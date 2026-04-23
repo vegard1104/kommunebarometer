@@ -602,13 +602,20 @@ let CURRENT_YEAR = null;
 let CURRENT_MUNI_CODE = '3029'; // Lørenskog kommunenummer (fra 2020)
 
 function findMuniCode(name) {
+  if (!name) return null;
   const n = name.trim().toLowerCase();
+  if (!n) return null;
+  // Nøyaktig treff
   for (const [k, v] of Object.entries(MUNI_NAMES)) {
     if (v.toLowerCase() === n) return k;
   }
-  // fuzzy
+  // Starter med
   for (const [k, v] of Object.entries(MUNI_NAMES)) {
     if (v.toLowerCase().startsWith(n)) return k;
+  }
+  // Inneholder
+  for (const [k, v] of Object.entries(MUNI_NAMES)) {
+    if (v.toLowerCase().includes(n)) return k;
   }
   return null;
 }
@@ -628,17 +635,39 @@ function pill(rank, total) {
 function renderYearSelect() {
   const years = Object.keys(OVERALL).sort();
   const sel = document.getElementById('year-select');
-  sel.innerHTML = years.map(y => `<option value="${y}" ${y === CURRENT_YEAR ? 'selected' : ''}>${y}</option>`).join('');
-  sel.onchange = () => { CURRENT_YEAR = sel.value; renderAll(); };
+  // Vis år i synkende rekkefølge (nyeste først), marker tomme år
+  const sortedDesc = [...years].reverse();
+  sel.innerHTML = sortedDesc.map(y => {
+    const n = Object.keys(OVERALL[y] || {}).length;
+    const label = n > 0 ? `${y} (${n} kommuner)` : `${y} (ingen data)`;
+    return `<option value="${y}" ${y === CURRENT_YEAR ? 'selected' : ''} ${n === 0 ? 'disabled' : ''}>${label}</option>`;
+  }).join('');
+  sel.onchange = () => {
+    CURRENT_YEAR = sel.value;
+    renderAll();
+    const yearCov = Object.keys(OVERALL[CURRENT_YEAR] || {}).length;
+    const covered = Object.values(ALL_SECTOR_DATA).filter(s => !s.error).length;
+    setStatus(`Viser ${CURRENT_YEAR} · ${yearCov} kommuner · ${covered}/${SECTORS.length} sektorer`, 'ok');
+  };
 }
 
 function renderMuniList() {
   const dl = document.getElementById('kommune-list');
   dl.innerHTML = Object.values(MUNI_NAMES).sort().map(n => `<option value="${n}">`).join('');
-  document.getElementById('kommune-search').onchange = (e) => {
-    const code = findMuniCode(e.target.value);
-    if (code) { CURRENT_MUNI_CODE = code; renderAll(); }
+  const input = document.getElementById('kommune-search');
+  const trySelect = () => {
+    const code = findMuniCode(input.value);
+    if (code && code !== CURRENT_MUNI_CODE) {
+      CURRENT_MUNI_CODE = code;
+      COMPARE_MUNIS = [code];
+      input.value = MUNI_NAMES[code] || input.value;
+      renderAll();
+    }
   };
+  // input fyrer ved hvert tastetrykk OG når man velger fra datalist
+  input.addEventListener('input', trySelect);
+  input.addEventListener('change', trySelect);
+  input.addEventListener('blur', trySelect);
 }
 
 function renderOverall() {
@@ -1078,8 +1107,10 @@ async function main() {
   // Samlet
   OVERALL = computeOverall(ALL_SECTOR_SCORES);
   const years = Object.keys(OVERALL).sort();
-  CURRENT_YEAR = years[years.length - 1] || null;
-  log(`Ferdig. Siste tilgjengelige år: ${CURRENT_YEAR}`);
+  // Velg siste år med faktisk data (>0 kommuner), ikke tomme år som 2026
+  const yearsWithData = years.filter(y => Object.keys(OVERALL[y] || {}).length > 0);
+  CURRENT_YEAR = yearsWithData[yearsWithData.length - 1] || years[years.length - 1] || null;
+  log(`Ferdig. ${yearsWithData.length} år med data. Viser: ${CURRENT_YEAR}`);
 
   // Sett Lørenskog kode ved å finne i muni-listen
   const lrCode = findMuniCode('Lørenskog');
@@ -1094,7 +1125,8 @@ async function main() {
   renderAll();
 
   const covered = Object.values(ALL_SECTOR_DATA).filter(s => !s.error).length;
-  setStatus(`Ferdig · ${covered}/${SECTORS.length} sektorer · siste år: ${CURRENT_YEAR}`, covered === SECTORS.length ? 'ok' : 'err');
+  const yearCov = Object.keys(OVERALL[CURRENT_YEAR] || {}).length;
+  setStatus(`Ferdig · ${covered}/${SECTORS.length} sektorer · viser ${CURRENT_YEAR} (${yearCov} kommuner)`, covered === SECTORS.length ? 'ok' : 'err');
 }
 
 document.getElementById('refresh-btn').onclick = () => { $log.textContent = ''; main(); };
