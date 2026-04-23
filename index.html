@@ -454,20 +454,23 @@ async function loadSector(sec) {
     const yearsToUse = allYears.slice(-6);
 
     // Hent data for valgt sett: alle kommuner, valgte indikatorer, valgte år
+    // MERK: ikke bruk codeList — vi henter alle regioner og filtrerer til kommuner i parsingen nedenfor
     const params = {};
     params[`valueCodes[${contentsDim}]`] = codes.map(c => c.code);
     params[`valueCodes[${timDim}]`] = yearsToUse;
-    // For region: bruk filter som matcher K-prefiks (kommunenummer)
-    params[`codeList[${regDim}]`] = 'agg_single:KommNyeste';
     params[`valueCodes[${regDim}]`] = '*';
 
     const ds = await fetchTableV2(sec.tableId, params);
     const parsed = parseJsonStat(ds);
     // Behold bare kommuner (4-sifret nummer, evt. med K- prefiks)
+    // Hopp over historiske kommuner som ble slått sammen (label inneholder f.eks. "(-2019)")
     const commMap = {};
     for (const [k, v] of Object.entries(parsed.data)) {
       const mk = k.match(/^(?:K-)?(\d{4})$/);
-      if (mk) commMap[mk[1]] = v;
+      if (!mk) continue;
+      const lbl = v._label || '';
+      if (/\(-?\d{4}\)/.test(lbl)) continue; // f.eks. "Kristiansand (-2019)"
+      commMap[mk[1]] = v;
     }
     log(`  ✓ ${sec.id}: ${Object.keys(commMap).length} kommuner, ${codes.length} indikatorer, ${yearsToUse.length} år`);
     return {
