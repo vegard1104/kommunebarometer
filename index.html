@@ -662,19 +662,53 @@ function renderMuniList() {
   const dl = document.getElementById('kommune-list');
   dl.innerHTML = Object.values(MUNI_NAMES).sort().map(n => `<option value="${n}">`).join('');
   const input = document.getElementById('kommune-search');
-  const trySelect = () => {
-    const code = findMuniCode(input.value);
+
+  // Eksakt match (case-insensitive) — f.eks. når brukeren velger fra datalist
+  const findExactCode = (val) => {
+    if (!val) return null;
+    const n = val.trim().toLowerCase();
+    if (!n) return null;
+    for (const [k, v] of Object.entries(MUNI_NAMES)) {
+      if (v.toLowerCase() === n) return k;
+    }
+    return null;
+  };
+
+  // Under tasting: kun oppdater hvis eksakt treff (datalist-valg eller ferdig skrevet navn).
+  // Ikke overskriv feltet — da får brukeren viske ut i fred.
+  input.addEventListener('input', () => {
+    const code = findExactCode(input.value);
     if (code && code !== CURRENT_MUNI_CODE) {
       CURRENT_MUNI_CODE = code;
       COMPARE_MUNIS = [code];
-      input.value = MUNI_NAMES[code] || input.value;
       renderAll();
     }
+  });
+
+  // Ved blur/change: tillat fuzzy match (startsWith/includes) og autofyll riktig navn.
+  const commitFuzzy = () => {
+    if (!input.value.trim()) {
+      // Brukeren har tømt feltet — sett det tilbake til gjeldende kommune uten å bytte
+      input.value = MUNI_NAMES[CURRENT_MUNI_CODE] || '';
+      return;
+    }
+    const code = findMuniCode(input.value);
+    if (code) {
+      if (code !== CURRENT_MUNI_CODE) {
+        CURRENT_MUNI_CODE = code;
+        COMPARE_MUNIS = [code];
+        input.value = MUNI_NAMES[code];
+        renderAll();
+      } else {
+        input.value = MUNI_NAMES[code];
+      }
+    } else {
+      // Ingen treff — rull tilbake til gjeldende
+      input.value = MUNI_NAMES[CURRENT_MUNI_CODE] || '';
+    }
   };
-  // input fyrer ved hvert tastetrykk OG når man velger fra datalist
-  input.addEventListener('input', trySelect);
-  input.addEventListener('change', trySelect);
-  input.addEventListener('blur', trySelect);
+  input.addEventListener('change', commitFuzzy);
+  input.addEventListener('blur', commitFuzzy);
 }
 
 function renderOverall() {
