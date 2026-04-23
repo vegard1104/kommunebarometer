@@ -281,7 +281,11 @@ const LOWER_IS_BETTER = /kostnad|utgift|netto driftsutgift|brutto driftsutgift|g
 // Nøkkelord som tydelig indikerer at høy verdi er bra
 const HIGHER_IS_BETTER = /dekning|andel med|andel barn|tilskudd|netto driftsresultat|disposisjonsfond|grunnbemanning|lærertetthet|årsverk per|fagutdanning|barnehagelærer|leke- og oppholdsareal/i;
 
-const API_BASE = 'https://data.ssb.no/api/pxwebapi/v2/tables/';
+// Bruk Vercel rewrite /api/ssb/* → data.ssb.no for å unngå CORS i nettleser.
+// Fallback til direkte SSB-URL ved lokal kjøring (file://).
+const API_BASE = (location.protocol === 'file:' || location.hostname === '')
+  ? 'https://data.ssb.no/api/pxwebapi/v2/tables/'
+  : '/api/ssb/tables/';
 const MUNI_CODE_KEY = 'KOKkommuneregion0000'; // typisk kode for region-dimensjon i KOSTRA-tabeller, sjekkes via metadata
 
 // ============================================================
