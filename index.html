@@ -1098,4 +1098,14 @@ async function main() {
 }
 
 document.getElementById('refresh-btn').onclick = () => { $log.textContent = ''; main(); };
-document.getElementById('csv-btn').onclick = d
+document.getElementById('csv-btn').onclick = downloadCsv;
+document.getElementById('xlsx-btn').onclick = downloadXlsx;
+
+main().catch(e => {
+  setStatus('Feil: ' + e.message, 'err');
+  log('FATAL: ' + e.message);
+  log(e.stack || '');
+});
+</script>
+</body>
+</html>
