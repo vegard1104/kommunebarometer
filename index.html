@@ -451,7 +451,7 @@ async function loadSector(sec) {
     // Velg alle tilgjengelige år (siste 6)
     const timIndex = dims[timDim].category.index || {};
     const allYears = Object.keys(timIndex).sort();
-    const yearsToUse = allYears.slice(-6);
+    const yearsToUse = allYears.filter(y => parseInt(y, 10) >= 2019);
 
     // Hent data for valgt sett: alle kommuner, valgte indikatorer, valgte år
     // MERK: ikke bruk codeList — vi henter alle regioner og filtrerer til kommuner i parsingen nedenfor
@@ -462,20 +462,43 @@ async function loadSector(sec) {
 
     const ds = await fetchTableV2(sec.tableId, params);
     const parsed = parseJsonStat(ds);
-    // Behold bare kommuner (4-sifret nummer, evt. med K- prefiks)
-    // Hopp over historiske kommuner som ble slått sammen (label inneholder f.eks. "(-2019)")
-    const commMap = {};
+    // Behold bare kommuner (4-sifret nummer, evt. med K- prefiks).
+    // SSB-data ligger under den kommunekoden som var gyldig det aktuelle året.
+    // F.eks. Lørenskog: 0230 (1908-2019), 3029 (2020-2023, Viken), 3222 (2024-, Akershus etter Viken-oppløsning).
+    // Vi grupperer alle koder med samme "rene" navn og slår sammen årstallene under den NÅVÆRENDE koden,
+    // slik at brukeren får sammenhengende historikk uten å vite om regionreformene.
+    const stripLabel = (lbl) => (lbl || '').replace(/\s*\([^)]*\)\s*$/, '').trim();
+    const isHistoricLabel = (lbl) => /\(\s*-?\d{4}/.test(lbl || '');
+    const groups = {}; // navn -> [{ code, info }]
     for (const [k, v] of Object.entries(parsed.data)) {
       const mk = k.match(/^(?:K-)?(\d{4})$/);
       if (!mk) continue;
-      const lbl = v._label || '';
-      // Hopp over historiske/utgåtte kommunekoder — label har årtall i parentes:
-      //   "(-2019)"      → gammel kode før sammenslåing
-      //   "(2020-2023)"  → gammel Viken-kode etter regionreform
-      //   "(1908-2019)"  → enda eldre historikk
-      // Aktive koder har ren label uten årtall (f.eks. "Lørenskog").
-      if (/\(\s*-?\d{4}/.test(lbl)) continue;
-      commMap[mk[1]] = v;
+      const name = stripLabel(v._label);
+      if (!name) continue;
+      (groups[name] = groups[name] || []).push({ code: mk[1], info: v });
+    }
+    const commMap = {};
+    for (const [name, entries] of Object.entries(groups)) {
+      // Finn "nåværende" kode — den uten årstall i parentes.
+      let current = entries.find(e => !isHistoricLabel(e.info._label));
+      if (!current) continue; // ignorer helt utgåtte kommuner (ingen nåværende kode)
+      // Slå sammen alle år fra alle koder i gruppen inn i current-koden.
+      const merged = { _label: name, indicators: {} };
+      for (const entry of entries) {
+        for (const [ci, iData] of Object.entries(entry.info.indicators || {})) {
+          if (!merged.indicators[ci]) {
+            merged.indicators[ci] = { _label: iData._label, years: {} };
+          }
+          for (const [yr, val] of Object.entries(iData.years || {})) {
+            // Ta første ikke-null verdi — historiske og nåværende koder har data for ulike år,
+            // så det er typisk ingen konflikt.
+            if (merged.indicators[ci].years[yr] == null && val != null) {
+              merged.indicators[ci].years[yr] = val;
+            }
+          }
+        }
+      }
+      commMap[current.code] = merged;
     }
     log(`  ✓ ${sec.id}: ${Object.keys(commMap).length} kommuner, ${codes.length} indikatorer, ${yearsToUse.length} år`);
     return {
