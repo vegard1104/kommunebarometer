@@ -469,7 +469,12 @@ async function loadSector(sec) {
       const mk = k.match(/^(?:K-)?(\d{4})$/);
       if (!mk) continue;
       const lbl = v._label || '';
-      if (/\(-?\d{4}\)/.test(lbl)) continue; // f.eks. "Kristiansand (-2019)"
+      // Hopp over historiske/utgåtte kommunekoder — label har årtall i parentes:
+      //   "(-2019)"      → gammel kode før sammenslåing
+      //   "(2020-2023)"  → gammel Viken-kode etter regionreform
+      //   "(1908-2019)"  → enda eldre historikk
+      // Aktive koder har ren label uten årtall (f.eks. "Lørenskog").
+      if (/\(\s*-?\d{4}/.test(lbl)) continue;
       commMap[mk[1]] = v;
     }
     log(`  ✓ ${sec.id}: ${Object.keys(commMap).length} kommuner, ${codes.length} indikatorer, ${yearsToUse.length} år`);
@@ -606,7 +611,7 @@ let ALL_SECTOR_DATA = {};
 let ALL_SECTOR_SCORES = {};
 let OVERALL = {};
 let CURRENT_YEAR = null;
-let CURRENT_MUNI_CODE = '3029'; // Lørenskog kommunenummer (fra 2020)
+let CURRENT_MUNI_CODE = '3222'; // Lørenskog (2024-, etter Viken-oppløsning). Oppdateres i main() via findMuniCode.
 
 function findMuniCode(name) {
   if (!name) return null;
@@ -847,7 +852,7 @@ function renderSources() {
 //  SAMMENLIGNING
 // ============================================================
 
-let COMPARE_MUNIS = ['3029']; // Lørenskog som default
+let COMPARE_MUNIS = ['3222']; // Lørenskog som default (ny kode 2024-)
 const COMPARE_COLORS = ['#4cc9f0', '#f72585', '#4ade80', '#fbbf24', '#c084fc'];
 let compareRadarChart, compareHistoryChart;
 
