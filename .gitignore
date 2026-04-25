@@ -4,8 +4,35 @@
 # OS-filer
 Thumbs.db
 .DS_Store
+desktop.ini
 
 # Editor-filer
 .vscode/
 .idea/
 *.swp
+*.swo
+
+# Node (om vi noensinne får build-steg)
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnpm-debug.log*
+
+# Miljøvariabler — aldri checke inn
+.env
+.env.*
+!.env.example
+
+# Vercel lokal cache
+.vercel/
+
+# Build/dist (ikke i bruk i v1, men sikrer fremtid)
+dist/
+build/
+.next/
+.output/
+.cache/
+
+# Testresultater fra spike (jsonene er evidens — IKKE ignorer)
+# Hvis vi ønsker å ekskludere, gjør det selektivt med eget mønster
