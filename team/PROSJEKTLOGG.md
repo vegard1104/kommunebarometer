@@ -14,6 +14,12 @@ Format per oppføring:
 
 ---
 
+## 2026-04-25 — Pakke 15 (C7) levert: Brønnøysund næringsstruktur skeleton
+**Hvem:** Claude Code (autonom, Pakke 15)
+**Hva:** Ny `data/brreg-helper.js` med `kbBrreg.fetchVirksomheter(kommunenummer)` og `kbBrreg.topNaceBransjer(virksomheter, n)`. Bruker BRREG sitt åpne API direkte (CORS-kompatibelt, ingen proxy nødvendig). 7-dagers localStorage-cache. Skeleton — UI-integrasjon i kommune-dashboard kommer som egen PR.
+**Hvorfor:** Rapport C7: forklaringsvariabel for inntektsnivå, pendling, barnehagedekning. Lavt hengende frukt.
+**Konsekvens for teamet:** Frontend kan vise topp-NACE-bransjer i en egen kort i kommune-dashboard.
+
 ## 2026-04-25 — Pakke 0–3 levert og merget til main
 **Hvem:** Claude Code (autonom kjøring på vegne av Vegard) + Vegard (merging)
 **Hva:** Fire pakker levert som selvstendige PR-er og merget til main:
