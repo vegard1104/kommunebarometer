@@ -1740,9 +1740,12 @@ function renderSectors() {
     const oppdatert = sd?.tableUpdated ? formatNorskDato(sd.tableUpdated) : null;
     const tabellLenke = `https://www.ssb.no/statbank/table/${sec.tableId}`;
     const tabellTittel = sd?.tableLabel ? sd.tableLabel.replace(/^\d+:\s*/, '') : '';
+    // E4-stempelet ligger inne i et klikkbart sector-kort (Pakke 5), så vi kan
+    // ikke ha nested <a>-tag her — det splitter ankeret i to. Vi viser tekst og
+    // lar dypdykk-siden ha SSB-lenken eksternt.
     const stempel = oppdatert
-      ? `<div class="sector-stamp" title="${escapeHtml(tabellTittel)}">Sist oppdatert ${oppdatert} · <a href="${tabellLenke}" target="_blank" rel="noopener">SSB tabell ${sec.tableId}</a></div>`
-      : `<div class="sector-stamp"><a href="${tabellLenke}" target="_blank" rel="noopener">SSB tabell ${sec.tableId}</a></div>`;
+      ? `<div class="sector-stamp" title="${escapeHtml(tabellTittel)}">Sist oppdatert ${oppdatert} · SSB tabell ${sec.tableId}</div>`
+      : `<div class="sector-stamp">SSB tabell ${sec.tableId}</div>`;
     // Pakke 5: hele sektor-kortet er klikkbar lenke til dypdykk.
     const params = new URLSearchParams({
       id: sec.id,
