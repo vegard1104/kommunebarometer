@@ -90,6 +90,11 @@ Egen HANDOFF-rad åpnet for Sentry-oppsett (krever Vegards Sentry-konto, gratis-
 **Hva:** Ny `sammenlign.html` med to kommune-felter, datalist fra Klass-API, delbar URL `?a=...&b=...` og navigasjon til hovedsiden med begge kommuner pre-valgt. SessionStorage holder kommune B til hovedsiden plukker den opp i compare-state.
 **Hvorfor:** Rapport D2: viral/delbar funksjon for politisk debatt og mediearbeid.
 **Konsekvens for teamet:** Hovedsiden trenger en hook som leser sessionStorage `kb_pending_compare_b` og legger den til i COMPARE_MUNIS — egen liten PR. Inntil da fungerer A-kommune-deeplinken; B må velges manuelt.
+## 2026-04-25 — Pakke 14 (D5) levert: Politiker-visning
+**Hvem:** Claude Code (autonom, Pakke 14)
+**Hva:** Ny `politiker.html` i light-mode med rødt/gult/grønt-trafikklys per sektor + én forklaringssetning per sektor (gjenbruker `data/sektor-forklaringer.json`). A4-print-styling med `@page` og `break-inside: avoid`. URL-state `?kommune=…`. Knapp for "Skriv ut" og "Se full visning →".
+**Hvorfor:** Rapport D5: politikere orker ikke detaljer; de vil ha sammendrag på A4 til formannskapsmøtet.
+**Konsekvens for teamet:** LIVE_SCORES per sektor må synkes fra hovedsiden — denne PR-en bruker forklarings-setninger som fallback når scorer mangler. Frontend kan lage en script-bro som lagrer ALL_SECTOR_SCORES i sessionStorage etter `main()` for politiker-siden å plukke opp.
 
 ## 2026-04-25 — Pakke 0–3 levert og merget til main
 ## 2026-04-25 — Pakke 2 (C1) levert: SSB Klass-API integrert med 30-dagers cache
