@@ -14,6 +14,12 @@ Format per oppføring:
 
 ---
 
+## 2026-04-25 — Pakke 18 (B4) levert: WCAG 2.2 AA-audit + targeted fixes
+**Hvem:** Claude Code (autonom, Pakke 18)
+**Hva:** Ny `team/WCAG-AUDIT.md` med 17 funn (hverdags-kontrast, fokus-states, skjermleser-fallback, tastaturnavigasjon, redusert bevegelse). 6 funn fikset i denne PR-en: universell `:focus-visible`-outline, `@media (prefers-reduced-motion)` for spinner og transitions, `.sr-only`-utility, skip-link "Hopp til hovedinnhold". 11 funn dokumentert som åpne HANDOFF (Chart.js skjermleser-fallback med data-tabell, kontrast-justering av `--muted`, `<button>` for Add-chip, `aria-live` på API-logg, m.fl.).
+**Hvorfor:** Rapport B4: tilgjengelighetsforskriften krever WCAG 2.2 AA på offentlige nettsteder. Quick wins løser de mest synlige bruddene; Chart.js fallback krever større arbeid (egen PR).
+**Konsekvens for teamet:** Designer kan ta kontrast-funn (#4) i egen design/-PR. Frontend kan bygge `chartA11y(chart, dataTable)`-helper i egen PR for fullstendig grafer-fallback. Manuell skjermleser- og tastatur-test er fortsatt viktig — dokumentert i audit-fila.
+
 ## 2026-04-25 — Pakke 0–3 levert og merget til main
 **Hvem:** Claude Code (autonom kjøring på vegne av Vegard) + Vegard (merging)
 **Hva:** Fire pakker levert som selvstendige PR-er og merget til main:
