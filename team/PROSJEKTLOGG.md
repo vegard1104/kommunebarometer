@@ -14,6 +14,12 @@ Format per oppføring:
 
 ---
 
+## 2026-04-25 — Pakke 9 (A1) levert: Universell kommunevelger
+**Hvem:** Claude Code (autonom, Pakke 9)
+**Hva:** `preloadKommunevelger()` henter alle ~357 norske kommuner fra Klass-API ved sidelast, sorterer alfabetisk og fyller `<datalist id="kommune-list">` før KOSTRA-data er ferdig lastet. SessionStorage-cache. Faller tilbake til KOSTRA-deteksjon hvis Klass feiler.
+**Hvorfor:** 2.0-rapportens A1-anbefaling — låser opp v1 fra Lørenskog til alle 357. Forutsetning for de fleste D-pakkene.
+**Konsekvens for teamet:** B2 kan utvide samme cache med sammenslåings-data. URL-state (?kommune=) implementeres i Pakke 7.
+
 ## 2026-04-25 — Pakke 0–3 levert og merget til main
 **Hvem:** Claude Code (autonom kjøring på vegne av Vegard) + Vegard (merging)
 **Hva:** Fire pakker levert som selvstendige PR-er og merget til main:

@@ -1363,6 +1363,55 @@ document.getElementById('refresh-btn').onclick = () => { $log.textContent = ''; 
 document.getElementById('csv-btn').onclick = downloadCsv;
 document.getElementById('xlsx-btn').onclick = downloadXlsx;
 
+// ============================================================
+//  A1: Universell kommunevelger
+// ============================================================
+//
+// Forhåndsbefolker kommune-velgeren med alle ~357 norske kommuner
+// fra SSB Klass-API klassifikasjon 131, slik at brukeren kan velge
+// hvilken som helst kommune før KOSTRA-data har lastet ferdig.
+async function preloadKommunevelger() {
+  const KEY = 'kb_klass_kommuner_v1';
+  const dl = document.getElementById('kommune-list');
+  if (!dl) return;
+  let kommuner = null;
+  try {
+    const cached = sessionStorage.getItem(KEY);
+    if (cached) kommuner = JSON.parse(cached);
+  } catch (_) {}
+  if (!kommuner) {
+    try {
+      const today = new Date().toISOString().slice(0, 10);
+      const url = (location.protocol === 'file:' || location.hostname === '')
+        ? `https://data.ssb.no/api/klass/v1/classifications/131/codesAt?date=${today}&language=nb`
+        : `/api/klass/classifications/131/codesAt?date=${today}&language=nb`;
+      const r = await fetch(url);
+      if (!r.ok) throw new Error(`Klass HTTP ${r.status}`);
+      const data = await r.json();
+      kommuner = (data.codes || [])
+        .filter(c => /^\d{4}$/.test(c.code))
+        .map(c => ({ code: c.code, name: c.name || '' }))
+        .sort((a, b) => a.name.localeCompare(b.name, 'nb'));
+      try { sessionStorage.setItem(KEY, JSON.stringify(kommuner)); } catch (_) {}
+      log(`Kommunevelger forhåndslastet: ${kommuner.length} kommuner fra Klass-API`);
+    } catch (e) {
+      log(`Kommunevelger-forhåndslast feilet (faller tilbake på KOSTRA-deteksjon): ${e.message}`);
+      return;
+    }
+  }
+  const eksisterende = new Set(Array.from(dl.options).map(o => o.value.toLowerCase()));
+  for (const k of kommuner) {
+    if (!k.name) continue;
+    if (!eksisterende.has(k.name.toLowerCase())) {
+      const opt = document.createElement('option');
+      opt.value = k.name;
+      dl.appendChild(opt);
+    }
+  }
+}
+
+preloadKommunevelger();
+
 main().catch(e => {
   setStatus('Feil: ' + e.message, 'err');
   log('FATAL: ' + e.message);
