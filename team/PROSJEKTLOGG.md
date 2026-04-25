@@ -14,6 +14,12 @@ Format per oppføring:
 
 ---
 
+## 2026-04-25 — Pakke 13 (D2) levert: Sammenlign-to-kommuner
+**Hvem:** Claude Code (autonom, Pakke 13)
+**Hva:** Ny `sammenlign.html` med to kommune-felter, datalist fra Klass-API, delbar URL `?a=...&b=...` og navigasjon til hovedsiden med begge kommuner pre-valgt. SessionStorage holder kommune B til hovedsiden plukker den opp i compare-state.
+**Hvorfor:** Rapport D2: viral/delbar funksjon for politisk debatt og mediearbeid.
+**Konsekvens for teamet:** Hovedsiden trenger en hook som leser sessionStorage `kb_pending_compare_b` og legger den til i COMPARE_MUNIS — egen liten PR. Inntil da fungerer A-kommune-deeplinken; B må velges manuelt.
+
 ## 2026-04-25 — Pakke 0–3 levert og merget til main
 **Hvem:** Claude Code (autonom kjøring på vegne av Vegard) + Vegard (merging)
 **Hva:** Fire pakker levert som selvstendige PR-er og merget til main:
