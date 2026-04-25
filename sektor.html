@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="nb">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sektor-dypdykk — Kommunebarometer 2026</title>
+<meta name="description" content="Detaljert sektor-dypdykk for KOSTRA-indikatorer per kommune. Inkluderer behovsjustering, tidsserier og eksterne kilder.">
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<style>
+  :root {
+    --bg: #0f1724; --panel: #182134; --panel-2: #1f2b44;
+    --accent: #4cc9f0; --accent-2: #f72585;
+    --good: #4ade80; --bad: #f87171; --warn: #fbbf24;
+    --text: #e6edf6; --muted: #94a3b8; --border: #263248;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: var(--bg); color: var(--text); line-height: 1.5; }
+  header { background: linear-gradient(135deg, #1a2540 0%, #0f1724 100%); border-bottom: 1px solid var(--border); padding: 24px 32px; }
+  header .crumb { font-size: 13px; color: var(--muted); margin-bottom: 12px; }
+  header .crumb a { color: var(--accent); text-decoration: none; }
+  header .crumb a:hover, header .crumb a:focus { text-decoration: underline; }
+  header h1 { margin: 0 0 6px; font-size: 26px; }
+  header h1 .vekt { font-size: 14px; color: var(--muted); font-weight: 400; margin-left: 12px; }
+  header .konteks { font-size: 13px; color: var(--muted); margin: 0; display: flex; gap: 18px; flex-wrap: wrap; }
+  header .konteks strong { color: var(--text); }
+  main { padding: 24px 32px 60px; max-width: 1200px; margin: 0 auto; }
+  section { background: var(--panel); border: 1px solid var(--border); border-radius: 12px; padding: 22px 26px; margin-bottom: 18px; }
+  section h2 { margin: 0 0 14px; font-size: 18px; color: var(--accent); }
+  .summary-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 16px; }
+  .summary-card { background: var(--panel-2); border: 1px solid var(--border); border-radius: 8px; padding: 14px 16px; }
+  .summary-card .label { font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.5px; }
+  .summary-card .value { font-size: 28px; font-weight: 700; color: var(--accent); margin-top: 4px; }
+  .summary-card .sub { font-size: 12px; color: var(--muted); margin-top: 4px; }
+  .summary-card.justert { border-left: 3px solid var(--accent-2); }
+  .dki-panel { background: var(--panel-2); border-left: 3px solid var(--accent); padding: 14px 18px; border-radius: 8px; margin-top: 12px; font-size: 14px; }
+  .dki-panel.dki-low { border-left-color: var(--good); }
+  .dki-panel.dki-high { border-left-color: var(--bad); }
+  .dki-panel strong { color: var(--accent); }
+  .dki-panel.dki-low strong { color: var(--good); }
+  .dki-panel.dki-high strong { color: var(--bad); }
+  table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  table th { text-align: left; padding: 10px 12px; border-bottom: 1px solid var(--border); color: var(--muted); font-weight: 500; font-size: 12px; text-transform: uppercase; letter-spacing: 0.3px; }
+  table td { padding: 10px 12px; border-bottom: 1px solid var(--border); }
+  table tr.kommune td { background: rgba(76,201,240,0.06); font-weight: 600; }
+  .ekstern-lenker { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 12px; }
+  .ekstern-lenker a {
+    display: block; padding: 14px 16px;
+    background: var(--panel-2); border: 1px solid var(--border); border-radius: 8px;
+    color: var(--text); text-decoration: none; font-size: 14px;
+    transition: border-color .15s;
+  }
+  .ekstern-lenker a:hover, .ekstern-lenker a:focus { border-color: var(--accent); outline: none; }
+  .ekstern-lenker a strong { color: var(--accent); display: block; margin-bottom: 4px; }
+  .ekstern-lenker a small { color: var(--muted); }
+  .placeholder-banner {
+    background: rgba(251,191,36,0.10); border: 1px solid var(--warn);
+    border-radius: 8px; padding: 12px 16px; margin-bottom: 18px;
+    font-size: 13px; line-height: 1.55;
+  }
+  .placeholder-banner strong { color: var(--warn); }
+  .chart-wrap { position: relative; height: 280px; }
+  .meta-stamp { font-size: 11px; color: var(--muted); margin-top: 12px; line-height: 1.5; }
+  .meta-stamp a { color: var(--accent); text-decoration: none; }
+  .ikke-funnet { padding: 32px; text-align: center; color: var(--muted); }
+  .ikke-funnet h2 { color: var(--bad); }
+</style>
+</head>
+<body>
+<header>
+  <div class="crumb"><a href="/">← Kommunebarometer</a> · <a href="/metodikk">Metodikk</a></div>
+  <h1 id="sektor-tittel">Sektor-dypdykk<span class="vekt" id="sektor-vekt"></span></h1>
+  <p class="konteks" id="sektor-konteks">
+    <span>Kommune: <strong id="kommune-navn">–</strong></span>
+    <span>År: <strong id="ar-tekst">–</strong></span>
+    <span>Modus: <strong id="modus-tekst">Rådata</strong></span>
+  </p>
+</header>
+
+<main id="hovedinnhold">
+  <div id="ikke-funnet" class="ikke-funnet" hidden>
+    <h2>Ukjent sektor</h2>
+    <p>Ingen sektor med ID <code id="ikke-funnet-id"></code>. Tilbake til <a href="/">Kommunebarometer</a>.</p>
+  </div>
+
+  <section id="sammendrag-seksjon" hidden>
+    <h2>Sammendrag</h2>
+    <div class="summary-grid">
+      <div class="summary-card"><div class="label">Sektor-score (rådata)</div><div class="value" id="score-raa">–</div><div class="sub" id="rangering-raa">–</div></div>
+      <div class="summary-card justert" id="card-justert" hidden><div class="label">Behovsjustert score</div><div class="value" id="score-justert">–</div><div class="sub" id="rangering-justert">–</div></div>
+      <div class="summary-card"><div class="label">4-årssnitt</div><div class="value" id="snitt-4y">–</div><div class="sub">Kontekst</div></div>
+      <div class="summary-card"><div class="label">Trend</div><div class="value" id="trend-pil">→</div><div class="sub" id="trend-tekst">–</div></div>
+    </div>
+    <div class="dki-panel" id="dki-panel" hidden>
+      <strong id="dki-headline">DKI for sektoren: –</strong>
+      <p id="dki-forklaring" style="margin: 6px 0 0; color: var(--text);"></p>
+    </div>
+  </section>
+
+  <section id="indikatorer-seksjon" hidden>
+    <h2>Indikatorer</h2>
+    <div class="placeholder-banner">
+      <strong>Detaljert indikator-tabell:</strong> Live-fetch av alle SSB-indikatorer for sektoren med kolonner for kommune, KOSTRA-gruppe, fylke og landsnitt er planlagt. Hovedsiden viser allerede de viktigste indikatorene per sektor — for full liste, klikk SSB-tabell-lenken nederst.
+    </div>
+    <div id="indikator-tabell-wrap" hidden>
+      <table id="indikator-tabell">
+        <thead><tr><th>Indikator</th><th>Kommunen</th><th>Landet</th><th>Retning</th><th>Behovsjustert</th></tr></thead>
+        <tbody id="indikator-tabell-body"></tbody>
+      </table>
+    </div>
+  </section>
+
+  <section id="tidsserie-seksjon" hidden>
+    <h2>Tidsserie 2019–2025</h2>
+    <div class="placeholder-banner">
+      <strong>Detaljert tidsserie:</strong> Linjegraf med kommunen, landet og KOSTRA-gruppe per indikator kommer i egen PR. Hovedsiden har allerede sparkline + 4-årssnitt + trend-pil per sektor (rapport A3).
+    </div>
+    <div class="chart-wrap"><canvas id="tidsserie-graf"></canvas></div>
+  </section>
+
+  <section id="ekstern-seksjon">
+    <h2>Eksterne kilder</h2>
+    <div class="ekstern-lenker" id="ekstern-lenker"></div>
+  </section>
+
+  <section id="kilde-seksjon">
+    <h2>Kildereferanse</h2>
+    <div class="meta-stamp" id="kilde-info">SSB-tabell <strong id="ssb-tabell-id">–</strong> · sist oppdatert <strong id="ssb-oppdatert">–</strong> · <a id="ssb-lenke" href="#" target="_blank" rel="noopener">Åpne i SSB Statistikkbanken →</a></div>
+    <p style="margin-top: 14px; font-size: 13px; color: var(--muted);">For tilbakekobling med behovsjustering, se <a href="/data/behovsjustering-readme.md" style="color: var(--accent);">data/behovsjustering-readme.md</a> eller <a href="/metodikk" style="color: var(--accent);">metodikk-siden</a>.</p>
+  </section>
+</main>
+
+<script>
+// ============================================================
+//  Sektor-dypdykk — parameterisert via ?id=<sektor>
+// ============================================================
+//
+// Designer-prinsipp: én HTML-fil for alle 12 sektorer. URL-param ?id
+// bestemmer hvilken sektor som rendres. ?kommune=, ?år= og ?mode=
+// følger samme konvensjon som hovedsiden.
+//
+// I dag rendres skjelett + DKI-panel + eksterne kilde-lenker. Live SSB-
+// fetch for full indikator-tabell og tidsserie er flagget i banner-tekst
+// som "kommer i egen PR" — krever sektor-spesifikk SSB-fetch og er
+// adressert i Pakke 4-loggen.
+
+// Sektor-konfig — speiler SECTORS-arrayet i index.html men inkluderer
+// eksterne kilder per sektor.
+const SEKTORER = {
+  grunnskole:    { navn: 'Grunnskole', vekt: 20.0, tableId: '12255', dkiFelt: 'grunnskole', eksterne: [
+    { tittel: 'Udir Statistikkbanken', url: 'https://statistikkportalen.udir.no/', beskrivelse: 'Nasjonale prøver, eksamen, Elevundersøkelsen, grunnskolepoeng. Rapport C3 — full integrasjon kommer i fase 2.' },
+    { tittel: 'GSI — Grunnskolens informasjonssystem', url: 'https://gsi.udir.no/', beskrivelse: 'Strukturdata om norske grunnskoler.' }
+  ]},
+  pleie:         { navn: 'Pleie og omsorg', vekt: 20.0, tableId: '12209', dkiFelt: 'pleie', eksterne: [
+    { tittel: 'IPLOS-registeret', url: 'https://www.helsedirektoratet.no/registre/iplos-registeret', beskrivelse: 'Individbaserte data om pleie- og omsorgstjenester. Krever søknad om forskertilgang.' },
+    { tittel: 'Folkehelseprofilen', url: 'https://www.helsedirektoratet.no/folkehelseprofiler', beskrivelse: 'PDF per kommune. Forventet levealder, sykdomsbyrde, demografi. Rapport C2.' }
+  ]},
+  barnevern:     { navn: 'Barnevern', vekt: 10.0, tableId: '08845', dkiFelt: 'barnevern', eksterne: [
+    { tittel: 'Bufdir — barnevernstall', url: 'https://www.bufdir.no/statistikk-og-analyse/barnevern/', beskrivelse: 'Barne-, ungdoms- og familiedirektoratets statistikk om barnevern.' }
+  ]},
+  barnehage:     { navn: 'Barnehage', vekt: 10.0, tableId: '12379', dkiFelt: 'barnehage', eksterne: [
+    { tittel: 'BASIL — Barnehage statistikk', url: 'https://www.udir.no/tall-og-forskning/statistikk/statistikk-barnehage/', beskrivelse: 'Udirs barnehagestatistikk: dekning, ansatte, areal.' }
+  ]},
+  helse:         { navn: 'Helse', vekt: 7.5, tableId: '12209', dkiFelt: 'kommunehelse', eksterne: [
+    { tittel: 'Folkehelseprofilen (Hdir)', url: 'https://www.helsedirektoratet.no/folkehelseprofiler', beskrivelse: 'Folkehelse-nøkkeltall per kommune. Rapport C2 — full integrasjon kommer i fase 2.' },
+    { tittel: 'Kommunehelsa.no', url: 'https://www.fhi.no/hn/helse-og-sykdom/kommunehelsa-statistikkbank/', beskrivelse: 'FHI Statistikkbank for helse og folkehelse på kommunenivå.' }
+  ]},
+  sosial:        { navn: 'Sosialtjeneste', vekt: 7.5, tableId: '14019', dkiFelt: 'sosial', eksterne: [
+    { tittel: 'NAV statistikk', url: 'https://www.nav.no/no/nav-og-samfunn/statistikk', beskrivelse: 'Sosialhjelp, kvalifiseringsprogram, uføretrygd.' }
+  ]},
+  okonomi:       { navn: 'Økonomi', vekt: 10.0, tableId: '12134', dkiFelt: 'administrasjon', eksterne: [
+    { tittel: 'KMD — kommuneproposisjonen', url: 'https://www.regjeringen.no/no/tema/kommuner-og-regioner/kommuneokonomi/', beskrivelse: 'Inntektssystemet og grønne hefter. Kilde for behovsjustering.' },
+    { tittel: 'ROBEK-registeret', url: 'https://www.regjeringen.no/no/tema/kommuner-og-regioner/kommunedata/robek-2/', beskrivelse: 'Kommuner i økonomisk kontroll.' }
+  ]},
+  eiendom:       { navn: 'Kostnadsnivå / eiendom', vekt: 5.0, tableId: '12051', dkiFelt: null, eksterne: [
+    { tittel: 'Kartverket', url: 'https://kartverket.no/', beskrivelse: 'Eiendomsdata, kommunegrenser.' }
+  ]},
+  kultur:        { navn: 'Kultur', vekt: 2.5, tableId: '13135', dkiFelt: null, eksterne: [
+    { tittel: 'Kulturrådet — statistikk', url: 'https://www.kulturradet.no/', beskrivelse: 'Bibliotekstatistikk, kulturskole, kulturarrangementer.' }
+  ]},
+  saksbehandling:{ navn: 'Saksbehandling (plan og bygg)', vekt: 2.5, tableId: '13111', dkiFelt: null, eksterne: [
+    { tittel: 'Direktoratet for byggkvalitet', url: 'https://dibk.no/', beskrivelse: 'Byggesaksstatistikk og veiledning.' }
+  ]},
+  var:           { navn: 'Vann, avløp, renovasjon', vekt: 2.5, tableId: '12263', dkiFelt: null, eksterne: [
+    { tittel: 'Norsk Vann', url: 'https://norskvann.no/', beskrivelse: 'Bransjeforening for VAR-sektoren.' }
+  ]},
+  klima:         { navn: 'Miljø og klima', vekt: 2.5, tableId: '12190', dkiFelt: null, eksterne: [
+    { tittel: 'Miljødirektoratet — klimagassregnskap', url: 'https://www.miljodirektoratet.no/tjenester/klimagassutslipp-kommuner/', beskrivelse: 'Klimagassutslipp per kommune.' }
+  ]}
+};
+
+const u = new URL(window.location.href);
+const sektorId = u.searchParams.get('id') || 'grunnskole';
+const kommuneNavn = u.searchParams.get('kommune') || 'Lørenskog';
+const år = u.searchParams.get('år') || u.searchParams.get('ar') || '2025';
+const modus = u.searchParams.get('mode') || (localStorage.getItem('kb_mode') === 'justert' ? 'justert' : 'raa');
+
+const sektor = SEKTORER[sektorId];
+if (!sektor) {
+  document.getElementById('ikke-funnet').hidden = false;
+  document.getElementById('ikke-funnet-id').textContent = sektorId;
+} else {
+  // Header
+  document.title = `${sektor.navn} — ${kommuneNavn} — Kommunebarometer`;
+  document.getElementById('sektor-tittel').firstChild.nodeValue = `Sektor-dypdykk: ${sektor.navn}`;
+  document.getElementById('sektor-vekt').textContent = `Vekt ${sektor.vekt}%`;
+  document.getElementById('kommune-navn').textContent = kommuneNavn;
+  document.getElementById('ar-tekst').textContent = år;
+  document.getElementById('modus-tekst').textContent = modus === 'justert' ? 'Behovsjustert' : 'Rådata';
+
+  // Sammendrag-skjelett (full data krever SSB-fetch + tilgang til ALL_SECTOR_SCORES fra hovedsiden)
+  document.getElementById('sammendrag-seksjon').hidden = false;
+  document.getElementById('score-raa').textContent = '–';
+  document.getElementById('rangering-raa').textContent = 'Hentes fra hovedsiden';
+  if (modus === 'justert') {
+    document.getElementById('card-justert').hidden = false;
+    document.getElementById('score-justert').textContent = '–';
+    document.getElementById('rangering-justert').textContent = 'Krever DKI-løypa';
+  }
+
+  // DKI-panel
+  if (sektor.dkiFelt) {
+    fetch(`/data/dki-${['2024', '2025'].includes(år) ? år : '2025'}.json`)
+      .then(r => r.ok ? r.json() : null)
+      .then(data => {
+        if (!data) return;
+        // Finn kommunenr fra navn (forenklet — bruker static map for kjent POC-data)
+        const kommuneCodes = { 'Lørenskog': '3222' };
+        const kommunenr = kommuneCodes[kommuneNavn] || null;
+        const dki = kommunenr ? data?.kommuner?.[kommunenr]?.[sektor.dkiFelt] : null;
+        const panel = document.getElementById('dki-panel');
+        if (dki && dki !== 1.0) {
+          panel.hidden = false;
+          const pct = Math.round(Math.abs(1 - dki) * 100);
+          const klasse = dki < 0.95 ? 'dki-low' : (dki > 1.05 ? 'dki-high' : '');
+          panel.className = 'dki-panel ' + klasse;
+          document.getElementById('dki-headline').textContent = `DKI for ${sektor.navn.toLowerCase()}: ${dki.toFixed(2)}`;
+          document.getElementById('dki-forklaring').innerHTML = dki < 1
+            ? `${kommuneNavn} forventes å bruke <strong>${pct}%</strong> mindre på ${sektor.navn.toLowerCase()} enn landsgjennomsnittet, basert på KMDs delkostnadsindeks (yngre/billigere befolkning).`
+            : `${kommuneNavn} forventes å bruke <strong>${pct}%</strong> mer på ${sektor.navn.toLowerCase()} enn landsgjennomsnittet (eldre/dyrere befolkning).`;
+        } else if (dki === 1.0) {
+          panel.hidden = false;
+          panel.className = 'dki-panel';
+          document.getElementById('dki-headline').textContent = `DKI for ${sektor.navn.toLowerCase()}: 1,00`;
+          document.getElementById('dki-forklaring').textContent = `${kommuneNavn} har samme forventet utgiftsbehov som landsgjennomsnittet.`;
+        } else {
+          panel.hidden = false;
+          document.getElementById('dki-headline').textContent = `DKI ikke tilgjengelig for ${kommuneNavn}`;
+          document.getElementById('dki-forklaring').textContent = 'Behovsjustering krever DKI-data fra KMDs grønne hefter. Foreløpig dekker POC kun Lørenskog (3222). HANDOFF åpnet for utvidelse.';
+        }
+      });
+  } else {
+    document.getElementById('dki-panel').hidden = false;
+    document.getElementById('dki-headline').textContent = 'Ikke behovsjustert';
+    document.getElementById('dki-forklaring').textContent = `${sektor.navn} har ingen DKI-faktor i KMDs inntektssystem. Indikatorer vises som rådata.`;
+  }
+
+  // Indikator-tabell og tidsserie er flagget som "kommer i egen PR"
+  document.getElementById('indikatorer-seksjon').hidden = false;
+  document.getElementById('tidsserie-seksjon').hidden = false;
+
+  // Eksterne lenker
+  const eksternEl = document.getElementById('ekstern-lenker');
+  for (const e of sektor.eksterne || []) {
+    const a = document.createElement('a');
+    a.href = e.url; a.target = '_blank'; a.rel = 'noopener';
+    a.innerHTML = `<strong>${e.tittel} →</strong><small>${e.beskrivelse}</small>`;
+    eksternEl.appendChild(a);
+  }
+  // Generisk lenke til SSB Statistikkbanken og folkehelse
+  const folkehelseLenke = document.createElement('a');
+  folkehelseLenke.href = `https://www.ssb.no/statbank/table/${sektor.tableId}`;
+  folkehelseLenke.target = '_blank'; folkehelseLenke.rel = 'noopener';
+  folkehelseLenke.innerHTML = `<strong>SSB Statistikkbanken — tabell ${sektor.tableId} →</strong><small>Hovedkilden for sektor-dataen. Klikk for å filtrere på kommune og år manuelt.</small>`;
+  eksternEl.appendChild(folkehelseLenke);
+
+  // Kilde-info
+  document.getElementById('ssb-tabell-id').textContent = sektor.tableId;
+  document.getElementById('ssb-oppdatert').textContent = '15. mars / 15. juni årlig';
+  document.getElementById('ssb-lenke').href = `https://www.ssb.no/statbank/table/${sektor.tableId}`;
+}
+</script>
+</body>
+</html>

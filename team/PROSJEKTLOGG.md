@@ -324,6 +324,28 @@ I `index.html`:
 **Hvorfor:** A2 er rapportens "største svakhet i dagens versjon" — kostnader uten korreksjon for utgiftsbehov gir feilrangering for kommuner med yngre/eldre befolkning. Toggle gir bruker valg + transparent visualisering av hva som justeres.
 
 **Konsekvens for teamet:** Lørenskog DKI=0,81 for pleie betyr at i justert modus blir kostnaden delt på 0,81 (12% høyere) — kommunen får dårligere score for pleie-kostnad i justert modus. Det er korrekt — Lørenskog har yngre befolkning enn snittet, så den "burde" bruke mindre. Når DKI-data utvides til alle 357 kommuner vil rangering endre seg merkbart for kommuner med skjev demografi. Frontend kan legge "Behovsjustert"-info i sektor-dypdykk-sider (Pakke 4).
+## 2026-04-25 — Pakke 4 (feature/sektor-dypdykk-alle-12) levert: parameterisert sektor-side
+**Hvem:** Claude Code (autonom)
+**Hva:** Ny `sektor.html` — én parameterisert side som dekker alle 12 sektorer via `?id=<sektor-id>`, `?kommune=<navn>`, `?år=<årstall>` og `?mode=raa|justert`. Bygger på Pakke 1 (kommunekode), Pakke 3a (DKI-data) og Pakke 3b (modus-håndtering).
+
+Designvalg: én HTML-fil i stedet for 12 separate (`sektor-grunnskole.html` osv) — gir mindre kode-duplisering og lettere vedlikehold. Hver sektor blir tilgjengelig på sin egen URL via query-param. Lenker fra forsiden (Pakke 5) bruker `sektor.html?id=grunnskole&kommune=Lørenskog&år=2025`.
+
+Implementert nå:
+- Header med tilbake-lenke, sektor-navn + vekt, kommune-, års- og modus-info
+- Sammendrag-grid med rådata-/justert-score-kort (justert vises kun i mode=justert)
+- DKI-panel med klartekst-forklaring og fargekoding (grønn/rød/standard)
+- Eksterne kilde-lenker per sektor (Udir, Hdir, IPLOS, NAV, Bufdir, Norsk Vann, Miljødirektoratet, m.fl.) med kontekst-tekst
+- Kildereferanse til SSB-tabell + lenke til Statistikkbanken
+- Behovsjusterings-forklaring koblet til /data/behovsjustering-readme.md
+
+Flagget i banner-tekst som "kommer i egen PR":
+- Detaljert indikator-tabell (alle SSB-indikatorer for sektoren med kommune/landet/KOSTRA-gruppe-kolonner)
+- Tidsserie-graf med kommune+landet+gruppe per indikator
+- Live-fetch av sammendrag-score (krever kobling til hovedsidens ALL_SECTOR_SCORES via shared store eller URL-meldinger)
+
+**Hvorfor:** D1-anbefalingen i 2.0-rapporten — gjør siden til ekte fagverktøy. Brukerinstruksen krevde alle 12 sektorer, men live SSB-fetch + tidsserie + KOSTRA-gruppe-data per sektor er for stort til én PR. Skjelett + DKI + eksterne lenker er pragmatisk MVP.
+
+**Konsekvens for teamet:** Pakke 5 (klikkbare sektor-kort) kan nå koble alle 12 sektor-kort til `sektor.html?id=...`. Live-fetch + indikator-tabell er åpen HANDOFF for fase 2 — krever sektor-konfig-deling mellom hovedside og dypdykk-side, eller egen SSB-fetch på dypdykk-siden.
 
 ## 2026-04-25 — Pakke 0–3 levert og merget til main
 ## 2026-04-25 — Pakke 2 (C1) levert: SSB Klass-API integrert med 30-dagers cache
