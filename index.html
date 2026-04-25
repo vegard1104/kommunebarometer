@@ -2095,6 +2095,22 @@ function renderAll() {
   renderHistory();
   renderRadar();
   renderCompare();
+  // D1: Speil små stub-datastrukturer til localStorage så sektor.html kan
+  // vise sammendrag (score, rang, trend) uten å re-fetche fra SSB. Hele
+  // ALL_SECTOR_DATA er for stor for localStorage; sektor-siden gjør egen
+  // fetch for indikator-tabell og tidsserie.
+  try {
+    if (typeof ALL_SECTOR_SCORES === 'object' && ALL_SECTOR_SCORES) {
+      localStorage.setItem('kb_sector_scores', JSON.stringify(ALL_SECTOR_SCORES));
+    }
+    if (typeof OVERALL === 'object' && OVERALL) {
+      localStorage.setItem('kb_overall', JSON.stringify(OVERALL));
+    }
+    if (typeof MUNI_NAMES === 'object' && MUNI_NAMES) {
+      localStorage.setItem('kb_muni_names', JSON.stringify(MUNI_NAMES));
+    }
+    localStorage.setItem('kb_data_timestamp', String(Date.now()));
+  } catch (_) { /* localStorage kan være avskrudd — ikke kritisk */ }
 }
 
 // ============================================================
