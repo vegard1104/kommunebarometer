@@ -273,6 +273,7 @@
   </details>
 
   <div class="footer">
+    <p style="margin: 0 0 10px;"><a href="/vekt-justering" style="color:var(--accent); font-weight: 600;">Justerbar vekting →</a> &nbsp;·&nbsp; test hvordan andre prioriteringer endrer rangeringen.</p>
     Laget ved å hente KOSTRA-tall direkte fra <a href="https://data.ssb.no/api/pxwebapi/v2/tables/" style="color:var(--accent)">SSBs åpne API</a>. Tabellene oppdateres av SSB 15. mars (foreløpige tall) og 15. juni (endelige tall) hvert år – når siden åpnes i juni 2026 vil 2025-tall være tilgjengelige og automatisk brukt. Selve Kommunebarometeret 2026 fra Kommunal Rapport publiseres normalt i juni 2026.
   </div>
 </div>
@@ -283,20 +284,31 @@
 // ============================================================
 
 // Vektene følger Kommunal Rapports offentlige metodikk.
+// A6: Brukers lagrede vekter (fra vekt-justering.html) overstyrer standardene.
+function _lesJusterteVekter() {
+  try {
+    const raw = localStorage.getItem('kb_vekt_justert_v1');
+    return raw ? (JSON.parse(raw) || {}) : {};
+  } catch (_) { return {}; }
+}
+const _JUSTERT = _lesJusterteVekter();
+function _w(id, std) { return typeof _JUSTERT[id] === 'number' ? _JUSTERT[id] : std; }
+
 const SECTORS = [
-  { id: 'grunnskole',    name: 'Grunnskole',                weight: 20.0, tableId: '12255', dir: 'auto', maxInd: 5 },
-  { id: 'pleie',         name: 'Pleie og omsorg',           weight: 20.0, tableId: '12209', dir: 'auto', maxInd: 5, filter: 'pleie|omsorg|sykehjem|hjemmetjeneste' },
-  { id: 'barnevern',     name: 'Barnevern',                 weight: 10.0, tableId: '08845', dir: 'auto', maxInd: 4 },
-  { id: 'barnehage',     name: 'Barnehage',                 weight: 10.0, tableId: '12379', dir: 'auto', maxInd: 4 },
-  { id: 'helse',         name: 'Helse',                     weight:  7.5, tableId: '12209', dir: 'auto', maxInd: 4, filter: 'helse|lege|fastlege|helsestasjon' },
-  { id: 'sosial',        name: 'Sosialtjeneste',            weight:  7.5, tableId: '14019', dir: 'auto', maxInd: 4 },
-  { id: 'okonomi',       name: 'Økonomi',                   weight: 10.0, tableId: '12134', dir: 'auto', maxInd: 5 },
-  { id: 'eiendom',       name: 'Kostnadsnivå / eiendom',    weight:  5.0, tableId: '12051', dir: 'auto', maxInd: 3 },
-  { id: 'kultur',        name: 'Kultur',                    weight:  2.5, tableId: '13135', dir: 'auto', maxInd: 3 },
-  { id: 'saksbehandling',name: 'Saksbehandling',            weight:  2.5, tableId: '13111', dir: 'auto', maxInd: 3 },
-  { id: 'var',           name: 'Vann, avløp, renovasjon',   weight:  2.5, tableId: '12263', dir: 'auto', maxInd: 3 },
-  { id: 'klima',         name: 'Miljø og klima',            weight:  2.5, tableId: '12190', dir: 'auto', maxInd: 3 }
+  { id: 'grunnskole',    name: 'Grunnskole',                weight: _w('grunnskole', 20.0), tableId: '12255', dir: 'auto', maxInd: 5 },
+  { id: 'pleie',         name: 'Pleie og omsorg',           weight: _w('pleie', 20.0),      tableId: '12209', dir: 'auto', maxInd: 5, filter: 'pleie|omsorg|sykehjem|hjemmetjeneste' },
+  { id: 'barnevern',     name: 'Barnevern',                 weight: _w('barnevern', 10.0), tableId: '08845', dir: 'auto', maxInd: 4 },
+  { id: 'barnehage',     name: 'Barnehage',                 weight: _w('barnehage', 10.0), tableId: '12379', dir: 'auto', maxInd: 4 },
+  { id: 'helse',         name: 'Helse',                     weight: _w('helse',  7.5),      tableId: '12209', dir: 'auto', maxInd: 4, filter: 'helse|lege|fastlege|helsestasjon' },
+  { id: 'sosial',        name: 'Sosialtjeneste',            weight: _w('sosial',  7.5),     tableId: '14019', dir: 'auto', maxInd: 4 },
+  { id: 'okonomi',       name: 'Økonomi',                   weight: _w('okonomi', 10.0),   tableId: '12134', dir: 'auto', maxInd: 5 },
+  { id: 'eiendom',       name: 'Kostnadsnivå / eiendom',    weight: _w('eiendom',  5.0),    tableId: '12051', dir: 'auto', maxInd: 3 },
+  { id: 'kultur',        name: 'Kultur',                    weight: _w('kultur',  2.5),     tableId: '13135', dir: 'auto', maxInd: 3 },
+  { id: 'saksbehandling',name: 'Saksbehandling',            weight: _w('saksbehandling', 2.5), tableId: '13111', dir: 'auto', maxInd: 3 },
+  { id: 'var',           name: 'Vann, avløp, renovasjon',   weight: _w('var',  2.5),        tableId: '12263', dir: 'auto', maxInd: 3 },
+  { id: 'klima',         name: 'Miljø og klima',            weight: _w('klima',  2.5),      tableId: '12190', dir: 'auto', maxInd: 3 }
 ];
+const _BRUKER_VEKTER_ER_JUSTERT = Object.keys(_JUSTERT).length > 0;
 
 // Heuristikker for retning (om høy verdi er bra eller dårlig)
 // Nøkkelord som indikerer at lav verdi er bra (kostnader, ventetid, frafall osv)

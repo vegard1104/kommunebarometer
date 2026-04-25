@@ -14,6 +14,12 @@ Format per oppføring:
 
 ---
 
+## 2026-04-25 — Pakke 12 (A6) levert: Justerbar vekting med slidere
+**Hvem:** Claude Code (autonom, Pakke 12)
+**Hva:** Ny `vekt-justering.html` med slidere for alle 12 sektorer + 4 forhåndsvalg (Standard/Oppvekst/Eldreomsorg/Økonomi). Sum-validering med farger. Lagrer i `localStorage`. `index.html` SECTORS-array leser fra localStorage og overstyrer standardvektene per sektor. Lenke fra footer.
+**Hvorfor:** Rapport A6: "Vektene er valg, ikke fasit. Gir tillit og lar kommunedirektører bruke siden i prioriteringsdiskusjoner."
+**Konsekvens for teamet:** Sliderne påvirker rangering først ved neste sidelast (siden SECTORS er evaluert på toppen). UX-forbedring senere: live oppdatering uten reload via egen rebuild-funksjon. URL-state er ikke implementert ennå (rapport-anbefaling).
+
 ## 2026-04-25 — Pakke 0–3 levert og merget til main
 **Hvem:** Claude Code (autonom kjøring på vegne av Vegard) + Vegard (merging)
 **Hva:** Fire pakker levert som selvstendige PR-er og merget til main:
