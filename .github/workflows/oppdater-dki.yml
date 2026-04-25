@@ -1,0 +1,86 @@
+name: Oppdater DKI fra KMD
+
+on:
+  schedule:
+    # Månedlig: kjører den 1. hver måned kl. 06:00 UTC
+    - cron: '0 6 1 * *'
+  workflow_dispatch:
+    inputs:
+      år:
+        description: 'År å oppdatere (komma-separert, f.eks. "2025,2026")'
+        required: false
+        default: '2025,2026'
+      fallback_excel:
+        description: 'Bruk Excel-fallback i stedet for nedlasting'
+        type: boolean
+        default: false
+
+jobs:
+  oppdater-dki:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+    steps:
+      - name: Sjekk ut repo
+        uses: actions/checkout@v4
+
+      - name: Sett opp Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Installer avhengigheter
+        run: pip install -r scripts/requirements.txt
+
+      - name: Kjør oppdaterings-script
+        id: kjor
+        run: |
+          ÅR_ARGS=""
+          IFS=',' read -ra ÅRLISTE <<< "${{ github.event.inputs.år || '2025,2026' }}"
+          for å in "${ÅRLISTE[@]}"; do
+            ÅR_ARGS="$ÅR_ARGS --år $å"
+          done
+          FALLBACK=""
+          if [ "${{ github.event.inputs.fallback_excel }}" = "true" ]; then
+            FALLBACK="--fallback-excel"
+          fi
+          python scripts/oppdater-dki-fra-kmd.py $ÅR_ARGS $FALLBACK || echo "Script feilet, men fortsetter for å se diff"
+
+      - name: Sjekk om DKI-filer endret seg
+        id: diff
+        run: |
+          if git diff --quiet -- data/dki-*.json; then
+            echo "endring=false" >> $GITHUB_OUTPUT
+            echo "Ingen endringer i DKI-filer"
+          else
+            echo "endring=true" >> $GITHUB_OUTPUT
+            echo "DKI-filer endret seg"
+            git diff --stat -- data/dki-*.json
+          fi
+
+      - name: Opprett PR med oppdaterte DKI-data
+        if: steps.diff.outputs.endring == 'true'
+        uses: peter-evans/create-pull-request@v6
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          branch: chore/dki-auto-oppdatering
+          delete-branch: true
+          title: 'chore: oppdater DKI-data fra KMD Grønt hefte'
+          body: |
+            Automatisk oppdatering av DKI-data fra KMDs grønne hefter.
+
+            **Kilde:** https://www.regjeringen.no/no/tema/kommuner-og-regioner/kommuneokonomi/gront-hefte/id547024/
+
+            ## Endrede filer
+            - `data/dki-2025.json`
+            - `data/dki-2026.json` (hvis tilgjengelig)
+
+            ## Sjekkliste før merge
+            - [ ] Verifiser at DKI-data ser plausible ut (vektet sum ≈ 1.0 per kommune)
+            - [ ] Sjekk at antall kommuner stemmer med forventet (≈357)
+            - [ ] Sammenlign mot Excel-referansen for Lørenskog (3222) — pleie ≈ 0.81
+
+            🤖 Auto-generert av `.github/workflows/oppdater-dki.yml`
+          commit-message: 'chore: oppdater DKI-data fra KMD Grønt hefte'
+          assignees: vegard1104
