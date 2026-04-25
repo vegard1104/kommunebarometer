@@ -210,6 +210,37 @@
   .info-popover .info-close:hover, .info-popover .info-close:focus {
     color: var(--text); outline: none;
   }
+  /* E4: Sist-oppdatert-stempel per sektor */
+  .sector .sector-stamp {
+    margin-top: 10px; padding-top: 8px;
+    border-top: 1px solid var(--border);
+    font-size: 10px; color: var(--muted);
+    line-height: 1.4;
+  }
+  .sector .sector-stamp a { color: var(--accent); text-decoration: none; }
+  .sector .sector-stamp a:hover,
+  .sector .sector-stamp a:focus { text-decoration: underline; }
+  /* A3: trend-pil og 4-årsgjennomsnitt */
+  .sector .trend-row {
+    display: flex; align-items: center; gap: 10px;
+    margin-top: 10px; padding-top: 8px;
+    border-top: 1px solid var(--border);
+    font-size: 12px;
+  }
+  .sector .trend-arrow {
+    font-size: 16px; line-height: 1; font-weight: 700;
+    flex: 0 0 auto;
+  }
+  .sector .trend-arrow.up { color: var(--good); }
+  .sector .trend-arrow.down { color: var(--bad); }
+  .sector .trend-arrow.flat { color: var(--muted); }
+  .sector .trend-text { color: var(--muted); flex: 1; }
+  .sector .trend-text strong { color: var(--text); }
+  .sector .sparkline {
+    flex: 0 0 auto;
+    width: 70px; height: 22px;
+    display: block;
+  }
   .sector.missing { opacity: 0.55; }
 
   .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 20px; }
@@ -1272,6 +1303,227 @@ function showSektorInfo(secId, btn) {
   popover.querySelector('h4').focus({ preventScroll: false });
 }
 
+// ============================================================
+//  Gjenopprettede funksjoner som falt ut i merge-konflikt 2026-04-25
+//  Definisjoner fra:
+//    E4 (feature/sist-oppdatert-stempel) — formatNorskDato
+//    A3 (feature/trend-og-snitt) — buildSectorSeries, compute4YearAvg,
+//        computeTrend, renderSparkline, renderTrendRow
+//    C6 (feature/robek-badge) — ROBEK_DATA, loadRobek, getRobekStatus,
+//        renderRobekBadge
+//    A5 (feature/eksport-og-deling) — readKommuneFromUrl,
+//        syncUrlToCurrentMuni, flashStatus, shareLink, copyChartImage
+//  (Pakke 8 / B5 sine kbReportError + brukerVennligFeil ligger nederst
+//   ved main().catch — gjenopprettet i forrige fix-commit.)
+// ============================================================
+
+// E4: formaterer ISO-dato til norsk lesbar form ("16. mars 2026").
+function formatNorskDato(isoString) {
+  if (!isoString) return '';
+  const d = new Date(isoString);
+  if (isNaN(d.getTime())) return '';
+  const måneder = ['januar', 'februar', 'mars', 'april', 'mai', 'juni',
+                   'juli', 'august', 'september', 'oktober', 'november', 'desember'];
+  return `${d.getDate()}. ${måneder[d.getMonth()]} ${d.getFullYear()}`;
+}
+
+// A3: Bygger en tidsserie av sektor-score for valgt kommune.
+function buildSectorSeries(secId, muniCode) {
+  const byYear = ALL_SECTOR_SCORES[secId] || {};
+  const years = Object.keys(byYear).sort();
+  const series = [];
+  for (const y of years) {
+    const v = byYear[y]?.[muniCode]?.score;
+    if (v != null && !isNaN(v)) series.push({ year: y, score: +v });
+  }
+  return series;
+}
+
+// A3: Beregner 4-årsgjennomsnitt — robust mot ettårsstøy.
+function compute4YearAvg(series) {
+  const last4 = series.slice(-4);
+  if (last4.length < 2) return null;
+  const sum = last4.reduce((a, b) => a + b.score, 0);
+  return +(sum / last4.length).toFixed(1);
+}
+
+// A3: Sammenligner siste års verdi med snittet av tidligere 3 år.
+function computeTrend(series) {
+  if (series.length < 2) return null;
+  const last = series[series.length - 1].score;
+  const prior = series.slice(-4, -1);
+  if (prior.length === 0) return null;
+  const baseline = prior.reduce((a, b) => a + b.score, 0) / prior.length;
+  const delta = +(last - baseline).toFixed(1);
+  const abs = Math.abs(delta);
+  let dir = 'flat';
+  if (delta > 3) dir = 'up';
+  else if (delta < -3) dir = 'down';
+  const magnitude = abs >= 8 ? 'strong' : 'weak';
+  return { dir, delta, magnitude };
+}
+
+// A3: Tegner mini-sparkline som inline SVG.
+function renderSparkline(series) {
+  if (series.length < 2) return '';
+  const w = 70, h = 22, pad = 2;
+  const scores = series.map(p => p.score);
+  const min = Math.min(...scores);
+  const max = Math.max(...scores);
+  const range = max - min || 1;
+  const points = series.map((p, i) => {
+    const x = pad + (i / (series.length - 1)) * (w - 2 * pad);
+    const y = h - pad - ((p.score - min) / range) * (h - 2 * pad);
+    return `${x.toFixed(1)},${y.toFixed(1)}`;
+  }).join(' ');
+  const titleText = series.map(p => `${p.year}: ${p.score}`).join(', ');
+  return `<svg class="sparkline" viewBox="0 0 ${w} ${h}" role="img" aria-label="Trend ${series[0].year}–${series[series.length-1].year}: ${titleText}"><title>${titleText}</title><polyline points="${points}" fill="none" stroke="var(--accent)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
+}
+
+// A3: Bygger HTML for trend-row (pil, klartekst, sparkline).
+function renderTrendRow(secId, muniCode) {
+  const series = buildSectorSeries(secId, muniCode);
+  if (series.length < 2) {
+    return '<div class="trend-row"><span class="trend-text">For lite historikk for trend</span></div>';
+  }
+  const avg = compute4YearAvg(series);
+  const trend = computeTrend(series);
+  const arrows = {
+    'up': { weak: '↗', strong: '↗↗' },
+    'down': { weak: '↘', strong: '↘↘' },
+    'flat': { weak: '→', strong: '→' }
+  };
+  const arrow = trend ? arrows[trend.dir][trend.magnitude] : '→';
+  const arrowClass = trend ? trend.dir : 'flat';
+  const trendLabels = {
+    'up': trend && trend.magnitude === 'strong' ? 'Sterk forbedring' : 'Forbedring',
+    'down': trend && trend.magnitude === 'strong' ? 'Sterk svekkelse' : 'Svekkelse',
+    'flat': 'Stabil'
+  };
+  const trendText = trend ? trendLabels[trend.dir] : 'Stabil';
+  const deltaText = trend && trend.dir !== 'flat' ? ` (${trend.delta > 0 ? '+' : ''}${trend.delta})` : '';
+  const avgText = avg != null ? ` · 4-årssnitt <strong>${avg}</strong>` : '';
+  const sparkSvg = renderSparkline(series);
+  return `<div class="trend-row"><span class="trend-arrow ${arrowClass}" aria-hidden="true">${arrow}</span><span class="trend-text">${trendText}${deltaText}${avgText}</span>${sparkSvg}</div>`;
+}
+
+// C6: ROBEK — Register om betinget godkjenning og kontroll
+let ROBEK_DATA = null;
+
+async function loadRobek() {
+  if (ROBEK_DATA) return ROBEK_DATA;
+  try {
+    const r = await fetch('/data/robek.json', { cache: 'no-cache' });
+    if (!r.ok) throw new Error(`HTTP ${r.status}`);
+    ROBEK_DATA = await r.json();
+    log(`ROBEK: ${ROBEK_DATA.kommuner.length} kommuner i registeret (publisert ${ROBEK_DATA.publisert})`);
+    return ROBEK_DATA;
+  } catch (e) {
+    log(`ROBEK feilet (ikke-kritisk): ${e.message}`);
+    ROBEK_DATA = { kommuner: [], hjemler: {}, kilde: '', kildeUrl: '', publisert: '' };
+    return ROBEK_DATA;
+  }
+}
+
+function getRobekStatus(muniCode) {
+  if (!ROBEK_DATA) return null;
+  return ROBEK_DATA.kommuner.find(k => k.kommunenummer === muniCode) || null;
+}
+
+function renderRobekBadge() {
+  const el = document.getElementById('robek-badge');
+  if (!el || !ROBEK_DATA) return;
+  const status = getRobekStatus(CURRENT_MUNI_CODE);
+  if (!status) {
+    el.hidden = true;
+    el.innerHTML = '';
+    return;
+  }
+  const bokstaver = (status.hjemmel || '').match(/[a-g]/gi) || [];
+  const hjemmelLi = bokstaver
+    .map(b => b.toLowerCase())
+    .map(b => `<li><strong>${b}.</strong> ${escapeHtml(ROBEK_DATA.hjemler[b] || 'Ukjent hjemmel')}</li>`)
+    .join('');
+  const datoFmt = formatNorskDato(ROBEK_DATA.publisert) || ROBEK_DATA.publisert;
+  el.hidden = false;
+  el.innerHTML = `
+    <div class="robek-icon" aria-hidden="true">⚠</div>
+    <div class="robek-content">
+      <div class="robek-label">ROBEK</div>
+      <div class="robek-text"><strong>${escapeHtml(status.kommune)}</strong> er oppført i Register om betinget godkjenning og kontroll. Låneopptak og langsiktige leieavtaler krever godkjenning fra statsforvalter.</div>
+      ${hjemmelLi ? `<ul class="robek-hjemler" aria-label="Lovhjemmel for registreringen">${hjemmelLi}</ul>` : ''}
+      <div class="robek-source">Kilde: <a href="${escapeHtml(ROBEK_DATA.kildeUrl)}" target="_blank" rel="noopener">Kommunal- og distriktsdepartementet</a> · publisert ${escapeHtml(datoFmt)}</div>
+    </div>
+  `;
+}
+
+// A5: URL-state — synker ?kommune=… i URL med valgt kommune.
+function syncUrlToCurrentMuni() {
+  if (!CURRENT_MUNI_CODE) return;
+  const name = MUNI_NAMES[CURRENT_MUNI_CODE];
+  const u = new URL(window.location.href);
+  u.searchParams.set('kommune', name || CURRENT_MUNI_CODE);
+  window.history.replaceState({}, '', u.toString());
+}
+
+function readKommuneFromUrl() {
+  const u = new URL(window.location.href);
+  const q = (u.searchParams.get('kommune') || '').trim();
+  if (!q) return null;
+  if (/^\d{4}$/.test(q) && MUNI_NAMES[q]) return q;
+  const code = findMuniCode(q);
+  return code || null;
+}
+
+function flashStatus(msg, type = 'ok') {
+  const original = $status.innerHTML;
+  $status.className = 'status ' + type;
+  $status.textContent = msg;
+  setTimeout(() => {
+    $status.innerHTML = original;
+    $status.className = 'status';
+  }, 2500);
+}
+
+async function shareLink() {
+  syncUrlToCurrentMuni();
+  const url = window.location.href;
+  try {
+    await navigator.clipboard.writeText(url);
+    flashStatus('Lenke kopiert til utklippstavlen', 'ok');
+  } catch (e) {
+    flashStatus('Kunne ikke kopiere automatisk', 'err');
+    window.prompt('Kopier lenken manuelt (Ctrl+C / Cmd+C):', url);
+  }
+}
+
+async function copyChartImage() {
+  if (!radarChart) {
+    flashStatus('Radar-grafen er ikke klar', 'err');
+    return;
+  }
+  try {
+    const dataUrl = radarChart.toBase64Image('image/png', 1.0);
+    const res = await fetch(dataUrl);
+    const blob = await res.blob();
+    if (navigator.clipboard && window.ClipboardItem) {
+      await navigator.clipboard.write([new ClipboardItem({ 'image/png': blob })]);
+      flashStatus('Bilde kopiert til utklippstavlen', 'ok');
+    } else {
+      const win = window.open();
+      if (win) {
+        win.document.write(`<title>Sektor-radar — ${MUNI_NAMES[CURRENT_MUNI_CODE] || ''}</title><img src="${dataUrl}" alt="Sektor-radar">`);
+        flashStatus('Bilde åpnet i ny fane', 'ok');
+      } else {
+        flashStatus('Kunne ikke åpne nytt vindu', 'err');
+      }
+    }
+  } catch (e) {
+    log(`Bilde-kopi feilet: ${e.message}`);
+    flashStatus('Kunne ikke kopiere bilde', 'err');
+  }
+}
+
 function renderSectors() {
   const grid = document.getElementById('sectors-grid');
   grid.innerHTML = SECTORS.map(sec => {
@@ -1279,6 +1531,13 @@ function renderSectors() {
     const sd = ALL_SECTOR_DATA[sec.id];
     const missing = !info;
     const hasForklaring = !!SEKTOR_FORKLARINGER?.sektorer?.[sec.id];
+    // E4: Sist-oppdatert-stempel
+    const oppdatert = sd?.tableUpdated ? formatNorskDato(sd.tableUpdated) : null;
+    const tabellLenke = `https://www.ssb.no/statbank/table/${sec.tableId}`;
+    const tabellTittel = sd?.tableLabel ? sd.tableLabel.replace(/^\d+:\s*/, '') : '';
+    const stempel = oppdatert
+      ? `<div class="sector-stamp" title="${escapeHtml(tabellTittel)}">Sist oppdatert ${oppdatert} · <a href="${tabellLenke}" target="_blank" rel="noopener">SSB tabell ${sec.tableId}</a></div>`
+      : `<div class="sector-stamp"><a href="${tabellLenke}" target="_blank" rel="noopener">SSB tabell ${sec.tableId}</a></div>`;
     return `
       <div class="sector ${missing ? 'missing' : ''}">
         <div class="head">
@@ -1295,6 +1554,7 @@ function renderSectors() {
         <div class="score-bar"><div class="score-bar-fill" style="width:${info.score}%;background:${info.score > 66 ? 'var(--good)' : info.score > 33 ? 'var(--warn)' : 'var(--bad)'}"></div></div>
         <div class="meta"><span>Score ${info.score}</span>${pill(info.rank, info.total)}</div>
         ${renderTrendRow(sec.id, CURRENT_MUNI_CODE)}` : ''}
+        ${stempel}
       </div>
     `;
   }).join('');
@@ -1680,14 +1940,17 @@ async function main() {
   log(`Starter innhenting for ${SECTORS.length} sektorer`);
 
   // C1: Hent kommuneliste fra Klass parallelt med KOSTRA-data.
-  // Feil her er ikke-blokkerende — KOSTRA-data har sin egen kommune-deteksjon.
-  // Brukes av A1 (kommunevelger) og B2 (dynamisk MERGERS) når de implementeres.
   fetchKlassKommuner().then(kommuner => {
     KLASS_KOMMUNER = kommuner;
     log(`Klass-API klar: ${kommuner.length} kommuner tilgjengelig for kommunevelger`);
   }).catch(e => {
     log(`Klass-API feilet (ikke-kritisk): ${e.message}`);
   });
+
+  // C6: ROBEK-data parallelt — lite payload, ikke-blokkerende.
+  loadRobek();
+  // A4: Sektor-forklaringer parallelt.
+  loadSektorForklaringer();
 
   const loaded = [];
   // parallell henting i batcher av 4
@@ -1767,6 +2030,9 @@ async function main() {
 document.getElementById('refresh-btn').onclick = () => { $log.textContent = ''; main(); };
 document.getElementById('csv-btn').onclick = downloadCsv;
 document.getElementById('xlsx-btn').onclick = downloadXlsx;
+// A5: bind eksport- og deling-knapper
+document.getElementById('share-btn').onclick = shareLink;
+document.getElementById('image-btn').onclick = copyChartImage;
 
 // ============================================================
 //  A1: Universell kommunevelger
