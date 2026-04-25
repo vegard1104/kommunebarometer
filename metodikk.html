@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="nb">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Metodikk — Kommunebarometer 2026</title>
+<meta name="description" content="Hvordan Kommunebarometer 2026 er beregnet: vekting, datakilder, indikatorer, kjente svakheter og endringslogg.">
+<style>
+  :root {
+    --bg: #0f1724;
+    --panel: #182134;
+    --panel-2: #1f2b44;
+    --accent: #4cc9f0;
+    --accent-2: #f72585;
+    --good: #4ade80;
+    --bad: #f87171;
+    --warn: #fbbf24;
+    --text: #e6edf6;
+    --muted: #94a3b8;
+    --border: #263248;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.6;
+  }
+  header {
+    background: linear-gradient(135deg, #1a2540 0%, #0f1724 100%);
+    border-bottom: 1px solid var(--border);
+    padding: 28px 32px;
+  }
+  header .crumb { font-size: 13px; color: var(--muted); margin-bottom: 10px; }
+  header .crumb a { color: var(--accent); text-decoration: none; }
+  header .crumb a:hover, header .crumb a:focus { text-decoration: underline; }
+  header h1 { margin: 0 0 8px; font-size: 28px; letter-spacing: -0.3px; }
+  header p { margin: 0; color: var(--muted); font-size: 14px; max-width: 800px; }
+  main { padding: 24px 32px 60px; max-width: 900px; margin: 0 auto; }
+  section {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 24px 28px;
+    margin-bottom: 20px;
+  }
+  section h2 {
+    margin: 0 0 16px;
+    font-size: 20px;
+    color: var(--accent);
+    letter-spacing: -0.2px;
+  }
+  section h3 {
+    margin: 24px 0 10px;
+    font-size: 15px;
+    color: var(--text);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    font-weight: 600;
+  }
+  section p { margin: 0 0 12px; color: var(--text); }
+  section ul, section ol { padding-left: 22px; margin: 0 0 14px; }
+  section li { margin-bottom: 6px; }
+  section a { color: var(--accent); text-decoration: none; }
+  section a:hover, section a:focus { text-decoration: underline; }
+  table.weights {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 12px 0 18px;
+    font-size: 14px;
+  }
+  table.weights th {
+    text-align: left;
+    padding: 10px 12px;
+    border-bottom: 1px solid var(--border);
+    color: var(--muted);
+    font-weight: 600;
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+  table.weights td {
+    padding: 10px 12px;
+    border-bottom: 1px solid var(--border);
+    vertical-align: top;
+  }
+  table.weights td:nth-child(2) {
+    font-weight: 600;
+    color: var(--accent);
+    text-align: right;
+    width: 70px;
+  }
+  table.weights td:nth-child(3) { color: var(--muted); font-size: 13px; }
+  .pill {
+    display: inline-block; padding: 2px 10px; border-radius: 12px;
+    font-size: 11px; font-weight: 600;
+  }
+  .pill-warn { background: rgba(251,191,36,0.15); color: var(--warn); }
+  .pill-good { background: rgba(74,222,128,0.15); color: var(--good); }
+  .source-card {
+    background: var(--panel-2);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 14px 18px;
+    margin: 10px 0;
+  }
+  .source-card h4 { margin: 0 0 4px; font-size: 14px; color: var(--text); }
+  .source-card .meta { font-size: 12px; color: var(--muted); }
+  .changelog-entry {
+    border-left: 3px solid var(--accent);
+    padding: 6px 14px;
+    margin: 12px 0;
+  }
+  .changelog-entry .date {
+    font-size: 12px;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+  .changelog-entry h4 { margin: 4px 0 6px; font-size: 14px; }
+  footer {
+    margin: 40px auto 0;
+    max-width: 900px;
+    padding: 20px 32px;
+    border-top: 1px solid var(--border);
+    font-size: 12px;
+    color: var(--muted);
+    line-height: 1.6;
+  }
+</style>
+</head>
+<body>
+<header>
+  <div class="crumb"><a href="/">← Tilbake til Kommunebarometer</a></div>
+  <h1>Metodikk og datakilder</h1>
+  <p>Hvordan Kommunebarometer 2026 er beregnet: vekting, datakilder, kjente svakheter og endringslogg. Skrevet for kommunalt ansatte, politikere, presse og innbyggere som vil forstå tallene før de bruker dem.</p>
+</header>
+
+<main>
+
+<section id="oversikt">
+  <h2>1. Kort om barometeret</h2>
+  <p>Kommunebarometer 2026 er en åpen, selvoppdaterende indeks over norske kommuner basert på <a href="https://www.ssb.no/offentlig-sektor/kostra" target="_blank" rel="noopener">SSB KOSTRA</a> (Kommune-Stat-Rapportering). Datagrunnlaget hentes live fra <a href="https://www.ssb.no/statbank/" target="_blank" rel="noopener">SSB StatBank</a> via PxWeb API v2.</p>
+  <p>Sluttbrukerne er rådmenn/kommunedirektører, økonomisjefer, kommunalsjefer for oppvekst og helse/omsorg, planleggere, politikere og engasjerte innbyggere — i budsjett-/økonomiplan-arbeid, politiske beslutninger, kommunesammenligning og dialog med innbyggere/media.</p>
+  <p><strong>Dette er ikke det offisielle Kommunebarometeret.</strong> <a href="https://www.kommunal-rapport.no/kommunebarometeret/" target="_blank" rel="noopener">Kommunal Rapports Kommunebarometer</a> bruker rundt 150 indikatorer og objektive-kriterie-korreksjoner (demografi, bosetting) som ikke er fullstendig offentlige. Vår side gjør en forenklet, åpen tilnærming med 3–5 indikatorer per sektor uten korreksjon for utgiftsbehov. Behovsjustering (rapport-anbefaling A2) er planlagt i en senere versjon.</p>
+</section>
+
+<section id="beregning">
+  <h2>2. Hvordan beregningen virker</h2>
+  <ol>
+    <li>For hver sektor hentes en utvalgt indikator-pakke fra SSB StatBank (se tabell-IDer under).</li>
+    <li>Hver indikator <strong>normaliseres til 0–100</strong> basert på fordelingen blant alle kommuner det året (min–max-skalering, med retning: høy er bra eller lav er bra avhengig av indikator-natur).</li>
+    <li>Indikatorene <strong>snittes til én sektorscore</strong> (0–100) per kommune.</li>
+    <li>Sektorscorene <strong>vektes til samlet score</strong> (vektene er offentlig kjente fra Kommunal Rapports metodikk — se §3).</li>
+    <li><strong>Rangering</strong> baseres på samlet score. Historikk beregnes ved å kjøre samme prosedyre for tidligere år.</li>
+  </ol>
+  <h3>Sammenligning på tre nivåer</h3>
+  <p>KOSTRA-rapporten anbefaler at sammenligning alltid skjer på tre nivåer samtidig:</p>
+  <ol>
+    <li><strong>Egen kommune over tid</strong> — har vi forbedret oss?</li>
+    <li><strong>Egen KOSTRA-gruppe</strong> — kommuner med liknende rammebetingelser (folkemengde, bundne kostnader, frie inntekter).</li>
+    <li><strong>Landet uten Oslo</strong> — Oslo er både kommune og fylke og kan forskyve nasjonale snitt.</li>
+  </ol>
+  <p>I dagens versjon vises landsgjennomsnitt og topp-10. KOSTRA-gruppe-visning og «landet uten Oslo» kommer i pakke D4 og medium-løft-fasen (rapport-anbefaling §6.2).</p>
+</section>
+
+<section id="vekter">
+  <h2>3. Vekter — hvorfor 20/20/10/10/...</h2>
+  <p>Vektene følger <strong>Kommunal Rapports offentlig kjente metodikk</strong> for Kommunebarometeret. Tanken er at sektorer med størst direkte påvirkning på innbyggernes hverdag (oppvekst og pleie/omsorg) veier mest. Vekt er ikke "objektivt riktig" — den er <em>et valg</em>. Vi tilbyr derfor justerbare vekter som funksjonalitet (rapport-anbefaling A6, planlagt) slik at brukere kan se hvordan rangering endres med andre prioriteringer.</p>
+  <table class="weights">
+    <thead>
+      <tr><th>Sektor</th><th>Vekt</th><th>Begrunnelse</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>Grunnskole</td><td>20 %</td><td>Lovpålagt kjerneoppgave, store kostnader, direkte påvirker barn og familier.</td></tr>
+      <tr><td>Pleie og omsorg</td><td>20 %</td><td>Den største utgiftsposten i de fleste kommuner, voksende behov.</td></tr>
+      <tr><td>Økonomi</td><td>10 %</td><td>Bærekraft, handlefrihet og fremtidig tjenestetilbud.</td></tr>
+      <tr><td>Barnehage</td><td>10 %</td><td>Lovpålagt for barn 1–5 år, høy prioritet for foreldre.</td></tr>
+      <tr><td>Barnevern</td><td>10 %</td><td>Sårbar gruppe; kvaliteten har stor effekt på livsløp.</td></tr>
+      <tr><td>Helse</td><td>7,5 %</td><td>Førstelinje-helsetjenester (fastlege, helsestasjon).</td></tr>
+      <tr><td>Sosialtjeneste</td><td>7,5 %</td><td>Sikkerhetsnettet for de mest utsatte.</td></tr>
+      <tr><td>Kostnadsnivå/eiendom</td><td>5 %</td><td>Forvaltning av kommunens fysiske kapital.</td></tr>
+      <tr><td>Kultur</td><td>2,5 %</td><td>Bibliotek, kulturskole, idrettsanlegg.</td></tr>
+      <tr><td>Saksbehandling</td><td>2,5 %</td><td>Plan og bygg — relevant for utbygging og bolig.</td></tr>
+      <tr><td>Vann, avløp, renovasjon</td><td>2,5 %</td><td>Selvkost-områder, men effektivitet varierer.</td></tr>
+      <tr><td>Miljø og klima</td><td>2,5 %</td><td>Klimagassutslipp, gjenvinning, energibruk.</td></tr>
+    </tbody>
+  </table>
+  <p>Sum: 100 %. Vektene er den samme på tvers av kommuner og år — vi varierer dem ikke etter kommunestørrelse eller geografi.</p>
+</section>
+
+<section id="datakilder">
+  <h2>4. Datakilder</h2>
+  <h3>Primærkilder (i bruk)</h3>
+  <div class="source-card">
+    <h4>SSB KOSTRA via PxWeb API v2 <span class="pill pill-good">aktiv</span></h4>
+    <div class="meta">data.ssb.no/api/pxwebapi/v2 · oppdateres 15. mars (foreløpige) og 15. juni (reviderte) hvert år · lisens: <a href="https://data.norge.no/nlod/no/2.0" target="_blank" rel="noopener">NLOD</a></div>
+    <p>12 sektor-tabeller. Tabell-IDer og publiseringstid vises som «Sist oppdatert»-stempel på hver sektor i hovedvisningen (rapport-anbefaling E4).</p>
+  </div>
+  <div class="source-card">
+    <h4>SSB Klass-API klassifikasjon 131 <span class="pill pill-good">aktiv</span></h4>
+    <div class="meta">data.ssb.no/api/klass/v1 · oppdateres ved kommunereformer (typisk 1. januar)</div>
+    <p>Autoritativ kommuneliste og strukturelle endringer (sammenslåinger, navnebytter). Brukes som grunnlag for kommunevelger og dynamisk håndtering av kommunesammenslåinger (rapport-anbefaling C1, B2).</p>
+  </div>
+  <div class="source-card">
+    <h4>ROBEK-registeret (Kommunal- og distriktsdepartementet) <span class="pill pill-good">aktiv</span></h4>
+    <div class="meta">regjeringen.no · oppdateres månedlig</div>
+    <p>Statisk JSON-snapshot i `data/robek.json`. Vises som badge på kommune-siden hvis kommunen er i registeret. Periodisk oppdatering er åpen handoff-pakke (rapport-anbefaling C6).</p>
+  </div>
+  <h3>Planlagte kilder (rapport-anbefaling §C, medium-løft og strategiske spor)</h3>
+  <div class="source-card">
+    <h4>Folkehelseprofilen (Helsedirektoratet) <span class="pill pill-warn">planlagt</span></h4>
+    <div class="meta">helsedirektoratet.no · overtatt fra FHI 2024</div>
+    <p>Forventet levealder, andel med psykiske plager, overvekt hos barn, røykere. Nødvendig for å koble pleie/omsorg-kostnader til faktisk helsestatus.</p>
+  </div>
+  <div class="source-card">
+    <h4>Udir Statistikkbanken <span class="pill pill-warn">planlagt</span></h4>
+    <div class="meta">api.udir-statistikkbanken.no · åpent API for kommunenivå</div>
+    <p>Nasjonale prøver (5. og 8. trinn), eksamen 10. trinn, Elevundersøkelsen (trivsel, mobbing), grunnskolepoeng. Personvern-prikking håndteres som «for få observasjoner — ikke publisert».</p>
+  </div>
+  <div class="source-card">
+    <h4>KMD inntektssystem <span class="pill pill-warn">planlagt</span></h4>
+    <div class="meta">regjeringen.no — grønt hefte, årlig Excel</div>
+    <p>Beregnet utgiftsbehov per kommune (aldersnøkkel, geografi). Forutsetning for behovsjustering (rapport A2).</p>
+  </div>
+  <div class="source-card">
+    <h4>SØF effektivitetsanalyse (DEA) <span class="pill pill-warn">planlagt</span></h4>
+    <div class="meta">regjeringen.no — årlig CSV-vedlegg</div>
+    <p>Data Envelopment Analysis-rangering per kommune for utvalgte sektorer. Autorativ uavhengig benchmark.</p>
+  </div>
+  <div class="source-card">
+    <h4>Brønnøysund / SSB næringsstruktur <span class="pill pill-warn">planlagt</span></h4>
+    <div class="meta">data.brreg.no + SSB tabell 13011</div>
+    <p>Topp-næringer og sysselsettings­grad. Viktig forklaringsvariabel for inntektsnivå, pendling, barnehagedekning.</p>
+  </div>
+  <div class="source-card">
+    <h4>Ungdata (NOVA/OsloMet) <span class="pill pill-warn">planlagt</span></h4>
+    <div class="meta">ungdata.no · kommunerapporter (PDF/datatabeller), per 3 år per kommune</div>
+    <p>Unges trivsel, rus, psykisk helse. Mangler API; krever halvauto innhenting.</p>
+  </div>
+  <h3>Eksplisitt utenfor scope</h3>
+  <ul>
+    <li><strong>Bedrekommune.no</strong> (KS/KF brukerundersøkelser) — krever lisensavtale. Egen handoff-pakke åpnet for at Vegard skal vurdere kost/nytte.</li>
+    <li><strong>SSB mikrodata / registerdata</strong> (IPLOS, GSI, BASIL koblet) — søknadspliktig, ikke aktuelt.</li>
+  </ul>
+</section>
+
+<section id="svakheter">
+  <h2>5. Kjente svakheter og fallgruver</h2>
+  <p>Brukere skal vite hva tallene <em>ikke</em> svarer på. Dette er den viktigste delen av denne siden.</p>
+  <h3>Strukturelle begrensninger ved KOSTRA</h3>
+  <ul>
+    <li><strong>Ulik konteringspraksis.</strong> Kommuner tolker kontoplanen noe ulikt. F.eks. kan spesialundervisning bokføres på funksjon 202 Grunnskole eller 213 Voksenopplæring — små forskjeller gir store utslag i sammenligning.</li>
+    <li><strong>Kommunale foretak og IKS.</strong> Renovasjon eller brannvern lagt ut til interkommunalt selskap ser ut som lavere kostnad i kommunekassen. Bruk konserntall ved sammenligning.</li>
+    <li><strong>Demografi og geografi.</strong> Høye enhetskostnader kan skyldes spredt bosetting (skoleskyss, små skoler) eller mange eldre — ikke dårlig styring. KOSTRA-grupper korrigerer delvis, men ikke fullt ut.</li>
+    <li><strong>Tidsforsinkelse.</strong> Selv reviderte tall beskriver fjoråret. En kommune som omstilte i fjor ser ikke effekten før om to år.</li>
+    <li><strong>Kvalitet måles ikke direkte.</strong> KOSTRA måler ressursbruk og dekningsgrad, men ikke opplevd kvalitet. En lav enhetskostnad kan bety god produktivitet — eller lav kvalitet.</li>
+    <li><strong>Rapporteringsfeil.</strong> Utfylling er fortsatt i stor grad manuell. Plutselige hopp i tidsserien er ofte feil, ikke virkelig endring.</li>
+  </ul>
+  <h3>Spesifikke svakheter ved denne implementasjonen</h3>
+  <ul>
+    <li><strong>Regex-basert retning per indikator.</strong> Vi bestemmer i dag «høy er bra» eller «lav er bra» basert på nøkkelord i indikator-navnet. Feil match gir feil rangering. Eksplisitt indikator-register er planlagt (rapport-anbefaling B1).</li>
+    <li><strong>Forenklet sett av indikatorer.</strong> Vi bruker 3–5 indikatorer per sektor; Kommunal Rapport bruker ~150 totalt. Dypdykk-sider per sektor er planlagt (D1).</li>
+    <li><strong>Ingen behovsjustering.</strong> Kostnader per innbygger sammenlignes uten korrigering for utgiftsbehov (alder, geografi). Planlagt (A2 + C9).</li>
+    <li><strong>Ett-års-tall i hovedvisningen.</strong> Trend-pil og 4-årsgjennomsnitt med sparkline er planlagt (A3).</li>
+  </ul>
+  <p>Svakhetene er forankret i KOSTRA-oversikt-rapporten (kapittel 5) og 2.0-rapportens panel-diskusjon (kapittel 4). Hver er adressert i rapportens roadmap.</p>
+</section>
+
+<section id="endringslogg">
+  <h2>6. Endringslogg</h2>
+  <div class="changelog-entry">
+    <div class="date">2026-04-25</div>
+    <h4>Metodikk-side publisert</h4>
+    <p>Dedikert side for vekting, datakilder, kjente svakheter, endringer (rapport-anbefaling E1 + D6, kapittel 6.1 quick wins).</p>
+  </div>
+  <div class="changelog-entry">
+    <div class="date">2026-04-25</div>
+    <h4>ROBEK-badge integrert (C6)</h4>
+    <p>Statisk snapshot fra regjeringen.no (publisert 2026-04-20). 27 kommuner i registeret. Periodisk oppdatering er åpen handoff-pakke.</p>
+  </div>
+  <div class="changelog-entry">
+    <div class="date">2026-04-25</div>
+    <h4>SSB Klass-API integrert (C1)</h4>
+    <p>Klassifikasjon 131 (kommuneinndeling) hentes ved oppstart, cachet i 30 dager. Forutsetning for kommunevelger og dynamisk MERGERS-håndtering.</p>
+  </div>
+  <div class="changelog-entry">
+    <div class="date">2026-04-25</div>
+    <h4>Sist-oppdatert-stempel per sektor (E4)</h4>
+    <p>Hver sektor-kort viser SSB-tabellnummer + publiseringstidspunkt med direkte lenke til SSB StatBank.</p>
+  </div>
+  <div class="changelog-entry">
+    <div class="date">2026-04-25</div>
+    <h4>Suksesskriterier forankret i 2.0-rapporten</h4>
+    <p>BRIEF.md restrukturert mot rapportens roadmap (§6.1 quick wins / §6.2 medium / §6.3 strategisk). Sluttbruker-profilen er kommunalt ansatte og innbyggere/politikere.</p>
+  </div>
+  <div class="changelog-entry">
+    <div class="date">2026-04-23</div>
+    <h4>v1 i produksjon</h4>
+    <p>Lørenskog-dashboard live på Vercel. KOSTRA-data hentes direkte fra SSB ved sidelast.</p>
+  </div>
+</section>
+
+</main>
+
+<footer>
+  <p>Kommunebarometer 2026 · Åpen kildekode · Data fra <a href="https://www.ssb.no/" target="_blank" rel="noopener">SSB</a> under <a href="https://data.norge.no/nlod/no/2.0" target="_blank" rel="noopener">NLOD</a> · ROBEK-data fra <a href="https://www.regjeringen.no/" target="_blank" rel="noopener">regjeringen.no</a>.</p>
+  <p>Spørsmål, feil eller forbedringsforslag: åpne en sak på <a href="https://github.com/vegard1104/kommunebarometer" target="_blank" rel="noopener">GitHub</a>.</p>
+</footer>
+
+</body>
+</html>

@@ -14,6 +14,12 @@ Format per oppføring:
 
 ---
 
+## 2026-04-25 — Pakke 4 (E1+D6) levert: Metodikk-side
+**Hvem:** Claude Code (autonom, Pakke 4)
+**Hva:** Ny `metodikk.html` med 6 seksjoner: (1) kort om barometeret + sluttbruker-profil, (2) hvordan beregningen fungerer + sammenligning på tre nivåer (KOSTRA-rapport-prinsipp), (3) vekter med begrunnelse i tabell-form (12 sektorer), (4) datakilder (aktive: SSB KOSTRA, Klass-API, ROBEK; planlagte: Folkehelseprofil, Udir, KMD, SØF, Brønnøysund, Ungdata; eksplisitt utenfor scope: Bedrekommune, mikrodata), (5) kjente svakheter (KOSTRA-strukturelle + spesifikke for vår implementasjon, alle med rapport-referanse), (6) endringslogg som speiler PROSJEKTLOGG. Samme dark-mode-styling som `index.html` (token-konsistent). Lenke fra `index.html`-footer øverst med tydelig accent-farge.
+**Hvorfor:** 2.0-rapportens E1- og D6-anbefalinger. Tillit hos økonomisjef, presse og akademia avhenger av at metodikken er åpen og dokumentert. Tidligere lå metodikken bare i en details-boks på hovedsiden — usynlig for de fleste.
+**Konsekvens for teamet:** Endringslogg på metodikk-siden må holdes oppdatert sammen med PROSJEKTLOGG når nye pakker leveres. UX/UI-designer kan vurdere om siden trenger egen typografi/spacing for lengre lesing — eventuelt egen handoff-pakke i medium-løft-fasen. Når B1 (indikator-register) er ferdig, kan vekt-tabellen utvides til indikator-nivå.
+
 ## 2026-04-25 — Pakke 0–3 levert og merget til main
 **Hvem:** Claude Code (autonom kjøring på vegne av Vegard) + Vegard (merging)
 **Hva:** Fire pakker levert som selvstendige PR-er og merget til main:
