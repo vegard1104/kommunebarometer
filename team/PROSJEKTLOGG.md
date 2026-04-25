@@ -14,6 +14,12 @@ Format per oppføring:
 
 ---
 
+## 2026-04-25 — Pakke 1 (A2 omberegning) levert og auto-merget til test
+**Hvem:** Claude Code (autonom)
+**Hva:** `feature/a2-omberegning-behovsjustert` fikser at toggle Behovsjustert ikke endret tallene. To bugs: (1) toggle-handler sjekket `window.ALL_SECTOR_DATA` men `let`-deklarasjonen legger ikke variabelen på window — alltid falsy, scoring ble aldri re-kjørt; (2) `ER_KOSTNADSINDIKATOR`-regex matchet for bredt (frie inntekter, netto driftsresultat, prosent-indikatorer ble feilaktig justert). Erstattet med `erKostnadsindikator(label)` som krever per-enhet (per innbygger/bruker/barn/elev) + kostnad/utgift, og avviser prosent-/inntekts-/resultat-indikatorer. 8 enhets-tester på typiske KOSTRA-labels passerer. Auto-merget til `test/alle-pakker-samlet` med verifikasjon 0 tap.
+**Hvorfor:** Brukeren rapporterte at toggle-UI fungerte men tallene endret seg ikke. Kjerneproblemet var at re-scoring aldri ble trigget. Strammere whitelist sikrer at bare reelle kostnadsindikatorer per enhet justeres.
+**Konsekvens for teamet:** Lørenskog-rangering flytter seg merkbart ved bytte til Behovsjustert (særlig på pleie pga DKI 0,81 og helse pga DKI 0,89). Andre kommuner får ingen endring før Pakke 5 (KMD ODS-parsing) gir DKI-data for alle 357 kommuner.
+
 ## 2026-04-25 — Pakke 1–5 merget inn i test/alle-pakker-samlet med null funksjonstap
 **Hvem:** Claude Code (autonom merge-runde)
 **Hva:** Alle 6 nye branches (`fix/lorenskog-knr-3222`, `chore/datavalidering-mot-excel`, `feature/a2-dki-data`, `feature/a2-behovsjustert-visning`, `feature/sektor-dypdykk-alle-12`, `feature/forside-klikkbare-sektorer`) merget sekvensielt inn i `test/alle-pakker-samlet`. Lagde `scripts/sjekk-udefinerte-funksjoner.sh` på egen branch `chore/merge-bug-vakt` som etter hver merge sammenligner funksjonsdefinisjoner i kilde-branchene mot merge-branchen og rapporterer hva som mangler. **Resultat: 0 funksjoner tapt** — alle 6 OK-rapporter etter siste merge. To merger ga konflikt i `index.html` (Pakke 1 og 3b), løst manuelt ved å beholde definisjons-blokker fra begge sider. Pakke 5 introduserte en ekstra UI-bug (nested `<a>` i sector-stempel ga 24 anchors i stedet for 12) — fikset i egen commit ved å gjøre stempelet til ren tekst inne i sector-kortet.
