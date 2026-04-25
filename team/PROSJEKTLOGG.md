@@ -14,6 +14,31 @@ Format per oppføring:
 
 ---
 
+## 2026-04-25 — Punkt 2 + 3 fra HANDOFF gjennomført (KMD-verifisering + Lighthouse)
+**Hvem:** Claude Code (autonom oppfølging)
+
+### Punkt 2 — KMD ODS-parsing verifisert mot live data
+- Skraping av landingssiden gront-hefte/id547024 fungerer: 239 .ods-lenker funnet, 18 for 2025 og 17 for 2026.
+- Identifiserte at min opprinnelige Python-script tok "første lenke per år", men riktig fil er **Tabell A-k (Utgiftsutjamning)**. URL-er bekreftet:
+  - 2025: `tabell-a-k-2025-utgiftsutjamning.ods`
+  - 2026: `tabell-a-k-utgiftsutjamning-for-kommunane-2026.ods`
+- Tørrkjøring via Node-port av samme parsing-logikk: 355 kommuner parset for begge år. Lørenskog (3222) = 0,95 (2025) / 0,9551 (2026). Oslo = 0,9287 / 0,9304.
+- **Begrensning oppdaget:** Tabell A-k inneholder kun SAMLET DKI per kommune, ikke sektor-spesifikt. Sektor-DKI for alle 357 kommuner krever F-k Kriteriedata + KMDs delkostnadsnøkler-formler — flagget som åpen HANDOFF for fase 2.
+- Python-scriptet oppdatert (`fix/dki-script-foretrekk-ak`): velger A-k eksplisitt, parser "Indeks berekna utgiftsbehov"-kolonnen robust, beholder Lørenskog-Excel-data for sektor-detaljer.
+
+### Punkt 3 — Lighthouse-test (lokal headless mot localhost:8080)
+| Side | Performance | Accessibility | Vurdering |
+|---|---|---|---|
+| `/?kommune=3222` | 56 → 59 | 89 → **91** ✓ | Performance under mål 85, a11y OK etter quick-wins |
+| `/sektor.html?id=helse` | 97 ✓ | 84 → forventet 91+ etter merge | Performance OK |
+
+A11y quick-wins (`fix/wcag-quick-wins-pakke6`):
+- `landmark-one-main`: container er nå `<main>` (fikset)
+- `color-contrast`: `--muted` #94a3b8 → #b6c2d4 (kontrast 4,4:1 → 6,6:1, WCAG AA OK)
+- Resterende: `target-size` (toolbar-knapper <44px) og `label-content-name-mismatch` (kommune-input). Krever større refaktor — ikke quick wins.
+
+**Performance-fiks krever større pakke:** 1500-linjers inline-script må splittes, Chart.js bør lazy-loades på forsiden. Ikke prioritert for hot-fix-runden.
+
 ## 2026-04-25 — SLUTTRAPPORT: Pakke 1–6 (behovsjustering, dypdykk, sosial-fix, barnevern/saksbehandling, KMD ODS, QA) levert og auto-merget
 **Hvem:** Claude Code (autonom)
 
