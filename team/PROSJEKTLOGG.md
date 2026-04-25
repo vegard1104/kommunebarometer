@@ -120,6 +120,24 @@ Egen HANDOFF-rad åpnet for Sentry-oppsett (krever Vegards Sentry-konto, gratis-
 **Hva:** Ny `data/kommunestruktur.js` med `Kommunestruktur`-klasse som henter aktuell kommuneliste + strukturelle endringer fra Klass-API (klassifikasjon 131 + changes.json fra 2018-01-01) og bygger MERGERS / MERGERS_REVERSE i samme format som den hardkodede MERGERS i `index.html`. 30-dagers localStorage-cache. Lastet via `<script defer>` så `window.Kommunestruktur` er tilgjengelig globalt — ikke i bruk ennå (full erstatning av hardkodet MERGERS er en større refaktor i egen PR).
 **Hvorfor:** 2.0-rapportens B2-anbefaling — fjerner vedlikeholds­byrde ved framtidige kommunereformer (planlagt 2027). Tjenester skalerer automatisk til nye sammenslåinger uten kode-deploy.
 **Konsekvens for teamet:** Backend kan nå skrive en migrasjons-PR som bytter ut linje 315–341 i `index.html` (MERGERS) med `await km.last(); window.MERGERS = km.MERGERS; ...`. Test-dekning bør validere at eksisterende kommuner får riktige sammenslåings-context.
+## 2026-04-25 — Bug-fix runde 2: 4 nye pakker hadde samme merge-tap (A3, A5, C6, E4)
+**Hvem:** Claude Code (autonom, etter Vegards diagnoseskript som identifiserte 14 manglende funksjoner)
+**Hva:** Etter B5-fixen viste det seg at samme merge-mønster hadde rammet 4 andre pakker. `readKommuneFromUrl()` kalles tidlig i `main()` og krasjet hele oppstartsflyten — derfor tomme dropdowns og ingen data selv om SSB-API-kall faktisk lyktes (12 sektorer hentet, 421 kommuner identifisert i konsoll).
+
+Gjenopprettet 14 funksjoner totalt, alle plassert FØR `renderSectors`:
+- **E4** (`feature/sist-oppdatert-stempel`): `formatNorskDato`
+- **A3** (`feature/trend-og-snitt`): `buildSectorSeries`, `compute4YearAvg`, `computeTrend`, `renderSparkline`, `renderTrendRow`
+- **C6** (`feature/robek-badge`): `ROBEK_DATA` (global), `loadRobek`, `getRobekStatus`, `renderRobekBadge`
+- **A5** (`feature/eksport-og-deling`): `syncUrlToCurrentMuni`, `readKommuneFromUrl`, `flashStatus`, `shareLink`, `copyChartImage`
+
+I tillegg: oppdatert `renderSectors()` til å vise sektor-stempel (E4), `main()` kaller nå `loadRobek()` og `loadSektorForklaringer()` parallelt med KOSTRA, og onclick-handlers for `share-btn` + `image-btn` koblet til. CSS for `.sector-stamp`, `.trend-row`, `.trend-arrow`, `.sparkline` lagt til.
+
+Verifisert med Node `new Function()`-syntax-sjekk: hele script-blokken (72 KB) parses OK, alle 18 nødvendige funksjoner definert, alle 8 kall/bindinger på plass.
+
+**Fullstendig sjekk av alle branches:** kjørte loop over alle 30+ feature/chore/design/fix/docs-branches. Test-branchen har nå alle funksjoner — ingen andre branches har funksjoner som mangler i test.
+**Hvorfor:** `git merge -X theirs` velger inkommende versjon ved konflikt. Når 25+ branches alle modifiserer den samme `<script>`-blokken i `index.html`, garanteres merge-konflikter. Konfliktløsning som dropper definisjoner men beholder kall gir ReferenceError uten at det fanges av syntax-validering.
+**Konsekvens for teamet:** **5 av 5 pakker verifisert** (B5 + E4 + A3 + C6 + A5). Strukturell rotårsak — alt JS i én script-blokk — krever en større refaktor. Ny ADR-002 åpnet (egen PR) for å foreslå modularisering: splitt JS i `js/`-moduler per pakke. Inntil da: alle fremtidige merges av branches som rører `index.html` skal **manuelt konfliktløses** med syntax-sjekk + browser-test, aldri `-X theirs` blindt.
+
 ## 2026-04-25 — Bug-fix: B5-merge-konflikt løst feil + literal &lt;/script&gt;-felle
 **Hvem:** Claude Code (autonom, etter Vegards rapport om brutt preview)
 **Hva:** To distinkte problemer oppdaget på `test/alle-pakker-samlet`:
