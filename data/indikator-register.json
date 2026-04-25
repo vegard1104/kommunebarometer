@@ -1,0 +1,48 @@
+{
+  "kilde": "Eksplisitt indikator-register som erstatter regex-heuristikken (LOWER_IS_BETTER / HIGHER_IS_BETTER) i index.html.",
+  "oppdatert": "2026-04-25",
+  "status": "skeleton — komplett dekning av alle KOSTRA-indikatorer er en flerstegs-prosess. Disse 30+ er manuelt verifisert og kan brukes som autoritativ overstyring. Resten faller fortsatt tilbake på regex-heuristikken til registeret er komplett.",
+  "konvensjon": {
+    "retning": "high = høyere verdi er bedre (f.eks. dekning, lærertetthet); low = lavere verdi er bedre (kostnader, ventetid, sykefravær)",
+    "kvalitet": "hoy = solid bredt grunnlag; medium = brukbart men med kjente svakheter; lav = upålitelig for små kommuner / prikket"
+  },
+  "indikatorer": {
+    "KOSAG110000": { "navn": "Frie inntekter per innbygger", "tabell": "12134", "sektor": "okonomi", "enhet": "kr", "retning": "high", "kvalitet": "hoy", "beskrivelse": "Sum av skatteinntekter og rammetilskudd, fratrukket eiendomsskatt og konsesjonsavgifter. Påvirker kommunens handlefrihet." },
+    "KOSAGD230000": { "navn": "Netto driftsresultat i prosent av brutto driftsinntekter", "tabell": "12134", "sektor": "okonomi", "enhet": "%", "retning": "high", "kvalitet": "hoy", "beskrivelse": "Mål på økonomisk handlefrihet. TBU anbefaler minst 1,75 %." },
+    "KOSKG320000": { "navn": "Langsiktig gjeld ex pensjonsforpliktelser i prosent av brutto driftsinntekter", "tabell": "12134", "sektor": "okonomi", "enhet": "%", "retning": "low", "kvalitet": "hoy", "beskrivelse": "Lavere gjeldsgrad gir mindre rente-eksponering." },
+    "KOSAGD290000": { "navn": "Årets merforbruk i driftsregnskapet i prosent av brutto driftsinntekter", "tabell": "12134", "sektor": "okonomi", "enhet": "%", "retning": "low", "kvalitet": "hoy", "beskrivelse": "Lavere = bedre balanse." },
+    "netto_driftsutg_grunnskole": { "navn": "Netto driftsutgifter til grunnskole, per innbygger 6-15 år", "tabell": "12255", "sektor": "grunnskole", "enhet": "kr", "retning": "high", "kvalitet": "hoy", "beskrivelse": "Høyere prioritering av grunnskolen. Tolk sammen med kvalitet — høy kostnad uten høyt læringsutbytte er ikke nødvendigvis bra." },
+    "andel_laerere_godkjent_utdanning": { "navn": "Andel lærere med godkjent utdanning", "tabell": "12255", "sektor": "grunnskole", "enhet": "%", "retning": "high", "kvalitet": "hoy", "beskrivelse": "Direkte kvalitetsmål for grunnskolen. Lave verdier reflekterer rekrutteringsproblemer." },
+    "elev_laerer_ratio": { "navn": "Elever per lærerårsverk", "tabell": "12255", "sektor": "grunnskole", "enhet": "antall", "retning": "low", "kvalitet": "hoy", "beskrivelse": "Lavere ratio = bedre lærertetthet." },
+    "barnehagedekning_1_5": { "navn": "Andel barn 1-5 år i barnehage", "tabell": "12379", "sektor": "barnehage", "enhet": "%", "retning": "high", "kvalitet": "hoy", "beskrivelse": "Måler kommunens kapasitet og tilbud til barnefamilier." },
+    "andel_barnehagelaerere": { "navn": "Andel ansatte med barnehagelærerutdanning", "tabell": "12379", "sektor": "barnehage", "enhet": "%", "retning": "high", "kvalitet": "hoy", "beskrivelse": "Pedagogisk kvalitet i barnehagen." },
+    "leke_oppholdsareal": { "navn": "Leke- og oppholdsareal per barn (kvm)", "tabell": "12379", "sektor": "barnehage", "enhet": "kvm", "retning": "high", "kvalitet": "medium" },
+    "korrigerte_brutto_pleie": { "navn": "Korrigerte brutto driftsutgifter pleie og omsorg, per innbygger 80+", "tabell": "12209", "sektor": "pleie", "enhet": "kr", "retning": "high", "kvalitet": "medium", "beskrivelse": "Høyere prioritering av eldreomsorg. Tolkes nyansert: høy kostnad kan være effektiv kvalitet eller ineffektivitet." },
+    "andel_80plus_hjemmetjeneste": { "navn": "Andel innbyggere 80+ med hjemmetjeneste", "tabell": "12209", "sektor": "pleie", "enhet": "%", "retning": "high", "kvalitet": "medium" },
+    "sykehjemsplasser_dekning": { "navn": "Andel innbyggere 80+ med plass i institusjon", "tabell": "12209", "sektor": "pleie", "enhet": "%", "retning": "high", "kvalitet": "medium" },
+    "fastlegedekning": { "navn": "Listeinnbyggere per fastlege", "tabell": "12209", "sektor": "helse", "enhet": "antall", "retning": "low", "kvalitet": "hoy", "beskrivelse": "Lavere = bedre fastlegetilgang." },
+    "helsestasjon_arsverk_per_barn": { "navn": "Helsestasjon-årsverk per 1000 barn 0-5 år", "tabell": "12209", "sektor": "helse", "enhet": "årsverk", "retning": "high", "kvalitet": "medium" },
+    "andel_barnevern_meldinger": { "navn": "Andel meldinger som ble undersøkt", "tabell": "08845", "sektor": "barnevern", "enhet": "%", "retning": "high", "kvalitet": "medium" },
+    "saksbehandlingstid_barnevern": { "navn": "Andel undersøkelser ferdig innen 3 mnd", "tabell": "08845", "sektor": "barnevern", "enhet": "%", "retning": "high", "kvalitet": "hoy" },
+    "sosialhjelp_per_mottaker": { "navn": "Brutto utbetalt sosialhjelp per mottaker", "tabell": "14019", "sektor": "sosial", "enhet": "kr", "retning": "high", "kvalitet": "medium", "beskrivelse": "Tolkes nyansert: høy utbetaling per mottaker kan reflektere alvorlige saker eller raus praksis." },
+    "saksbehandlingstid_sosial": { "navn": "Andel sosialhjelpsmottakere med sak ferdig innen 1 mnd", "tabell": "14019", "sektor": "sosial", "enhet": "%", "retning": "high", "kvalitet": "medium" },
+    "kostnad_skolebygg": { "navn": "Driftsutgifter til skolelokaler per kvm", "tabell": "12051", "sektor": "eiendom", "enhet": "kr", "retning": "low", "kvalitet": "medium" },
+    "vedlikehold_per_kvm_komm_bygg": { "navn": "Vedlikeholdsutgifter per kvm kommunale bygg", "tabell": "12051", "sektor": "eiendom", "enhet": "kr", "retning": "high", "kvalitet": "medium", "beskrivelse": "Lavt vedlikehold kan tyde på etterslep, ikke effektivitet." },
+    "kulturutgift_per_innbygger": { "navn": "Netto driftsutgifter til kultur per innbygger", "tabell": "13135", "sektor": "kultur", "enhet": "kr", "retning": "high", "kvalitet": "medium" },
+    "kulturskoletimer_per_elev": { "navn": "Kulturskoletimer per elev", "tabell": "13135", "sektor": "kultur", "enhet": "antall", "retning": "high", "kvalitet": "medium" },
+    "byggesak_saksbehandlingstid": { "navn": "Saksbehandlingstid byggesøknader", "tabell": "13111", "sektor": "saksbehandling", "enhet": "dager", "retning": "low", "kvalitet": "hoy" },
+    "klage_andel_byggesak": { "navn": "Andel byggesaker som blir påklaget", "tabell": "13111", "sektor": "saksbehandling", "enhet": "%", "retning": "low", "kvalitet": "medium" },
+    "vannlekkasje_andel": { "navn": "Andel ledningsvann tapt som lekkasje", "tabell": "12263", "sektor": "var", "enhet": "%", "retning": "low", "kvalitet": "hoy" },
+    "gjenvinning_husholdning": { "navn": "Andel husholdningsavfall til materialgjenvinning", "tabell": "12263", "sektor": "var", "enhet": "%", "retning": "high", "kvalitet": "hoy" },
+    "klimagassutslipp_per_innbygger": { "navn": "Klimagassutslipp per innbygger (CO2-ekv)", "tabell": "12190", "sektor": "klima", "enhet": "tonn", "retning": "low", "kvalitet": "medium" },
+    "andel_elbiler_kommune_kjt": { "navn": "Andel kommunale tjenestebiler som er elbiler", "tabell": "12190", "sektor": "klima", "enhet": "%", "retning": "high", "kvalitet": "medium" }
+  },
+  "framtidig": {
+    "merknad": "Topp-30 verifisert manuelt. Resten av indikatorene faller tilbake på regex-heuristikken i index.html (LOWER_IS_BETTER / HIGHER_IS_BETTER). Komplett register krever koordinert gjennomgang med fagpersoner per sektor.",
+    "neste_steg": [
+      "Erstatt determineDirection() i index.html til først å sjekke INDIKATOR_REGISTER, deretter falle tilbake til regex.",
+      "Legg til 'forklaring'-felt for indikator-nivå-forklaringer (rapport A4 topp-30).",
+      "Bruk 'kvalitet'-felt til å skjule eller degradere lave-kvalitet-tall i sammenligninger (rapport E2)."
+    ]
+  }
+}

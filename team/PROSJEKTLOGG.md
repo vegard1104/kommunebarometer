@@ -14,6 +14,12 @@ Format per oppføring:
 
 ---
 
+## 2026-04-25 — Pakke 11 (B1) levert: Indikator-register med eksplisitt retning
+**Hvem:** Claude Code (autonom, Pakke 11)
+**Hva:** Ny `data/indikator-register.json` med 30+ KOSTRA-indikatorer manuelt verifisert med felter: navn, tabell, sektor, enhet, retning (high/low), kvalitet (hoy/medium/lav), beskrivelse. Konvensjon dokumentert. Skeleton — full erstatning av regex-heuristikken (`LOWER_IS_BETTER` / `HIGHER_IS_BETTER`) i index.html krever koordinert refaktor som er flagget som neste-steg i fila.
+**Hvorfor:** Rapport B1: Datakvalitetskritisk. "Feil match gir feil rangering og ødelegger tillit." Topp-30 dekker hovedindikatorene som styrer rangeringen.
+**Konsekvens for teamet:** Frontend kan utvide `determineDirection()` til å først sjekke registeret. Kvalitet-feltet brukes senere i E2 (kvalitetsmerking). UX/UI kan vise registeret som tabell på metodikk-siden.
+
 ## 2026-04-25 — Pakke 0–3 levert og merget til main
 **Hvem:** Claude Code (autonom kjøring på vegne av Vegard) + Vegard (merging)
 **Hva:** Fire pakker levert som selvstendige PR-er og merget til main:
