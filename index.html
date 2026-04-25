@@ -114,6 +114,54 @@
   .sector .score-bar { height: 6px; background: var(--panel-2); border-radius: 3px; margin-top: 10px; overflow: hidden; }
   .sector .score-bar-fill { height: 100%; border-radius: 3px; transition: width .4s; }
   .sector .meta { display: flex; justify-content: space-between; font-size: 11px; color: var(--muted); margin-top: 6px; }
+  /* A4: «Hva betyr dette?»-forklaringsbobler — info-knapp + popover */
+  .sector .name-row { display: flex; align-items: center; gap: 6px; }
+  .info-btn {
+    appearance: none;
+    background: transparent;
+    border: 1px solid var(--border);
+    color: var(--muted);
+    width: 18px; height: 18px;
+    border-radius: 50%;
+    font-size: 11px; line-height: 1;
+    cursor: pointer;
+    padding: 0;
+    display: inline-flex; align-items: center; justify-content: center;
+    flex: 0 0 auto;
+    transition: color .15s, border-color .15s, background .15s;
+  }
+  .info-btn:hover, .info-btn:focus {
+    color: var(--accent); border-color: var(--accent);
+    background: rgba(76,201,240,0.1); outline: none;
+  }
+  .info-btn:focus-visible { box-shadow: 0 0 0 2px var(--accent); }
+  .info-popover {
+    position: absolute; z-index: 100;
+    background: var(--panel-2);
+    border: 1px solid var(--accent);
+    border-radius: 10px;
+    padding: 14px 16px 14px 16px;
+    max-width: 320px;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.4);
+    font-size: 13px; line-height: 1.55;
+    color: var(--text);
+  }
+  .info-popover h4 { margin: 0 0 8px; font-size: 14px; color: var(--accent); padding-right: 20px; }
+  .info-popover .info-line { margin: 6px 0; }
+  .info-popover .info-line strong { color: var(--text); }
+  .info-popover .info-meta {
+    margin-top: 10px; padding-top: 8px;
+    border-top: 1px solid var(--border);
+    font-size: 11px; color: var(--muted);
+  }
+  .info-popover .info-close {
+    position: absolute; top: 6px; right: 10px;
+    background: transparent; border: none; color: var(--muted);
+    font-size: 20px; cursor: pointer; padding: 0; line-height: 1;
+  }
+  .info-popover .info-close:hover, .info-popover .info-close:focus {
+    color: var(--text); outline: none;
+  }
   .sector.missing { opacity: 0.55; }
 
   .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 20px; }
@@ -913,16 +961,112 @@ function renderMergerPanel() {
   });
 }
 
+// A4: «Hva betyr dette?»-forklaringer per sektor.
+// Lastes én gang fra /data/sektor-forklaringer.json.
+let SEKTOR_FORKLARINGER = null;
+
+async function loadSektorForklaringer() {
+  if (SEKTOR_FORKLARINGER) return SEKTOR_FORKLARINGER;
+  try {
+    const r = await fetch('/data/sektor-forklaringer.json', { cache: 'no-cache' });
+    if (!r.ok) throw new Error(`HTTP ${r.status}`);
+    SEKTOR_FORKLARINGER = await r.json();
+    log(`Sektor-forklaringer lastet (${Object.keys(SEKTOR_FORKLARINGER.sektorer || {}).length} stk)`);
+    return SEKTOR_FORKLARINGER;
+  } catch (e) {
+    log(`Sektor-forklaringer feilet (ikke-kritisk): ${e.message}`);
+    SEKTOR_FORKLARINGER = { sektorer: {}, oppdatert: '' };
+    return SEKTOR_FORKLARINGER;
+  }
+}
+
+// Holder styr på åpen popover slik at vi kan lukke den ved nye åpninger.
+let _activeInfoPopover = null;
+
+function _closeActiveInfoPopover() {
+  if (_activeInfoPopover) {
+    _activeInfoPopover.popover.remove();
+    if (_activeInfoPopover.btn) _activeInfoPopover.btn.setAttribute('aria-expanded', 'false');
+    _activeInfoPopover = null;
+  }
+}
+
+function showSektorInfo(secId, btn) {
+  // Toggle: hvis samme knapp er åpen, lukk.
+  if (_activeInfoPopover && _activeInfoPopover.secId === secId) {
+    _closeActiveInfoPopover();
+    return;
+  }
+  _closeActiveInfoPopover();
+  const data = SEKTOR_FORKLARINGER?.sektorer?.[secId];
+  if (!data) return;
+  const popover = document.createElement('div');
+  popover.className = 'info-popover';
+  popover.setAttribute('role', 'dialog');
+  popover.setAttribute('aria-label', `Forklaring: ${data.tittel}`);
+  popover.innerHTML = `
+    <button class="info-close" aria-label="Lukk forklaring" type="button">×</button>
+    <h4>${data.tittel}</h4>
+    <div class="info-line"><strong>Hva måles:</strong> ${data.hva || ''}</div>
+    <div class="info-line"><strong>Hvorfor:</strong> ${data.hvorfor || ''}</div>
+    <div class="info-line"><strong>Retning:</strong> ${data.retning || ''}</div>
+    ${data.begrensninger ? `<div class="info-line" style="color:var(--muted);"><strong>Forbehold:</strong> ${data.begrensninger}</div>` : ''}
+    <div class="info-meta">SSB-tabell ${data.ssbTabell || '?'} · forklaringer oppdatert ${SEKTOR_FORKLARINGER.oppdatert || '?'}</div>
+  `;
+  // Posisjoner under knappen
+  document.body.appendChild(popover);
+  const r = btn.getBoundingClientRect();
+  const px = r.left + window.scrollX;
+  const py = r.bottom + window.scrollY + 6;
+  popover.style.left = Math.max(8, Math.min(px, window.innerWidth - popover.offsetWidth - 8)) + 'px';
+  popover.style.top = py + 'px';
+  // Knytt lukk-handler
+  const closeBtn = popover.querySelector('.info-close');
+  closeBtn.addEventListener('click', _closeActiveInfoPopover);
+  // Escape lukker
+  function onKey(e) { if (e.key === 'Escape') { _closeActiveInfoPopover(); } }
+  // Klikk utenfor lukker
+  function onDocClick(e) {
+    if (!popover.contains(e.target) && e.target !== btn) _closeActiveInfoPopover();
+  }
+  setTimeout(() => {
+    document.addEventListener('click', onDocClick);
+    document.addEventListener('keydown', onKey);
+  }, 0);
+  btn.setAttribute('aria-expanded', 'true');
+  _activeInfoPopover = {
+    secId, popover, btn,
+    cleanup: () => {
+      document.removeEventListener('click', onDocClick);
+      document.removeEventListener('keydown', onKey);
+    }
+  };
+  // Override _closeActiveInfoPopover så den også gjør cleanup
+  const origClose = _closeActiveInfoPopover;
+  _closeActiveInfoPopover = function () {
+    if (_activeInfoPopover && _activeInfoPopover.cleanup) _activeInfoPopover.cleanup();
+    origClose();
+    _closeActiveInfoPopover = origClose; // gjenopprett etter første kall
+  };
+  // Flytt fokus til popover-tittel for skjermleser
+  popover.querySelector('h4').setAttribute('tabindex', '-1');
+  popover.querySelector('h4').focus({ preventScroll: false });
+}
+
 function renderSectors() {
   const grid = document.getElementById('sectors-grid');
   grid.innerHTML = SECTORS.map(sec => {
     const info = ALL_SECTOR_SCORES[sec.id]?.[CURRENT_YEAR]?.[CURRENT_MUNI_CODE];
     const missing = !info;
+    const hasForklaring = !!SEKTOR_FORKLARINGER?.sektorer?.[sec.id];
     return `
       <div class="sector ${missing ? 'missing' : ''}">
         <div class="head">
           <div>
-            <div class="name">${sec.name}</div>
+            <div class="name-row">
+              <div class="name">${sec.name}</div>
+              ${hasForklaring ? `<button class="info-btn" type="button" aria-label="Forklaring av ${sec.name}" aria-expanded="false" data-sector-info="${sec.id}">i</button>` : ''}
+            </div>
             <div class="weight">Vekt ${sec.weight}% · SSB ${sec.tableId}</div>
           </div>
           <div class="rank">${info ? info.rank : '–'}<br><small>${info ? `av ${info.total}` : 'ingen data'}</small></div>
@@ -933,6 +1077,13 @@ function renderSectors() {
       </div>
     `;
   }).join('');
+  // Bind klikk-handlere på info-knappene
+  grid.querySelectorAll('[data-sector-info]').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      showSektorInfo(btn.getAttribute('data-sector-info'), btn);
+    });
+  });
 }
 
 function renderTop10() {
@@ -1295,6 +1446,9 @@ function downloadXlsx() {
 async function main() {
   setStatus('Henter metadata og data fra SSB…');
   log(`Starter innhenting for ${SECTORS.length} sektorer`);
+
+  // A4: Last sektor-forklaringer parallelt med KOSTRA. Lite payload.
+  loadSektorForklaringer();
 
   const loaded = [];
   // parallell henting i batcher av 4

@@ -14,6 +14,12 @@ Format per oppføring:
 
 ---
 
+## 2026-04-25 — Pakke 6 (A4) levert: Forklaringsbobler per sektor
+**Hvem:** Claude Code (autonom, Pakke 6)
+**Hva:** Hver sektor-kort har nå en (i)-knapp ved navnet som åpner et popover med fire seksjoner: «Hva måles», «Hvorfor (er det viktig)», «Retning» (høy bra eller lav bra) og evt. «Forbehold» (begrensninger som demografi/IKS/personvern). Forklaringene ligger i `data/sektor-forklaringer.json` for alle 12 sektorer (~150 ord per sektor). Popover lukkes ved Escape, klikk utenfor, eller toggle på samme knapp. ARIA-roller (dialog, aria-expanded) og fokus til tittel ved åpning. CSS `.info-btn` og `.info-popover` stilet i token-konsistent dark mode.
+**Hvorfor:** 2.0-rapportens A4-anbefaling — politiker/innbygger må forstå om høyt tall er bra eller dårlig uten KOSTRA-bakgrunn. Forklaringer på sektor-nivå er praktisk å gjøre nå; rapportens topp-30-indikator-mål krever B1 (indikator-register) først, noe som er flagget i forklarings-fila som merknad.
+**Konsekvens for teamet:** Designer kan finstille tone og lengde i JSON-filen uten kode-endring. Når B1 implementeres, kan forklaringer utvides til indikator-nivå med samme komponent-mønster. Mobil-test bekreftet at popover-posisjonering klipper riktig mot skjermkanten.
+
 ## 2026-04-25 — Pakke 0–3 levert og merget til main
 **Hvem:** Claude Code (autonom kjøring på vegne av Vegard) + Vegard (merging)
 **Hva:** Fire pakker levert som selvstendige PR-er og merget til main:
