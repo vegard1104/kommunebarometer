@@ -4,5 +4,25 @@
   "rewrites": [
     { "source": "/api/ssb/:path*", "destination": "https://data.ssb.no/api/pxwebapi/v2/:path*" },
     { "source": "/api/klass/:path*", "destination": "https://data.ssb.no/api/klass/v1/:path*" }
+  ],
+  "headers": [
+    {
+      "source": "/api/ssb/(.*)",
+      "headers": [
+        { "key": "Cache-Control", "value": "public, s-maxage=86400, stale-while-revalidate=604800" }
+      ]
+    },
+    {
+      "source": "/api/klass/(.*)",
+      "headers": [
+        { "key": "Cache-Control", "value": "public, s-maxage=2592000, stale-while-revalidate=7776000" }
+      ]
+    },
+    {
+      "source": "/data/(.*\\.json)",
+      "headers": [
+        { "key": "Cache-Control", "value": "public, max-age=300, s-maxage=3600" }
+      ]
+    }
   ]
 }
