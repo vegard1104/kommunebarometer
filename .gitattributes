@@ -1,0 +1,26 @@
+# Normaliser line endings for tekstfiler — unngå CRLF/LF-warnings på Windows.
+# Repo lagrer LF, sjekker ut native på den platformen som brukes.
+* text=auto eol=lf
+
+# Eksplisitte tekstfiltyper (sikrer riktig diff/merge)
+*.html       text
+*.css        text
+*.js         text
+*.mjs        text
+*.json       text
+*.md         text
+*.yml        text
+*.yaml       text
+*.txt        text
+
+# Binærfiler — ikke konverter
+*.png        binary
+*.jpg        binary
+*.jpeg       binary
+*.gif        binary
+*.ico        binary
+*.svg        text
+*.docx       binary
+*.xlsx       binary
+*.pdf        binary
+*.zip        binary
