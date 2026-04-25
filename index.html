@@ -1817,6 +1817,49 @@ async function preloadKommunevelger() {
 
 preloadKommunevelger();
 
+// ============================================================
+//  B5: Brukervennlige feilmeldinger + observabilitet
+// ============================================================
+//
+// kbReportError(err, context) sender feilen til Sentry hvis konfigurert
+// og logger uansett til API-loggen. Hooks står klare for Sentry-init via
+// CDN — Vegard må sette opp gratis Sentry-konto og legge inn DSN i
+// window.KB_SENTRY_DSN før denne fila lastes.
+//
+// Sentry-integrasjon (valgfri): se /metodikk for instruksjoner.
+// Kort: legg til Sentry-bundle via CDN og kjør Sentry.init({dsn:...})
+// FØR denne JS-blokken laster. (HTML-script-tager ikke gjengitt her
+// fordi de ville avslutte den ytre script-blokken.)
+function kbReportError(err, context) {
+  const msg = err && err.message ? err.message : String(err);
+  log(`FEIL [${context || 'ukjent'}]: ${msg}`);
+  if (err && err.stack) log(err.stack);
+  if (typeof window.Sentry !== 'undefined' && typeof window.Sentry.captureException === 'function') {
+    window.Sentry.captureException(err, { tags: { context: context || 'unknown' } });
+  }
+}
+
+// Mapper teknisk feil til en brukervennlig melding.
+function brukerVennligFeil(err) {
+  const msg = (err && err.message) ? err.message : String(err);
+  if (/HTTP 429/.test(msg)) {
+    return 'SSB svarer for mange forespørsler akkurat nå. Prøv igjen om noen minutter.';
+  }
+  if (/HTTP 5\d\d/.test(msg)) {
+    return 'SSB-tjenesten er midlertidig nede. Vi viser tidligere data hvis tilgjengelig — prøv "Oppdater" om noen minutter.';
+  }
+  if (/HTTP 404/.test(msg)) {
+    return 'Fant ikke dataene hos SSB. Tabellen kan være flyttet — sjekk metodikk-siden for kildelenker.';
+  }
+  if (/timeout|abort/i.test(msg)) {
+    return 'Forespørselen tok for lang tid. Sjekk nettforbindelsen og prøv "Oppdater".';
+  }
+  if (/Failed to fetch|NetworkError/i.test(msg)) {
+    return 'Mistet kontakt med nettet. Sjekk forbindelsen og prøv "Oppdater".';
+  }
+  return `Noe gikk galt: ${msg}`;
+}
+
 main().catch(e => {
   setStatus(brukerVennligFeil(e), 'err');
   kbReportError(e, 'main');
