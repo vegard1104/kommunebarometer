@@ -20,7 +20,7 @@
     --bad: #f87171;
     --warn: #fbbf24;
     --text: #e6edf6;
-    --muted: #94a3b8;
+    --muted: #b6c2d4;
     --border: #263248;
   }
   * { box-sizing: border-box; }
@@ -373,7 +373,7 @@
   <p>Rekonstruert indeks basert på SSB KOSTRA-hovedtabeller, normalisert og vektet etter samme filosofi som Kommunal Rapports <em>Kommunebarometer</em>. Data hentes direkte fra <a href="https://www.ssb.no/statbank/" style="color:var(--accent)">SSB StatBank</a> ved åpning av siden og oppdaterer seg når SSB publiserer nye tall. Fokus: <strong>Lørenskog kommune</strong>.</p>
 </header>
 
-<div class="container" id="main-content">
+<main class="container" id="main-content">
   <div class="bar">
     <label>Kommune:
       <input id="kommune-search" list="kommune-list" value="Lørenskog" style="width: 200px;">
@@ -478,7 +478,7 @@
     <p style="margin: 0 0 10px;"><a href="/vekt-justering" style="color:var(--accent); font-weight: 600;">Justerbar vekting →</a> &nbsp;·&nbsp; test hvordan andre prioriteringer endrer rangeringen.</p>
     Laget ved å hente KOSTRA-tall direkte fra <a href="https://data.ssb.no/api/pxwebapi/v2/tables/" style="color:var(--accent)">SSBs åpne API</a>. Tabellene oppdateres av SSB 15. mars (foreløpige tall) og 15. juni (endelige tall) hvert år – når siden åpnes i juni 2026 vil 2025-tall være tilgjengelige og automatisk brukt. Selve Kommunebarometeret 2026 fra Kommunal Rapport publiseres normalt i juni 2026.
   </div>
-</div>
+</main>
 
 <script>
 // ============================================================
