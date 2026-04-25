@@ -14,6 +14,29 @@ Format per oppføring:
 
 ---
 
+## 2026-04-25 — Pakke 4 (feature/sektor-dypdykk-alle-12) levert: parameterisert sektor-side
+**Hvem:** Claude Code (autonom)
+**Hva:** Ny `sektor.html` — én parameterisert side som dekker alle 12 sektorer via `?id=<sektor-id>`, `?kommune=<navn>`, `?år=<årstall>` og `?mode=raa|justert`. Bygger på Pakke 1 (kommunekode), Pakke 3a (DKI-data) og Pakke 3b (modus-håndtering).
+
+Designvalg: én HTML-fil i stedet for 12 separate (`sektor-grunnskole.html` osv) — gir mindre kode-duplisering og lettere vedlikehold. Hver sektor blir tilgjengelig på sin egen URL via query-param. Lenker fra forsiden (Pakke 5) bruker `sektor.html?id=grunnskole&kommune=Lørenskog&år=2025`.
+
+Implementert nå:
+- Header med tilbake-lenke, sektor-navn + vekt, kommune-, års- og modus-info
+- Sammendrag-grid med rådata-/justert-score-kort (justert vises kun i mode=justert)
+- DKI-panel med klartekst-forklaring og fargekoding (grønn/rød/standard)
+- Eksterne kilde-lenker per sektor (Udir, Hdir, IPLOS, NAV, Bufdir, Norsk Vann, Miljødirektoratet, m.fl.) med kontekst-tekst
+- Kildereferanse til SSB-tabell + lenke til Statistikkbanken
+- Behovsjusterings-forklaring koblet til /data/behovsjustering-readme.md
+
+Flagget i banner-tekst som "kommer i egen PR":
+- Detaljert indikator-tabell (alle SSB-indikatorer for sektoren med kommune/landet/KOSTRA-gruppe-kolonner)
+- Tidsserie-graf med kommune+landet+gruppe per indikator
+- Live-fetch av sammendrag-score (krever kobling til hovedsidens ALL_SECTOR_SCORES via shared store eller URL-meldinger)
+
+**Hvorfor:** D1-anbefalingen i 2.0-rapporten — gjør siden til ekte fagverktøy. Brukerinstruksen krevde alle 12 sektorer, men live SSB-fetch + tidsserie + KOSTRA-gruppe-data per sektor er for stort til én PR. Skjelett + DKI + eksterne lenker er pragmatisk MVP.
+
+**Konsekvens for teamet:** Pakke 5 (klikkbare sektor-kort) kan nå koble alle 12 sektor-kort til `sektor.html?id=...`. Live-fetch + indikator-tabell er åpen HANDOFF for fase 2 — krever sektor-konfig-deling mellom hovedside og dypdykk-side, eller egen SSB-fetch på dypdykk-siden.
+
 ## 2026-04-25 — Pakke 0–3 levert og merget til main
 **Hvem:** Claude Code (autonom kjøring på vegne av Vegard) + Vegard (merging)
 **Hva:** Fire pakker levert som selvstendige PR-er og merget til main:
