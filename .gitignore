@@ -1,0 +1,11 @@
+# Claude Code worktrees og lokal state
+.claude/
+
+# OS-filer
+Thumbs.db
+.DS_Store
+
+# Editor-filer
+.vscode/
+.idea/
+*.swp
