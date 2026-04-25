@@ -85,6 +85,11 @@ Egen HANDOFF-rad åpnet for Sentry-oppsett (krever Vegards Sentry-konto, gratis-
 **Hva:** Ny `vekt-justering.html` med slidere for alle 12 sektorer + 4 forhåndsvalg (Standard/Oppvekst/Eldreomsorg/Økonomi). Sum-validering med farger. Lagrer i `localStorage`. `index.html` SECTORS-array leser fra localStorage og overstyrer standardvektene per sektor. Lenke fra footer.
 **Hvorfor:** Rapport A6: "Vektene er valg, ikke fasit. Gir tillit og lar kommunedirektører bruke siden i prioriteringsdiskusjoner."
 **Konsekvens for teamet:** Sliderne påvirker rangering først ved neste sidelast (siden SECTORS er evaluert på toppen). UX-forbedring senere: live oppdatering uten reload via egen rebuild-funksjon. URL-state er ikke implementert ennå (rapport-anbefaling).
+## 2026-04-25 — Pakke 13 (D2) levert: Sammenlign-to-kommuner
+**Hvem:** Claude Code (autonom, Pakke 13)
+**Hva:** Ny `sammenlign.html` med to kommune-felter, datalist fra Klass-API, delbar URL `?a=...&b=...` og navigasjon til hovedsiden med begge kommuner pre-valgt. SessionStorage holder kommune B til hovedsiden plukker den opp i compare-state.
+**Hvorfor:** Rapport D2: viral/delbar funksjon for politisk debatt og mediearbeid.
+**Konsekvens for teamet:** Hovedsiden trenger en hook som leser sessionStorage `kb_pending_compare_b` og legger den til i COMPARE_MUNIS — egen liten PR. Inntil da fungerer A-kommune-deeplinken; B må velges manuelt.
 
 ## 2026-04-25 — Pakke 0–3 levert og merget til main
 ## 2026-04-25 — Pakke 2 (C1) levert: SSB Klass-API integrert med 30-dagers cache
