@@ -286,14 +286,14 @@
 const SECTORS = [
   { id: 'grunnskole',    name: 'Grunnskole',                weight: 20.0, tableId: '12255', dir: 'auto', maxInd: 5 },
   { id: 'pleie',         name: 'Pleie og omsorg',           weight: 20.0, tableId: '12209', dir: 'auto', maxInd: 5, filter: 'pleie|omsorg|sykehjem|hjemmetjeneste' },
-  { id: 'barnevern',     name: 'Barnevern',                 weight: 10.0, tableId: '08845', dir: 'auto', maxInd: 4 },
+  { id: 'barnevern',     name: 'Barnevern',                 weight: 10.0, tableId: '12873', dir: 'auto', maxInd: 4, fallbackTableIds: ['12849', '08845'], statusNotat: 'Tabell 08845 returnerer HTTP 400 på enkelte parameter-kombinasjoner. Bruker 12873 (KOSTRA Barnevern, kommune) som primær med 12849/08845 som fallback. Verifiser mot SSB Statistikkbanken.' },
   { id: 'barnehage',     name: 'Barnehage',                 weight: 10.0, tableId: '12379', dir: 'auto', maxInd: 4 },
   { id: 'helse',         name: 'Helse',                     weight:  7.5, tableId: '12209', dir: 'auto', maxInd: 4, filter: 'helse|lege|fastlege|helsestasjon' },
   { id: 'sosial',        name: 'Sosialtjeneste',            weight:  7.5, tableId: '14019', dir: 'auto', maxInd: 4 },
   { id: 'okonomi',       name: 'Økonomi',                   weight: 10.0, tableId: '12134', dir: 'auto', maxInd: 5 },
   { id: 'eiendom',       name: 'Kostnadsnivå / eiendom',    weight:  5.0, tableId: '12051', dir: 'auto', maxInd: 3 },
   { id: 'kultur',        name: 'Kultur',                    weight:  2.5, tableId: '13135', dir: 'auto', maxInd: 3 },
-  { id: 'saksbehandling',name: 'Saksbehandling',            weight:  2.5, tableId: '13111', dir: 'auto', maxInd: 3 },
+  { id: 'saksbehandling',name: 'Saksbehandling',            weight:  2.5, tableId: '13141', dir: 'auto', maxInd: 3, fallbackTableIds: ['13139', '13111'], statusNotat: 'Tabell 13111 sist oppdatert 15. juni 2021 — flagget som foreldet. Bruker 13141 (Plansaker behandlet) som primær. Vegard må vurdere redistribusjon av 2,5% vekt eller bytte til mer aktiv kilde.' },
   { id: 'var',           name: 'Vann, avløp, renovasjon',   weight:  2.5, tableId: '12263', dir: 'auto', maxInd: 3 },
   { id: 'klima',         name: 'Miljø og klima',            weight:  2.5, tableId: '12190', dir: 'auto', maxInd: 3 }
 ];
@@ -490,8 +490,36 @@ function parseJsonStat(ds) {
 // Hent metadata først, identifiser gyldige contents-koder, velg et subset,
 // hent data for alle kommuner (K = 4-sifret nummer, filter K0000 via valuecode-mønster)
 async function loadSector(sec) {
+  // Pakke 4: prøv fallback-tableIds hvis primær feiler. Dette gjør at en
+  // foreldet eller endret SSB-tabell ikke knekker hele sektoren — vi
+  // prøver 12873 → 12849 → 08845 (barnevern) eller 13141 → 13139 → 13111
+  // (saksbehandling).
+  const tabellerÅPrøve = [sec.tableId, ...(sec.fallbackTableIds || [])];
+  let meta = null;
+  let valgtTabell = null;
+  let sisteFeil = null;
+  for (const tid of tabellerÅPrøve) {
+    try {
+      meta = await fetchMeta(tid);
+      valgtTabell = tid;
+      if (tid !== sec.tableId) {
+        log(`  ⚠ ${sec.id}: primær tabell ${sec.tableId} feilet, bruker fallback ${tid}`);
+      }
+      break;
+    } catch (e) {
+      sisteFeil = e;
+    }
+  }
+  if (!meta) {
+    log(`  ✗ ${sec.id}: alle tabeller (${tabellerÅPrøve.join(', ')}) feilet — datakilde foreldet`);
+    return {
+      sector: sec, error: `Datakilde foreldet — alle SSB-tabeller (${tabellerÅPrøve.join(', ')}) feilet. ${sisteFeil?.message || ''}`,
+      data: {}, indicators: [], years: [], deprecated: true
+    };
+  }
+  // Behold midlertidig override så fetchTableV2 kalles med riktig tableId.
+  const sekMedTabell = { ...sec, tableId: valgtTabell };
   try {
-    const meta = await fetchMeta(sec.tableId);
     // JSON-stat2 metadata: id[] + dimension{} struktur
     const ids = meta.id || [];
     const dims = meta.dimension || {};
@@ -499,7 +527,7 @@ async function loadSector(sec) {
     const regDim = ids.find(d => /region|kommune|Region|fylke/i.test(d));
     const timDim = ids.find(d => /^Tid$|^TID$|tid/i.test(d));
     if (!contentsDim || !regDim || !timDim || !dims[contentsDim] || !dims[timDim]) {
-      throw new Error(`Mangler dimensjoner i ${sec.tableId}`);
+      throw new Error(`Mangler dimensjoner i ${valgtTabell}`);
     }
 
     const contentsIndex = dims[contentsDim].category.index || {};
@@ -528,7 +556,7 @@ async function loadSector(sec) {
     params[`valueCodes[${timDim}]`] = yearsToUse;
     params[`valueCodes[${regDim}]`] = '*';
 
-    const ds = await fetchTableV2(sec.tableId, params);
+    const ds = await fetchTableV2(valgtTabell, params);
     const parsed = parseJsonStat(ds);
     // Behold bare kommuner (4-sifret nummer, evt. med K- prefiks).
     // SSB-data ligger under den kommunekoden som var gyldig det aktuelle året.
@@ -917,19 +945,23 @@ function renderSectors() {
   const grid = document.getElementById('sectors-grid');
   grid.innerHTML = SECTORS.map(sec => {
     const info = ALL_SECTOR_SCORES[sec.id]?.[CURRENT_YEAR]?.[CURRENT_MUNI_CODE];
+    const sd = ALL_SECTOR_DATA[sec.id];
     const missing = !info;
+    const foreldet = sd?.deprecated === true;
+    const ingenDataText = foreldet ? 'Datakilde foreldet' : 'ingen data';
     return `
-      <div class="sector ${missing ? 'missing' : ''}">
+      <div class="sector ${missing ? 'missing' : ''}${foreldet ? ' deprecated' : ''}">
         <div class="head">
           <div>
-            <div class="name">${sec.name}</div>
+            <div class="name">${sec.name}${foreldet ? ' <span style="color:var(--warn);font-size:11px;">⚠ foreldet</span>' : ''}</div>
             <div class="weight">Vekt ${sec.weight}% · SSB ${sec.tableId}</div>
           </div>
-          <div class="rank">${info ? info.rank : '–'}<br><small>${info ? `av ${info.total}` : 'ingen data'}</small></div>
+          <div class="rank">${info ? info.rank : '–'}<br><small>${info ? `av ${info.total}` : ingenDataText}</small></div>
         </div>
         ${info ? `
         <div class="score-bar"><div class="score-bar-fill" style="width:${info.score}%;background:${info.score > 66 ? 'var(--good)' : info.score > 33 ? 'var(--warn)' : 'var(--bad)'}"></div></div>
         <div class="meta"><span>Score ${info.score}</span>${pill(info.rank, info.total)}</div>` : ''}
+        ${foreldet ? `<div style="margin-top:8px;padding:8px 10px;background:rgba(251,191,36,0.10);border-left:3px solid var(--warn);border-radius:4px;font-size:12px;color:var(--muted);">SSB-tabell ${sec.tableId} svarer ikke. Sjekk Statistikkbanken for bytte eller fjerning av sektoren.</div>` : ''}
       </div>
     `;
   }).join('');
