@@ -14,6 +14,12 @@ Format per oppføring:
 
 ---
 
+## 2026-04-25 — Pakke 16 (C2) levert: Folkehelseprofil skeleton + utredning
+**Hvem:** Claude Code (autonom, Pakke 16, draft)
+**Hva:** Ny `data/folkehelse-helper.js` med `kbFolkehelse.fetchFolkehelse()` (placeholder) og `lagFolkehelseKort()` som viser lenke til Helsedirektoratets PDF. Folkehelseprofilen mangler offentlig REST-API per 2026-04 — egen HANDOFF-rad åpnet for å undersøke API-tilgang via Helsedirektoratet, alternativt scrape av kommunehelsa.no eller bruk av SSB-tabell 11342 som proxy.
+**Hvorfor:** Rapport C2: Kommunens største kostnad (pleie/omsorg) er tett koblet til folkehelse. Uten denne dimensjonen kan man ikke tolke KOSTRA-tallene riktig. Men API-strategi må avklares før full integrasjon.
+**Konsekvens for teamet:** HANDOFF-rad åpnet — Vegard / Backend bør kontakte Helsedirektoratet eller utforske kommunehelsa.no.
+
 ## 2026-04-25 — Pakke 0–3 levert og merget til main
 **Hvem:** Claude Code (autonom kjøring på vegne av Vegard) + Vegard (merging)
 **Hva:** Fire pakker levert som selvstendige PR-er og merget til main:
