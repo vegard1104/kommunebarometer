@@ -14,6 +14,12 @@ Format per oppføring:
 
 ---
 
+## 2026-04-25 — Pakke 5 (A3) levert: Trend-pil + 4-årsgjennomsnitt + sparkline
+**Hvem:** Claude Code (autonom, Pakke 5)
+**Hva:** Hver sektor-kort viser nå: ↗/↘/→-pil med klartekst-beskrivelse ("Forbedring (+5,3) · 4-årssnitt 64,2") og inline SVG-sparkline over historikken (auto-skalert til min/max). Tre nye helpers: `buildSectorSeries(secId, muniCode)` bygger kronologisk score-serie, `compute4YearAvg(series)` gir robust snitt mot ettårsstøy, `computeTrend(series)` sammenligner siste år mot snittet av tidligere 3 år (terskler: ±3 svak, ±8 sterk). Sparkline-titles inneholder år+score for skjermleser-tilgjengelighet (`<title>` + `aria-label`). CSS `.trend-row` med fargekodet pil (good/bad/muted).
+**Hvorfor:** 2.0-rapportens A3-anbefaling — ett-års-tall er for volatilt for politisk og økonomisk styring. Rådmann og planlegger trenger retning over tid for å se om kommunen er på vei opp eller ned. Quick win med stor effekt på lesbarhet.
+**Konsekvens for teamet:** Designer kan justere terskler (±3, ±8) hvis brukertest viser at de er for sensitive eller for slappe. Sparkline-mønsteret kan gjenbrukes i sektor-dypdykk-sider (D1) per indikator. Når B1 (indikator-register) er ferdig, kan trend-pil utvides til indikator-nivå inni hver sektor.
+
 ## 2026-04-25 — Pakke 0–3 levert og merget til main
 **Hvem:** Claude Code (autonom kjøring på vegne av Vegard) + Vegard (merging)
 **Hva:** Fire pakker levert som selvstendige PR-er og merget til main:
