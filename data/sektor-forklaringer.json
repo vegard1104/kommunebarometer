@@ -1,0 +1,100 @@
+{
+  "kilde": "Forklaringer skrevet for kommunale sluttbrukere — basert på SSB KOSTRA dokumentasjon og 2.0-rapport kapittel 5A4.",
+  "oppdatert": "2026-04-25",
+  "merknad": "Sektor-nivå-forklaringer. Indikator-nivå-forklaringer (rapport-anbefaling A4 topp-30) krever indikator-register B1 før de kan integreres.",
+  "sektorer": {
+    "grunnskole": {
+      "tittel": "Grunnskole",
+      "hva": "Måler kommunens innsats og resultater i grunnskolen — fra ressursbruk per elev og lærertetthet til andel lærere med godkjent utdanning.",
+      "hvorfor": "Grunnskolen er kommunens største lovpålagte tjeneste for unge familier og påvirker kommuneøkonomi, omstilling og tilflytning over tid.",
+      "retning": "Høyere score = flere ressurser per elev, høyere lærertetthet og bedre kvalifikasjoner blant lærere.",
+      "ssbTabell": "12255",
+      "begrensninger": "KOSTRA måler ressursbruk, ikke læringsutbytte. Nasjonale prøver og Elevundersøkelsen er planlagt integrert (rapport C3) for å koble kostnad til resultat."
+    },
+    "pleie": {
+      "tittel": "Pleie og omsorg",
+      "hva": "Hjemmetjeneste, sykehjem og helsetjenester for eldre og personer med funksjonsnedsettelser. Inkluderer dekning, bemanning og enhetskostnader.",
+      "hvorfor": "Den største utgiftsposten i de fleste kommuner — voksende behov med eldrebølgen. Kvaliteten her er kritisk for opplevd velferd.",
+      "retning": "Høyere score = bedre dekning og bemanning. Enhetskostnader tolkes nyansert: lavt kan bety effektivitet eller redusert kvalitet.",
+      "ssbTabell": "12209",
+      "begrensninger": "Krever justering for utgiftsbehov (alderssammensetning) for rettferdig sammenligning. Rapport-anbefaling A2 + C9 vil løse dette."
+    },
+    "barnevern": {
+      "tittel": "Barnevern",
+      "hva": "Tjenester for barn og unge i sårbare situasjoner. Måler ressursbruk, saksbehandlingstid og utfall.",
+      "hvorfor": "Et velfungerende barnevern reduserer langsiktige sosiale og helsemessige kostnader for kommunen og samfunnet.",
+      "retning": "Høyere score = mer ressurser per sak og raskere saksbehandling. Lave tall kan bety underrapportering eller manglende kapasitet.",
+      "ssbTabell": "08845",
+      "begrensninger": "Personvernhensyn gjør at små kommuner ofte har prikkete data."
+    },
+    "barnehage": {
+      "tittel": "Barnehage",
+      "hva": "Dekning, bemanning, areal og kvalifikasjoner i kommunale og private barnehager.",
+      "hvorfor": "Lovpålagt for barn 1–5 år. Høy prioritet for foreldre og en sentral indikator på kommunens tilbud til småbarnsfamilier.",
+      "retning": "Høyere score = bedre dekningsgrad, høyere andel barnehagelærere, mer leke- og oppholdsareal per barn.",
+      "ssbTabell": "12379",
+      "begrensninger": "Foreldrebetaling og åpningstider varierer — ikke alltid sammenlignbart på tvers av kommuner."
+    },
+    "helse": {
+      "tittel": "Helse",
+      "hva": "Førstelinje-helsetjenester: fastlegedekning, helsestasjon, jordmor, fysioterapi.",
+      "hvorfor": "Tilgjengelig primærhelsetjeneste avlaster sykehus og er et viktig gode for innbyggere.",
+      "retning": "Høyere score = bedre legedekning og helsestasjonsbemanning per innbygger.",
+      "ssbTabell": "12209",
+      "begrensninger": "KOSTRA måler ressurser, ikke folkehelseresultater. Folkehelseprofilen (rapport C2) vil utfylle bildet."
+    },
+    "sosial": {
+      "tittel": "Sosialtjeneste",
+      "hva": "Sosialhjelp, kvalifiseringsprogram, gjeldsrådgivning, boligkontor.",
+      "hvorfor": "Sikkerhetsnettet for innbyggere i økonomisk eller sosial krise. Indikator på hvordan kommunen møter de mest utsatte.",
+      "retning": "Høyere score = bedre dekning av tiltak. Tolkning krever nyanse: høy bruk kan bety mange behov eller god tilgjengelighet.",
+      "ssbTabell": "14019",
+      "begrensninger": "Tett kobling til arbeidsmarked og næringsstruktur — Brønnøysund-data (rapport C7) vil gi kontekst."
+    },
+    "okonomi": {
+      "tittel": "Økonomi",
+      "hva": "Driftsresultat, gjeldsgrad, disposisjonsfond, frie inntekter — kommunens økonomiske bærekraft.",
+      "hvorfor": "Avgjør handlefrihet, tjenestetilbud og evnen til å håndtere uforutsette utgifter. Direkte koblet til ROBEK-registrering.",
+      "retning": "Høyere score = sterkere driftsresultat, lavere gjeldsgrad, høyere fond. Kommuner i ROBEK får synlig badge på siden.",
+      "ssbTabell": "12134",
+      "begrensninger": "Frie inntekter varierer pga. inntektssystemet — KMD inntektssystem (rapport C9) gir kontekst på \"naturlig\" nivå."
+    },
+    "eiendom": {
+      "tittel": "Kostnadsnivå og eiendom",
+      "hva": "Forvaltning av kommunale bygg: drift, vedlikehold, kvadratmeter per innbygger.",
+      "hvorfor": "Vedlikeholdsetterslep er en skjult gjeld. Effektiv eiendomsforvaltning frigjør midler til tjenester.",
+      "retning": "Høyere score = bedre vedlikehold og effektiv arealbruk. Lave tall på vedlikehold kan være etterslep, ikke effektivitet.",
+      "ssbTabell": "12051"
+    },
+    "kultur": {
+      "tittel": "Kultur",
+      "hva": "Bibliotek, kulturskole, idrett, kulturminner, kulturarrangementer.",
+      "hvorfor": "Frivillig sektor for kommuner — relevant for tilflytning, livskvalitet og lokal identitet.",
+      "retning": "Høyere score = mer ressurser til kultursektoren, høyere bruk av kulturskole og bibliotek.",
+      "ssbTabell": "13135"
+    },
+    "saksbehandling": {
+      "tittel": "Saksbehandling (plan og bygg)",
+      "hva": "Saksbehandlingstid for byggesøknader, klagesaker, dispensasjoner.",
+      "hvorfor": "Direkte påvirker bolig- og næringsutvikling. Lange saksbehandlingstider hemmer bygging.",
+      "retning": "Høyere score = kortere saksbehandlingstid og lavere klage-rate.",
+      "ssbTabell": "13111"
+    },
+    "var": {
+      "tittel": "Vann, avløp, renovasjon (VAR)",
+      "hva": "Tekniske selvkost-tjenester: vann, avløp, husholdningsavfall, slamtømming.",
+      "hvorfor": "Selvkost-prinsippet betyr at innbyggerne betaler kostnaden direkte via gebyrer. Effektivitet påvirker gebyrnivå.",
+      "retning": "Høyere score = lavere lekkasje, høyere gjenvinningsgrad, lavere gebyr per husstand. Kommuner med interkommunalt selskap har ofte annerledes regnskapsføring.",
+      "ssbTabell": "12263",
+      "begrensninger": "Bør sammenlignes med konserntall, ikke bare kommunekassen — IKS-løsninger kan se misvisende billige ut."
+    },
+    "klima": {
+      "tittel": "Miljø og klima",
+      "hva": "Klimagassutslipp, gjenvinningsgrad, energibruk i kommunale bygg, klimatiltak i planer.",
+      "hvorfor": "Kommunen er en stor lokal utslippskilde og har myndighet over arealplanlegging og bygg.",
+      "retning": "Høyere score = lavere utslipp per innbygger og høyere gjenvinningsgrad.",
+      "ssbTabell": "12190",
+      "begrensninger": "Klimatall er forsinket og avhengig av nasjonale beregningsmetoder; lokal innsats kan være større enn tallene viser."
+    }
+  }
+}
