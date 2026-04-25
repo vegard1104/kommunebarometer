@@ -20,7 +20,7 @@ Format:
 | Bootstrap | Prosjektleder | **Oppstart:** Les 2.0-rapporten + KOSTRA-dokumentet. Verifiser/juster de foreløpige suksesskriteriene i BRIEF.md. Logg endringer i PROSJEKTLOGG. Åpne de fire arbeidspakkene nedenfor for teamet når du har gjort dette. | `Kommunebarometer-2.0-panel-og-CEO-anbefalinger.docx`, `KOSTRA-oversikt-og-dypdykk.docx`, `team/BRIEF.md` | Nei | 2026-04-24 |
 | Prosjektleder | Tech Lead | **AP-01 — v2-arkitektur ADR.** Beslutt om vi blir på vanilla HTML/JS eller flytter til et lett framework (Vite+React/Preact, Astro, eller annet). Vurder: 357 kommuner skal støttes, dypdykk-skjermer, mobil-ytelse, vedlikeholdbarhet, deploy-enkelhet. Skriv ADR som låser valget. Oppdater `team/BRIEF.md` sin tech-stack-seksjon. | `team/adr/001-v2-arkitektur.md` (ny) | Nei | 2026-04-24 |
 | Prosjektleder | UX/UI-designer | **AP-02 — Informasjonsarkitektur + wireframes.** Design tre skjermer: (1) landing/kommune-velger for 357 kommuner, (2) kommune-dashboard (utvidelse av dagens Lørenskog-skjerm), (3) dypdykk per KOSTRA-område. Bekreft/utvid `team/DESIGN-TOKENS.md`. Output: lav-fi wireframes + tokens-fil. | `team/wireframes/` (ny), `team/DESIGN-TOKENS.md` | Nei | 2026-04-24 |
-| Prosjektleder | Fullstack | **AP-04 — Data-spike SSB PxWeb for alle kommuner.** Verifiser at `/api/ssb/*`-rewriten kan hente data for 357 kommuner innen rimelig tid (< 3 s per indikator). Test 3 kommuner først, så batch. Dokumenter funn + evt. caching-strategi i `team/API-KONTRAKT.md`. Ikke rør produksjon-`index.html`. | `team/API-KONTRAKT.md`, spike-branch `spike/ssb-alle-kommuner` | Nei | 2026-04-24 |
+
 
 > **Merknad til alle:** De fire arbeidspakkene er forhånds-skissert av Claude (bootstrap). Prosjektleder kan åpne dem som de er, justere, eller holde igjen til rapportene er lest. Hvis en AP endres, oppdater raden her og logg endringen i PROSJEKTLOGG.
 
@@ -32,4 +32,4 @@ _(tom)_
 
 | Fra | Til | Oppgave | Artefakt | Levert |
 |---|---|---|---|---|
-| Prosjektleder | Release Manager | **AP-03 — Repo- og Vercel-hygiene.** `.gitattributes` (LF-normalisering) lagt til. `.gitignore` utvidet (.env, node_modules, .vercel, etc). `team/DEPLOY.md` skrevet med branch-strategi, deploy-flyt, rollback (3 strategier), Vercel-konfigurasjon, og 6 manuelle sjekkpunkter for Vegard. Edge-cache-anbefaling fra AP-04 dokumentert (ikke implementert i denne PR-en). | `team/DEPLOY.md`, `.gitattributes`, `.gitignore` (oppd.), branch `chore/repo-og-vercel-hygiene` | 2026-04-25 |
+

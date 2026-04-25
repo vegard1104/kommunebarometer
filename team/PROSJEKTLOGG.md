@@ -14,11 +14,11 @@ Format per oppføring:
 
 ---
 
-## 2026-04-25 — AP-03 Repo- og Vercel-hygiene levert
-**Hvem:** Claude Code (autonom, Pakke 2, Release Manager-rolle)
-**Hva:** Opprettet `.gitattributes` med `* text=auto eol=lf` (eliminerer CRLF/LF-warnings på tvers av OS) og eksplisitte tekst/binær-flagg for vanlige filtyper. Utvidet `.gitignore` med `.env*`, `node_modules/`, `.vercel/`, `dist/`, `.next/`, `desktop.ini`, `*.swo`. Skrevet `team/DEPLOY.md` med branch-strategi (6 prefikser), deploy-flyt (lokal → preview → PR → main → produksjon), tre rollback-strategier, Vercel-konfigurasjon-status, `.gitattributes`/`.gitignore`-rasjonale, og 6 manuelle sjekkpunkter for Vegard. Inkludert AP-04-anbefaling om edge-cache-headers i `vercel.json` (ikke implementert i denne PR-en — Vegard avgjør timing). `gh` CLI er ikke tilgjengelig i Claude Code-miljøet, så GitHub branch-protection-instillinger må Vegard verifisere manuelt.
-**Hvorfor:** Repo-hygiene er forutsetning for at flere agenter kan jobbe parallelt uten å overskrive hverandre eller spore ned line-ending-bugs i diff-er. DEPLOY.md gir Release Manager-rollen et tydelig løp og sikrer at Vegards manuelle verifikasjoner ikke faller mellom to stoler.
-**Konsekvens for teamet:** Alle nye PR-er får automatisk normalisert line endings via `.gitattributes`. Vegard har en sjekkliste å gå gjennom i Vercel/GitHub før AP-02 (wireframes) eller v2-implementasjon starter. Tech Lead (AP-01) kan referere til DEPLOY.md for deploy-konsekvenser av arkitekturvalg.
+## 2026-04-25 — AP-04 SSB-spike: målt p50/p95, batching-strategi anbefalt
+**Hvem:** Claude Code (autonom, Pakke 1, Fullstack-rolle)
+**Hva:** Bygd Node-spike i `spike/ssb-spike.mjs` + `spike/batch-sweet-spot.mjs`. Testet smoke (3 kommuner), Klass-API (kommuneliste), tabell-metadata, single batch (alle), sekvensiell (n=30), parallelle batcher (3 strategier), feilmodi (5 cases). Funn: **p50=620 ms, p95=757 ms** for én kommune cold; **batchSize 100–200, concurrency 1** er trygt; **single batch ikke mulig** pga URL-grense ~4000 tegn (839 kommune-koder gir 4365 tegn → 404 i IIS); **rate-limit 429** ved ≥3 samtidige; **Klass-API gir 358 koder, tabellens metadata gir 839** (historiske + nåværende) — bruk metadata for å unngå "Non-existent value". Total tid for hele datasettet: 3–4 sekunder. Strategi-anbefaling skrevet i `API-KONTRAKT.md` under ny seksjon "Datalast — alle kommuner".
+**Hvorfor:** AP-01 (arkitektur-ADR) trenger empiriske ytelsestall for å begrunne valg av build-step / framework / caching-strategi. Brukeropplevelsen for v2 avhenger kritisk av om vi kan levere kommunebytte i <1 s — uten edge-cache og pre-compute er det ikke mulig.
+**Konsekvens for teamet:** Tech Lead (AP-01) kan nå skrive ADR med konkrete tall i begrunnelsen. Release Manager (AP-03) bør sette `Cache-Control: s-maxage=86400, stale-while-revalidate=604800` på `/api/ssb/*` i `vercel.json` — utkast lagt i API-KONTRAKT-dokumentet. Frontend-arbeid (når det starter) skal bruke tabellens metadata-regions-liste, ikke Klass, for å bygge query-koder. Pre-compute av "topp-10", kart-data og KOSTRA-gruppe-aggregater må ligge i Vercel cron / serverless function — ikke i request-path.
 
 ## 2026-04-24 — Foreløpige suksesskriterier + fire arbeidspakker åpnet
 **Hvem:** Claude (Cowork-bootstrap, på vegne av Vegard)
