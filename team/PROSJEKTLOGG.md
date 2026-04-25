@@ -14,6 +14,20 @@ Format per oppføring:
 
 ---
 
+## 2026-04-25 — Pakke 1 (fix/lorenskog-knr-3222) levert: generisk CODE_HISTORY for Viken-oppløsningen
+**Hvem:** Claude Code (autonom)
+**Hva:** Lagt til `data/code-history.json` med 112 rene kommunekode-endringer fra SSB Klass-API klassifikasjon 131 changes.json (perioden 2023-12-01 til 2024-02-01) — Viken-oppløsningen + Møre og Romsdal-omnummerering. Format: `newCode → { name, oldCodes: [{code, validTo}] }`. Lørenskog-eksempel: 3029 (Viken 2020-2023) → 3222 (Akershus 2024-). NB: Vegard angav 3030 som gammel kode, men Klass-API + SSB-tabell-data viser entydig **3029**. Bruker Klass-data som autoritativ.
+
+I `index.html`:
+- Globale `CODE_HISTORY` og `CODE_HISTORY_REVERSE` (oldCode → newCode) lastes via `loadCodeHistory()` ved oppstart i `main()`.
+- `parseJsonStat`-grupperingen kanoniserer nå koder via `CODE_HISTORY_REVERSE` i tillegg til label-matching: gammel kode 3029 og ny kode 3222 havner i samme gruppe `__codehist__3222`. Sammenhengende historikk 2019–2025 uten avhengighet til at SSB legger ved årstalls-parentes i label.
+- `findMuniCode` mapper historiske koder (eks. `?kommune=3029`) til nåværende (3222) automatisk.
+- Helpere `allCodesForKommune(currentCode)` og `codeForYear(currentCode, year)` eksponert for fremtidige API-kall som trenger eksplisitt år-til-kode-mapping (Pakke 2/3 vil bruke disse).
+
+**Hvorfor:** Viken-fylket ble oppløst 1. januar 2024. 112 kommuner fikk ny kode uten navnebytte eller sammenslåing. Tidligere håndteringen i `index.html` baserte seg på label-matching ("Lørenskog" mot "Lørenskog (2020-2023)"), som er skjør hvis SSB endrer label-konvensjon. Nå har vi eksplisitt mapping fra Klass-API som autoritativ kilde.
+
+**Konsekvens for teamet:** Pakke 2 (datavalidering) og Pakke 3 (DKI/behovsjustering) kan nå bruke `allCodesForKommune('3222')` for å få begge koder ved API-kall. URL-state med gammel kode (3029) vil automatisk vise 3222 i søkefelt og url. `data/code-history.json` augmenteres ved oppstart med fersk Klass-fetch (cache 30 dager) når Klass-rewrite (Pakke 2/C1) er på plass — i dag er den statiske snapshoten primær kilde.
+
 ## 2026-04-25 — Pakke 0–3 levert og merget til main
 **Hvem:** Claude Code (autonom kjøring på vegne av Vegard) + Vegard (merging)
 **Hva:** Fire pakker levert som selvstendige PR-er og merget til main:

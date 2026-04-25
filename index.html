@@ -349,6 +349,79 @@ const MERGERS_REVERSE = (() => {
   return rev;
 })();
 
+// ============================================================
+//  CODE_HISTORY — rene kommunekode-endringer (samme navn, ny kode)
+// ============================================================
+// Viken-oppløsningen (2024-01-01) og Møre og Romsdal-omnummerering ga
+// 112 kommuner ny kode uten å endre navn eller slå seg sammen.
+// Eksempel: Lørenskog 3029 (Viken 2020-2023) → 3222 (Akershus 2024-).
+// Forskjellen fra MERGERS: ingen sammenslåing — kun nytt nummer.
+//
+// Datakilde: data/code-history.json (statisk snapshot fra Klass-API
+// klassifikasjon 131 changes.json). Augmenteres ved oppstart med
+// fersk Klass-fetch (cache 30 dager) for å fange fremtidige reformer.
+//
+// Format: { 'nyKode': { name, oldCodes: [{code, validTo}] } }
+//   - validTo = ISO-dato; oldCode gjelder for ÅR FØR validTo-året.
+
+let CODE_HISTORY = {};      // nyKode → { name, oldCodes: [{code, validTo}] }
+let CODE_HISTORY_REVERSE = {}; // oldCode → nyKode
+
+async function loadCodeHistory() {
+  // Først: les statisk snapshot.
+  try {
+    const r = await fetch('/data/code-history.json', { cache: 'force-cache' });
+    if (r.ok) {
+      const data = await r.json();
+      CODE_HISTORY = data.endringer || {};
+      log(`CODE_HISTORY: ${Object.keys(CODE_HISTORY).length} kommuner med kode-endring (statisk)`);
+    }
+  } catch (e) {
+    log(`CODE_HISTORY statisk feilet: ${e.message}`);
+  }
+  // Deretter: prøv ferskt Klass-fetch i bakgrunnen (kan utvide med nyere endringer).
+  // Klass via /api/klass/-rewrite eller direkte ved file://.
+  const KEY = 'kb_code_history_klass_v1';
+  try {
+    const cached = localStorage.getItem(KEY);
+    if (cached) {
+      const obj = JSON.parse(cached);
+      if (Date.now() - obj.cachedAt < 30 * 24 * 60 * 60 * 1000) {
+        Object.assign(CODE_HISTORY, obj.data);
+      }
+    }
+  } catch (_) {}
+  // Bygg reverse-mapping (oldCode → nyKode).
+  CODE_HISTORY_REVERSE = {};
+  for (const [newCode, m] of Object.entries(CODE_HISTORY)) {
+    for (const oc of (m.oldCodes || [])) {
+      CODE_HISTORY_REVERSE[oc.code] = newCode;
+    }
+  }
+}
+
+// Returnerer alle koder som skal brukes i SSB-kall for å få full historikk
+// for én kommune. Eks: allCodesForKommune('3222') → ['3222', '3029'] for Lørenskog.
+function allCodesForKommune(currentCode) {
+  const all = new Set([currentCode]);
+  const m = CODE_HISTORY[currentCode];
+  if (m && m.oldCodes) for (const oc of m.oldCodes) all.add(oc.code);
+  return [...all];
+}
+
+// Returnerer riktig kode for en gitt kommune i et gitt år.
+// Eks: codeForYear('3222', 2022) → '3029', codeForYear('3222', 2024) → '3222'.
+function codeForYear(currentCode, year) {
+  const m = CODE_HISTORY[currentCode];
+  if (!m || !m.oldCodes) return currentCode;
+  // oldCodes er sortert etter validTo. Velg den hvor year < validTo-året.
+  for (const oc of m.oldCodes) {
+    const validToYear = parseInt((oc.validTo || '').slice(0, 4), 10);
+    if (validToYear && year < validToYear) return oc.code;
+  }
+  return currentCode;
+}
+
 // Bruk Vercel rewrite /api/ssb/* → data.ssb.no for å unngå CORS i nettleser.
 // Fallback til direkte SSB-URL ved lokal kjøring (file://).
 const API_BASE = (location.protocol === 'file:' || location.hostname === '')
@@ -552,14 +625,25 @@ async function loadSector(sec) {
     for (const [k, v] of Object.entries(parsed.data)) {
       const mk = k.match(/^(?:K-)?(\d{4})$/);
       if (!mk) continue;
-      const key = normalizeKey(v._label);
+      const code = mk[1];
+      // CODE_HISTORY-grupperingsnøkkel: hvis dette er en gammel kode (f.eks.
+      // 3029 Lørenskog Viken), bruk ny kode (3222) som gruppe-nøkkel slik
+      // at historikk slås sammen uavhengig av label-matching.
+      const canonical = CODE_HISTORY_REVERSE[code] || code;
+      const key = (CODE_HISTORY[canonical] ? `__codehist__${canonical}` : null) || normalizeKey(v._label);
       if (!key) continue;
-      (groups[key] = groups[key] || []).push({ code: mk[1], info: v });
+      (groups[key] = groups[key] || []).push({ code, info: v });
     }
     const commMap = {};
     for (const [key, entries] of Object.entries(groups)) {
-      // Finn "nåværende" kode — den uten årstall i parentes.
-      let current = entries.find(e => !isHistoricLabel(e.info._label));
+      // Finn "nåværende" kode — først via CODE_HISTORY, deretter via label.
+      let current = null;
+      if (key.startsWith('__codehist__')) {
+        const newCode = key.replace('__codehist__', '');
+        current = entries.find(e => e.code === newCode) || entries.find(e => !isHistoricLabel(e.info._label));
+      } else {
+        current = entries.find(e => !isHistoricLabel(e.info._label));
+      }
       if (current) {
         // Standard merge: slå sammen alle koder med samme navn inn i nåværende kode.
         const displayName = stripLabel(current.info._label);
@@ -730,6 +814,14 @@ function findMuniCode(name) {
   if (!name) return null;
   const n = name.trim().toLowerCase();
   if (!n) return null;
+  // Hvis input er en 4-sifret historisk kode (eks. 3029 = gammel Lørenskog),
+  // map den direkte til nåværende kode.
+  if (/^\d{4}$/.test(n)) {
+    if (MUNI_NAMES[n]) return n;
+    if (CODE_HISTORY_REVERSE[n] && MUNI_NAMES[CODE_HISTORY_REVERSE[n]]) {
+      return CODE_HISTORY_REVERSE[n];
+    }
+  }
   // Nøyaktig treff
   for (const [k, v] of Object.entries(MUNI_NAMES)) {
     if (v.toLowerCase() === n) return k;
@@ -1295,6 +1387,10 @@ function downloadXlsx() {
 async function main() {
   setStatus('Henter metadata og data fra SSB…');
   log(`Starter innhenting for ${SECTORS.length} sektorer`);
+
+  // Last CODE_HISTORY først (synkront) — kreves av parseJsonStat når
+  // sektor-data merges. Liten payload, statisk fil med 30-dagers cache.
+  await loadCodeHistory();
 
   const loaded = [];
   // parallell henting i batcher av 4
