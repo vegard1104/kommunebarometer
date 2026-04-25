@@ -100,6 +100,11 @@ Egen HANDOFF-rad åpnet for Sentry-oppsett (krever Vegards Sentry-konto, gratis-
 **Hva:** Ny `team/WCAG-AUDIT.md` med 17 funn (hverdags-kontrast, fokus-states, skjermleser-fallback, tastaturnavigasjon, redusert bevegelse). 6 funn fikset i denne PR-en: universell `:focus-visible`-outline, `@media (prefers-reduced-motion)` for spinner og transitions, `.sr-only`-utility, skip-link "Hopp til hovedinnhold". 11 funn dokumentert som åpne HANDOFF (Chart.js skjermleser-fallback med data-tabell, kontrast-justering av `--muted`, `<button>` for Add-chip, `aria-live` på API-logg, m.fl.).
 **Hvorfor:** Rapport B4: tilgjengelighetsforskriften krever WCAG 2.2 AA på offentlige nettsteder. Quick wins løser de mest synlige bruddene; Chart.js fallback krever større arbeid (egen PR).
 **Konsekvens for teamet:** Designer kan ta kontrast-funn (#4) i egen design/-PR. Frontend kan bygge `chartA11y(chart, dataTable)`-helper i egen PR for fullstendig grafer-fallback. Manuell skjermleser- og tastatur-test er fortsatt viktig — dokumentert i audit-fila.
+## 2026-04-25 — Pakke 15 (C7) levert: Brønnøysund næringsstruktur skeleton
+**Hvem:** Claude Code (autonom, Pakke 15)
+**Hva:** Ny `data/brreg-helper.js` med `kbBrreg.fetchVirksomheter(kommunenummer)` og `kbBrreg.topNaceBransjer(virksomheter, n)`. Bruker BRREG sitt åpne API direkte (CORS-kompatibelt, ingen proxy nødvendig). 7-dagers localStorage-cache. Skeleton — UI-integrasjon i kommune-dashboard kommer som egen PR.
+**Hvorfor:** Rapport C7: forklaringsvariabel for inntektsnivå, pendling, barnehagedekning. Lavt hengende frukt.
+**Konsekvens for teamet:** Frontend kan vise topp-NACE-bransjer i en egen kort i kommune-dashboard.
 
 ## 2026-04-25 — Pakke 0–3 levert og merget til main
 ## 2026-04-25 — Pakke 2 (C1) levert: SSB Klass-API integrert med 30-dagers cache
