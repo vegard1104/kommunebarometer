@@ -14,6 +14,23 @@ Format per oppføring:
 
 ---
 
+## 2026-04-25 — Pakke 8 (B5) levert: Edge-cache + brukervennlige feilmeldinger + Sentry-stub
+**Hvem:** Claude Code (autonom, Pakke 8)
+**Hva:** `vercel.json` utvidet med tre cache-headers:
+- `/api/ssb/*` — `s-maxage=86400, stale-while-revalidate=604800` (24 t edge-cache, 1 uke stale)
+- `/api/klass/*` — `s-maxage=2592000, stale-while-revalidate=7776000` (30 dager / 90 dager — Klass endres svært sjelden)
+- `/data/*.json` — `s-maxage=3600, max-age=300` (statiske data lokal cache 5 min, edge 1 t)
+
+I `index.html`:
+- `kbReportError(err, context)` — sender til Sentry hvis konfigurert, logger uansett til API-loggen
+- `brukerVennligFeil(err)` — mapper tekniske feil til norsk klartekst (429, 5xx, 404, timeout, network)
+- `window.error` og `unhandledrejection`-listeners så bug-rapporter ikke faller bak — main()-catch bruker brukerVennligFeil
+- Sentry-stub: kommentar-blokk forklarer hvordan Vegard kan aktivere via CDN-script-tags + DSN. Ingen avhengighet uten DSN — koden er trygg i begge tilstander.
+
+Egen HANDOFF-rad åpnet for Sentry-oppsett (krever Vegards Sentry-konto, gratis-tier).
+**Hvorfor:** 2.0-rapportens B5-anbefaling — stabilitet og tillit. AP-04-spiken viste p50 cold = 620 ms; uten edge-cache tar hver kommune-bytte 600+ ms. Med cache: ~50 ms warm. Brukervennlige feilmeldinger erstatter "HTTP 429" med "SSB svarer for mange forespørsler akkurat nå".
+**Konsekvens for teamet:** Vercel deployer headers automatisk ved merge. Vegard må vurdere Sentry-konto (gratis-tier dekker ~5000 events/mnd, mer enn nok for v1+v2 trafikk). DevOps kan teste edge-cache via `curl -I` mot Vercel-URL etter deploy. Frontend-utviklere bør bruke `kbReportError(e, 'kontekst')` i stedet for `console.error` for å få Sentry-rapportering.
+
 ## 2026-04-25 — Pakke 0–3 levert og merget til main
 **Hvem:** Claude Code (autonom kjøring på vegne av Vegard) + Vegard (merging)
 **Hva:** Fire pakker levert som selvstendige PR-er og merget til main:
