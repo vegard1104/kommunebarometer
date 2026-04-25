@@ -14,6 +14,12 @@ Format per oppføring:
 
 ---
 
+## 2026-04-25 — Pakke 2 (D1 dypdykk fullført) levert og auto-merget
+**Hvem:** Claude Code (autonom)
+**Hva:** `feature/d1-dypdykk-fullfor` komplettér sektor-dypdykk-siden med ekte data: hovedsiden speiler ALL_SECTOR_SCORES + OVERALL + MUNI_NAMES til localStorage etter renderAll, sektor.html gjør egen SSB-fetch for indikator-tabell + tidsserie, Chart.js linjegraf med kommune+landet, "Behovsjustert"-kolonne i mode=justert. Bug fixet: TDZ-feil på DKI_CACHE — flyttet `let`-deklarasjon over initSide-kallet.
+**Hvorfor:** Skjelett fra Pakke 4 viste kun placeholder-bannere. Brukeren krever ekte sektor-data for de 12 sektorene.
+**Konsekvens for teamet:** Sektor-dypdykk-sidene gir nå ekte verdi. KOSTRA-gruppe-kolonne flagget som videre arbeid (krever ekstra SSB-fetch). Lokalt feiler indikator-tabellen pga 404 på /api/ssb/* — virker på Vercel preview.
+
 ## 2026-04-25 — Pakke 1 (A2 omberegning) levert og auto-merget til test
 **Hvem:** Claude Code (autonom)
 **Hva:** `feature/a2-omberegning-behovsjustert` fikser at toggle Behovsjustert ikke endret tallene. To bugs: (1) toggle-handler sjekket `window.ALL_SECTOR_DATA` men `let`-deklarasjonen legger ikke variabelen på window — alltid falsy, scoring ble aldri re-kjørt; (2) `ER_KOSTNADSINDIKATOR`-regex matchet for bredt (frie inntekter, netto driftsresultat, prosent-indikatorer ble feilaktig justert). Erstattet med `erKostnadsindikator(label)` som krever per-enhet (per innbygger/bruker/barn/elev) + kostnad/utgift, og avviser prosent-/inntekts-/resultat-indikatorer. 8 enhets-tester på typiske KOSTRA-labels passerer. Auto-merget til `test/alle-pakker-samlet` med verifikasjon 0 tap.
