@@ -115,6 +115,11 @@ Egen HANDOFF-rad åpnet for Sentry-oppsett (krever Vegards Sentry-konto, gratis-
 **Hva:** Ny `data/udir-helper.js` med `kbUdir.fetchUdir()`, `fetchGrunnskolepoeng()` og `lagUdirKort()`. Bruker proxy `/api/udir/` (krever vercel.json-rewrite til api.udir-statistikkbanken.no — egen HANDOFF). 7-dagers cache.
 **Hvorfor:** Rapport C3: Grunnskole har 20 % vekt, men vi måler bare kostnad. Udir gir resultat-siden.
 **Konsekvens for teamet:** Vercel-rewrite må legges til. Endelig endepunkt-struktur trenger validering via egen mini-spike.
+## 2026-04-25 — Pakke 10 (B2) levert: Dynamisk kommuneinndeling skeleton
+**Hvem:** Claude Code (autonom, Pakke 10)
+**Hva:** Ny `data/kommunestruktur.js` med `Kommunestruktur`-klasse som henter aktuell kommuneliste + strukturelle endringer fra Klass-API (klassifikasjon 131 + changes.json fra 2018-01-01) og bygger MERGERS / MERGERS_REVERSE i samme format som den hardkodede MERGERS i `index.html`. 30-dagers localStorage-cache. Lastet via `<script defer>` så `window.Kommunestruktur` er tilgjengelig globalt — ikke i bruk ennå (full erstatning av hardkodet MERGERS er en større refaktor i egen PR).
+**Hvorfor:** 2.0-rapportens B2-anbefaling — fjerner vedlikeholds­byrde ved framtidige kommunereformer (planlagt 2027). Tjenester skalerer automatisk til nye sammenslåinger uten kode-deploy.
+**Konsekvens for teamet:** Backend kan nå skrive en migrasjons-PR som bytter ut linje 315–341 i `index.html` (MERGERS) med `await km.last(); window.MERGERS = km.MERGERS; ...`. Test-dekning bør validere at eksisterende kommuner får riktige sammenslåings-context.
 
 ## 2026-04-25 — Pakke 0–3 levert og merget til main
 ## 2026-04-25 — Pakke 2 (C1) levert: SSB Klass-API integrert med 30-dagers cache
