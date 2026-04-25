@@ -14,6 +14,17 @@ Format per oppføring:
 
 ---
 
+## 2026-04-25 — Pakke 7 (A5) levert: Del lenke + Kopier bilde + URL-state
+**Hvem:** Claude Code (autonom, Pakke 7)
+**Hva:** Tre nye eksport-mekanismer ut over eksisterende CSV/Excel:
+- **🔗 Del lenke** — `navigator.clipboard.writeText(url)` med fallback til `prompt()`. URL-en synker `?kommune=…` med valgt kommune (foretrekker navn for lesbarhet, koder fungerer også).
+- **⎙ Bilde** — bruker Chart.js sin innebygde `toBase64Image()` på radar-grafen + `ClipboardItem` for å kopiere PNG til utklippstavlen. Fallback: åpner i ny fane.
+- **URL-state synkronisering** — `?kommune=…` parses ved oppstart, oppdateres via `history.replaceState` ved hver kommune-endring. Søkefeltet får riktig verdi ved sidelast med URL-param.
+
+`flashStatus()` viser bekreftelse i status-feltet i 2,5 sekunder uten å bryte spinner-tilstand.
+**Hvorfor:** 2.0-rapportens A5-anbefaling — reduser friksjon for politiske saker og presse-bruk. Tidligere måtte tall skrives av manuelt; ingen permalenker. Nå kan rådmann sende «se Lørenskog her» som klikkbar lenke.
+**Konsekvens for teamet:** Når A1 (universell kommunevelger) implementeres, må den kalle `syncUrlToCurrentMuni()` og lese fra URL ved første kommune-bytte. ClipboardItem støttes ikke i Safari før 13.4 — fallback dekker det. Bilde-eksport tar bare radar-grafen i denne iterasjonen; senere kan vi utvide til full-side-snapshot via html2canvas, men det er ikke verdt CDN-kostnaden ennå.
+
 ## 2026-04-25 — Pakke 0–3 levert og merget til main
 **Hvem:** Claude Code (autonom kjøring på vegne av Vegard) + Vegard (merging)
 **Hva:** Fire pakker levert som selvstendige PR-er og merget til main:
