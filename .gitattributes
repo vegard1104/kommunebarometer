@@ -13,6 +13,11 @@
 *.yaml       text
 *.txt        text
 
+# Auto-kombiner HANDOFF og PROSJEKTLOGG ved merge — alle "Levert"-rader
+# og logg-oppføringer fra ulike branches beholdes uten manuell konfliktløsing.
+team/HANDOFF.md       merge=union
+team/PROSJEKTLOGG.md  merge=union
+
 # Binærfiler — ikke konverter
 *.png        binary
 *.jpg        binary
