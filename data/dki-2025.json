@@ -1,0 +1,31 @@
+{
+  "år": 2025,
+  "kilde": "Grønt hefte 2026 (KMD inntektssystem) — delkostnadsindeks per kommune. Beregnet av delkostnadsnøkler × kriterieindekser.",
+  "kildeFil": "team/referansedata/Lorenskog_KOSTRA_2025_nokkeltall.xlsx (Oversikt-arket, R26-R32, kolonne E)",
+  "publisert": "2026-03-16",
+  "hentet": "2026-04-25",
+  "definisjon": "DKI > 1,0 = kommunen har høyere utgiftsbehov enn landsgjennomsnittet (yngre befolkning, dyre tjenester). DKI < 1,0 = lavere utgiftsbehov. Brukes til behovsjustering: (kostnad × 1000) / (folkemengde × DKI).",
+  "dekning": "POC — kun Lørenskog (3222). HANDOFF åpnet for utvidelse til alle 357 kommuner.",
+  "kommuner": {
+    "3222": {
+      "navn": "Lørenskog",
+      "grunnskole": 0.9700,
+      "pleie": 0.8127,
+      "barnehage": 1.1783,
+      "barnevern": 1.0236,
+      "sosial": 1.1804,
+      "kommunehelse": 0.8948,
+      "administrasjon": 0.8960
+    }
+  },
+  "sektorvekter": {
+    "_kommentar": "KMDs offisielle sektorvekter for 2025 (delkostnadsnøkler i inntektssystemet). Sum = 1.00.",
+    "grunnskole": 0.272,
+    "pleie": 0.353,
+    "barnehage": 0.157,
+    "barnevern": 0.030,
+    "sosial": 0.046,
+    "kommunehelse": 0.046,
+    "administrasjon": 0.096
+  }
+}

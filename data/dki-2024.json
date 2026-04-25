@@ -1,0 +1,32 @@
+{
+  "år": 2024,
+  "kilde": "Grønt hefte 2025 (KMD inntektssystem) — POC: gjenbruker 2025-DKI som tilnærming. KMD oppdaterer DKI årlig; reelle 2024-tall må hentes fra Grønt hefte 2025.",
+  "kildeFil": "team/referansedata/Lorenskog_KOSTRA_2025_nokkeltall.xlsx — kun 2025-DKI tilgjengelig her",
+  "publisert": null,
+  "hentet": "2026-04-25",
+  "definisjon": "DKI > 1,0 = kommunen har høyere utgiftsbehov enn landsgjennomsnittet. < 1,0 = lavere. Brukes til behovsjustering.",
+  "dekning": "POC — kun Lørenskog (3222) med 2025-tall som approks for 2024. HANDOFF åpnet for ekte 2024-data fra Grønt hefte 2025.",
+  "merknad": "DKI-tallene endrer seg lite fra år til år (typisk ±0,01-0,03). Approksimasjonen er rimelig for visning, men bør erstattes når Vegard / Backend henter fra KMD.",
+  "kommuner": {
+    "3222": {
+      "navn": "Lørenskog",
+      "grunnskole": 0.9700,
+      "pleie": 0.8127,
+      "barnehage": 1.1783,
+      "barnevern": 1.0236,
+      "sosial": 1.1804,
+      "kommunehelse": 0.8948,
+      "administrasjon": 0.8960
+    }
+  },
+  "sektorvekter": {
+    "_kommentar": "Samme vekter som 2025 — endrer seg sjelden mellom år.",
+    "grunnskole": 0.272,
+    "pleie": 0.353,
+    "barnehage": 0.157,
+    "barnevern": 0.030,
+    "sosial": 0.046,
+    "kommunehelse": 0.046,
+    "administrasjon": 0.096
+  }
+}
