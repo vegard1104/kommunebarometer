@@ -681,10 +681,24 @@ const SECTOR_DKI_MAP = {
   okonomi: 'administrasjon'
 };
 
-// A2: Whitelist for behovsjustering. Kun ekte kostnadsindikatorer (kr per
-// innbygger/bruker) skal divideres med DKI. Resultatindikatorer (dekning,
-// poeng, andel m/utdanning, ventetid, sykefravær osv) skal ALDRI justeres.
-const ER_KOSTNADSINDIKATOR = /netto driftsutgift|brutto driftsutgift|driftsutgift.*kr|kostnad.*kr|kroner per|kr per innbygger|kr per bruker|gjeld i prosent|gjeld ex|frie inntekter/i;
+// A2: Whitelist for behovsjustering. Kun ekte kostnadsindikatorer (utgift per
+// innbygger/bruker/barn/elev) skal divideres med DKI. Resultatindikatorer
+// (dekning, poeng, andel, brukerundersøkelser) og inntekts-/finans-indikatorer
+// (frie inntekter, netto driftsresultat) skal ALDRI justeres.
+function erKostnadsindikator(label) {
+  const l = String(label || '').toLowerCase();
+  // Filtrer bort prosent-indikatorer ("i % av total", "i prosent av brutto")
+  if (/i\s*%|i\s*prosent|prosent\s+av|\s%\s*av\s+(?:tot|brutto|netto)/.test(l)) return false;
+  // Filtrer bort inntekt-/resultat-indikatorer
+  if (/\b(?:frie\s+inntekter|netto\s+driftsresultat|driftsinntekter|skatteinntekt)\b/.test(l)) return false;
+  // Krev at indikatoren uttrykker noe per enhet
+  if (!/(?:per|pr\.?)\s+(?:innbygger|bruker|barn|elev|årsverk|opphold|plass)/.test(l)) return false;
+  // Krev at indikatoren omtaler kostnad/utgift/kroner
+  if (!/kostnad|utgift|driftsutgift|kr\b|kroner|gjeld/.test(l)) return false;
+  return true;
+}
+// Bakoverkompatibilitet: noen kallesteder bruker fortsatt ER_KOSTNADSINDIKATOR.test(label).
+const ER_KOSTNADSINDIKATOR = { test: (s) => erKostnadsindikator(s) };
 
 let BEHOVSJUSTERT = false;
 let DKI_DATA = null; // { år: data fra /data/dki-{år}.json }
@@ -1495,16 +1509,30 @@ document.querySelectorAll('input[name="kb-mode"]').forEach(inp => {
       window.history.replaceState({}, '', u.toString());
       localStorage.setItem('kb_mode', BEHOVSJUSTERT ? 'justert' : 'raa');
     } catch (_) {}
-    // Re-kjør scoring fra rå-data uten å hente fra SSB på nytt
+    // Re-kjør scoring fra rå-data uten å hente fra SSB på nytt.
+    // Top-level `let` legger ikke ALL_SECTOR_DATA på window-objektet,
+    // så vi sjekker mot den lexical-scope-variabelen direkte.
     log(`Behovsjustert: ${BEHOVSJUSTERT ? 'PÅ' : 'AV'} — beregner score på nytt`);
-    if (window.ALL_SECTOR_DATA && Object.keys(ALL_SECTOR_DATA).length > 0) {
+    if (ALL_SECTOR_DATA && Object.keys(ALL_SECTOR_DATA).length > 0) {
+      let justerteIndikatorer = 0;
+      let totaltIndikatorer = 0;
       for (const [secId, sd] of Object.entries(ALL_SECTOR_DATA)) {
         if (!sd.error && Object.keys(sd.data || {}).length > 0) {
+          // Tell hvor mange indikatorer som ble flagget som kostnadsbaserte i denne sektoren.
+          for (const ind of (sd.indicators || [])) {
+            totaltIndikatorer++;
+            if (ER_KOSTNADSINDIKATOR.test(ind.label)) justerteIndikatorer++;
+          }
           ALL_SECTOR_SCORES[secId] = computeSectorScores(sd);
         }
       }
       OVERALL = computeOverall(ALL_SECTOR_SCORES);
+      if (BEHOVSJUSTERT) {
+        log(`  Justerte ${justerteIndikatorer} av ${totaltIndikatorer} indikatorer (kostnadsbaserte)`);
+      }
       renderAll();
+    } else {
+      log('  Ingen sektor-data lastet ennå — toggle får effekt etter SSB-data er hentet');
     }
   });
 });
