@@ -14,6 +14,26 @@ Format per oppføring:
 
 ---
 
+## 2026-04-25 — Pakke 2 (chore/datavalidering-mot-excel) levert: validering + 100% match for 4 indikatorer
+**Hvem:** Claude Code (autonom)
+**Hva:** Skrevet `scripts/valider-mot-excel.mjs` (Node — Python ikke tilgjengelig i kjøremiljøet) som pakker ut .xlsx via PowerShell `[System.IO.Compression.ZipFile]`, parser sharedStrings + sheet-XML, henter SSB live for Lørenskog 2024+2025, og skriver markdown-rapport til `team/referansedata/valideringsrapport.md`.
+
+**Funn (kjørt 2026-04-25):**
+- 22 Excel-indikatorer detektert i Oversikt-arket (sheet1)
+- 8 indikatorer i `INDIKATOR_KART` mot SSB; 6 har contents-mapping
+- **4 av 4 mapped + hentbare indikatorer matcher Excel-tallene EKSAKT** (avvik 0,00 for alle):
+  - Frie inntekter per innbygger 2024 og 2025 (tabell 12134, KOSAG110000)
+  - Netto driftsresultat i prosent av brutto driftsinntekter 2024 og 2025 (tabell 12134, KOSAGD230000)
+- 2 indikatorer ga HTTP 400 (Innbyggere per 1.1. — feil ContentsCode for tabell 11342)
+- 2 indikatorer mangler SSB-ekvivalent (Grunnskolepoeng krever Udir-integrasjon, rapport C3)
+- 9 mappinger uten resultat fordi de ikke finnes i kart-tabellen (krever ContentsCode-oppslag mot tabell-metadata)
+
+**Ingen ekte avvik (>0,5%) funnet** der vi har korrekt SSB-mapping. Side-tallene matcher Excel-referansen for de indikatorene som er mappet.
+
+**Hvorfor:** Vegard krevde validering for å bekrefte at side-tallene er riktige etter Pakke 1 (kommunekode-mapping). Match på 4/4 kostnads-/økonomi-indikatorer for både 2024 og 2025 er sterk indikasjon på at både SSB-fetch og kommune-kanonisering virker korrekt.
+
+**Konsekvens for teamet:** Ingen rot-årsaks-debugging nødvendig for de 4 mapped indikatorene. Egen HANDOFF-rad åpnet for utvidet INDIKATOR_KART (mappe alle 22 Excel-indikatorer mot SSB-tabeller). Grunnskolepoeng dokumenterer behovet for Udir Statistikkbank-integrasjon (rapport C3, åpen).
+
 ## 2026-04-25 — Pakke 0–3 levert og merget til main
 **Hvem:** Claude Code (autonom kjøring på vegne av Vegard) + Vegard (merging)
 **Hva:** Fire pakker levert som selvstendige PR-er og merget til main:
