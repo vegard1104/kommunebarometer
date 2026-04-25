@@ -230,6 +230,30 @@
   .spinner { display: inline-block; width: 14px; height: 14px; border: 2px solid var(--border); border-top-color: var(--accent); border-radius: 50%; animation: spin 0.8s linear infinite; vertical-align: middle; margin-right: 6px; }
   @keyframes spin { to { transform: rotate(360deg); } }
 
+  /* B4: WCAG 2.2 AA — universell fokus-state, redusert bevegelse, sr-only */
+  button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .spinner { animation: none; opacity: 0.7; }
+    * { transition: none !important; }
+  }
+  .sr-only {
+    position: absolute !important;
+    width: 1px; height: 1px; padding: 0; margin: -1px;
+    overflow: hidden; clip: rect(0, 0, 0, 0);
+    white-space: nowrap; border: 0;
+  }
+  /* Skip-link for skjermleser- og tastatur-brukere */
+  .skip-link {
+    position: absolute; left: -9999px; top: auto;
+    background: var(--accent); color: #0b1220;
+    padding: 8px 14px; border-radius: 6px; font-weight: 600;
+    z-index: 1000;
+  }
+  .skip-link:focus { left: 8px; top: 8px; }
+
   .chart-wrap { position: relative; height: 280px; }
 
   .tag { display: inline-block; padding: 2px 8px; font-size: 11px; border-radius: 4px; background: var(--panel-2); color: var(--muted); margin-left: 6px; }
@@ -269,12 +293,13 @@
 </style>
 </head>
 <body>
+<a href="#main-content" class="skip-link">Hopp til hovedinnhold</a>
 <header>
   <h1>Kommunebarometer 2026 <span class="tag approx">Tilnærming</span></h1>
   <p>Rekonstruert indeks basert på SSB KOSTRA-hovedtabeller, normalisert og vektet etter samme filosofi som Kommunal Rapports <em>Kommunebarometer</em>. Data hentes direkte fra <a href="https://www.ssb.no/statbank/" style="color:var(--accent)">SSB StatBank</a> ved åpning av siden og oppdaterer seg når SSB publiserer nye tall. Fokus: <strong>Lørenskog kommune</strong>.</p>
 </header>
 
-<div class="container">
+<div class="container" id="main-content">
   <div class="bar">
     <label>Kommune:
       <input id="kommune-search" list="kommune-list" value="Lørenskog" style="width: 200px;">
