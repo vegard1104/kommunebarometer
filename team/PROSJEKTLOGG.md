@@ -35,6 +35,11 @@ I `index.html`:
 Egen HANDOFF-rad åpnet for Sentry-oppsett (krever Vegards Sentry-konto, gratis-tier).
 **Hvorfor:** 2.0-rapportens B5-anbefaling — stabilitet og tillit. AP-04-spiken viste p50 cold = 620 ms; uten edge-cache tar hver kommune-bytte 600+ ms. Med cache: ~50 ms warm. Brukervennlige feilmeldinger erstatter "HTTP 429" med "SSB svarer for mange forespørsler akkurat nå".
 **Konsekvens for teamet:** Vercel deployer headers automatisk ved merge. Vegard må vurdere Sentry-konto (gratis-tier dekker ~5000 events/mnd, mer enn nok for v1+v2 trafikk). DevOps kan teste edge-cache via `curl -I` mot Vercel-URL etter deploy. Frontend-utviklere bør bruke `kbReportError(e, 'kontekst')` i stedet for `console.error` for å få Sentry-rapportering.
+## 2026-04-25 — Pakke 1 (E4) levert: Sist-oppdatert-stempel per sektor
+**Hvem:** Claude Code (autonom, Pakke 1)
+**Hva:** Hver sektor i `index.html` viser nå `Sist oppdatert {dato} · SSB tabell {id}` med klikkbar lenke til SSB StatBank. `loadSector` returnerer nå `tableUpdated` og `tableLabel` fra metadata-responsen. Ny helper `formatNorskDato` formaterer ISO-tidspunkt til norsk lesbar form ("16. mars 2026"). Ny helper `escapeHtml` brukt i title-attributtet med tabell-tittel for ekstra kontekst på hover. Liten CSS for `.sector-stamp` (border-top, muted font, accent-farge på lenken).
+**Hvorfor:** 2.0-rapportens E4-anbefaling — transparens og tillit. Økonomisjef/controller skal kunne se nøyaktig hvilken SSB-tabell scoren er beregnet fra og når SSB sist publiserte tallet. Liten innsats, stor effekt på akademisk og presse-bruk.
+**Konsekvens for teamet:** Frontend kan utvide samme mønster på indikator-nivå når B1 (indikator-register) er ferdig — da kan hver enkelt indikator også få stempel. Designer bør verifisere kontrast på `.sector-stamp` mot `--panel` i WCAG-audit (B4).
 
 ## 2026-04-25 — Pakke 0–3 levert og merget til main
 **Hvem:** Claude Code (autonom kjøring på vegne av Vegard) + Vegard (merging)
