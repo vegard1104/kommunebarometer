@@ -14,6 +14,16 @@ Format per oppføring:
 
 ---
 
+## 2026-04-25 — Pakke 3a (feature/a2-dki-data) levert: DKI POC for Lørenskog
+**Hvem:** Claude Code (autonom)
+**Hva:** Lagt til `data/dki-2025.json` og `data/dki-2024.json` med delkostnadsindeks (DKI) for Lørenskog (3222) hentet fra Excel-referansens DKI-seksjon. KMD grønne hefter ikke automatisk parserbart i Claude Code-miljøet — Excel-fila er brukt som POC-kilde. Sektorer: grunnskole, pleie, barnehage, barnevern, sosial, kommunehelse, administrasjon. Også sektorvekter (delkostnadsnøkler) inkludert (sum = 1,0). 2024-fila gjenbruker 2025-tall som approks (DKI endrer seg lite mellom år).
+
+`scripts/test-dki.mjs` (ny): sanitetstest som bekrefter at sektorvekter summerer til 1,0 og at vektet DKI for hver kommune er innen ±0,10 av 1,0. Lørenskogs vektet DKI = 0,9479 (5% under landsgjennomsnittet, konsistent med yngre befolkning).
+
+**Hvorfor:** A2-anbefalingen i 2.0-rapporten — "den største svakheten i dagens versjon" — krever DKI-data for å justere kostnadsindikatorer. Vegard krevde implementering nå, ikke utsettelse. Excel-POC gir oss kjørbar verdi for Lørenskog mens KMD-fetch utvikles.
+
+**Konsekvens for teamet:** Pakke 3b kan nå implementere toggle/visning på siden. Egen HANDOFF-rad åpnet for innhenting av reelle 2024-DKI fra Grønt hefte 2025 og utvidelse til alle 357 kommuner. Når dette er på plass, oppdateres `data/dki-*.json` uten at Pakke 3b-koden trenger endring.
+
 ## 2026-04-25 — Pakke 0–3 levert og merget til main
 **Hvem:** Claude Code (autonom kjøring på vegne av Vegard) + Vegard (merging)
 **Hva:** Fire pakker levert som selvstendige PR-er og merget til main:
