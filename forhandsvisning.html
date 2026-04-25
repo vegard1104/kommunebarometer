@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<html lang="nb">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Forhåndsvisning — Alle pakker samlet</title>
+<style>
+  :root {
+    --bg: #0f1724; --panel: #182134; --panel-2: #1f2b44;
+    --accent: #4cc9f0; --accent-2: #f72585;
+    --good: #4ade80; --bad: #f87171; --warn: #fbbf24;
+    --text: #e6edf6; --muted: #94a3b8; --border: #263248;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: var(--bg); color: var(--text); line-height: 1.6; }
+  header { background: linear-gradient(135deg, #1a2540 0%, #0f1724 100%); border-bottom: 1px solid var(--border); padding: 32px 32px; }
+  header h1 { margin: 0 0 12px; font-size: 32px; letter-spacing: -0.5px; }
+  header p { margin: 0; color: var(--muted); font-size: 15px; max-width: 800px; line-height: 1.55; }
+  header .badges { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 14px; }
+  header .badge { background: var(--panel); border: 1px solid var(--border); padding: 4px 10px; border-radius: 12px; font-size: 12px; color: var(--muted); }
+  header .badge.live { background: rgba(74,222,128,0.15); color: var(--good); border-color: var(--good); }
+  main { padding: 32px; max-width: 1200px; margin: 0 auto; }
+
+  .hovedseksjon { margin-bottom: 36px; }
+  .hovedseksjon h2 {
+    margin: 0 0 16px; font-size: 20px; color: var(--accent);
+    padding-bottom: 8px; border-bottom: 2px solid var(--border);
+  }
+  .hovedseksjon .lead { color: var(--muted); font-size: 14px; margin: 0 0 20px; }
+
+  .pakke-grid {
+    display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 14px;
+  }
+  .pakke {
+    background: var(--panel); border: 1px solid var(--border); border-radius: 12px;
+    padding: 18px 20px; display: flex; flex-direction: column; gap: 8px;
+    transition: border-color .15s, transform .15s;
+  }
+  .pakke:hover { border-color: var(--accent); transform: translateY(-2px); }
+  .pakke.test-direkte { border-left: 4px solid var(--good); }
+  .pakke.bytte-side { border-left: 4px solid var(--accent); }
+  .pakke.skeleton { border-left: 4px solid var(--warn); }
+  .pakke.dokumentasjon { border-left: 4px solid var(--muted); }
+
+  .pakke-header { display: flex; justify-content: space-between; align-items: baseline; gap: 10px; }
+  .pakke-tittel { font-weight: 600; font-size: 15px; }
+  .pakke-kode { font-size: 11px; color: var(--muted); font-family: 'SF Mono', Monaco, Consolas, monospace; }
+  .pakke-beskrivelse { font-size: 13px; color: var(--muted); flex: 1; }
+  .pakke-actions { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 6px; }
+  .pakke-link {
+    display: inline-block; background: var(--accent); color: #0b1220;
+    padding: 6px 12px; border-radius: 6px; font-size: 12px; font-weight: 600;
+    text-decoration: none;
+  }
+  .pakke-link:hover, .pakke-link:focus { background: #6dd5f5; outline: none; }
+  .pakke-link.sekundaer {
+    background: var(--panel-2); color: var(--text); border: 1px solid var(--border);
+  }
+  .pakke-link.sekundaer:hover { background: #2a3a5c; }
+  .pakke-link.disabled { background: var(--panel-2); color: var(--muted); pointer-events: none; }
+
+  .test-info {
+    background: var(--panel-2); border: 1px solid var(--border); border-radius: 10px;
+    padding: 18px 22px; margin-bottom: 32px;
+  }
+  .test-info h3 { margin: 0 0 10px; color: var(--accent); font-size: 16px; }
+  .test-info ol { margin: 0; padding-left: 20px; }
+  .test-info ol li { margin: 6px 0; }
+  .test-info code { background: var(--bg); padding: 2px 6px; border-radius: 4px; font-size: 12px; }
+
+  .legenden { display: flex; gap: 16px; flex-wrap: wrap; margin-top: 14px; font-size: 12px; color: var(--muted); }
+  .legenden span { display: inline-flex; align-items: center; gap: 6px; }
+  .legenden .swatch { width: 12px; height: 12px; border-radius: 2px; display: inline-block; }
+  .legenden .swatch.good { background: var(--good); }
+  .legenden .swatch.accent { background: var(--accent); }
+  .legenden .swatch.warn { background: var(--warn); }
+  .legenden .swatch.muted { background: var(--muted); }
+
+  footer { padding: 30px 32px; border-top: 1px solid var(--border); color: var(--muted); font-size: 13px; max-width: 1200px; margin: 40px auto 0; }
+</style>
+</head>
+<body>
+<header>
+  <h1>Forhåndsvisning — alle 30 pakker samlet</h1>
+  <p>Alle endringene fra Pakke 0–29 er merget inn på <code>test/alle-pakker-samlet</code>. Bruk denne siden til å navigere mellom alt det nye og teste live i nettleseren.</p>
+  <div class="badges">
+    <span class="badge live">● Live preview-deploy via Vercel</span>
+    <span class="badge">30 pakker merget</span>
+    <span class="badge">9 nye HTML-sider</span>
+    <span class="badge">12 nye data-/helper-filer</span>
+  </div>
+</header>
+
+<main>
+
+<div class="test-info">
+  <h3>Slik tester du</h3>
+  <ol>
+    <li><strong>Åpne hovedsiden</strong> nedenfor for å se alle quick wins (sist-oppdatert-stempel, trend-pil, forklaringsbobler, ROBEK-badge, eksport).</li>
+    <li><strong>Klikk på en (i)-knapp</strong> ved en sektor for forklaringsboble.</li>
+    <li><strong>Bytt kommune</strong> — datalisten har nå alle 357 kommuner. Prøv f.eks. «Sør-Varanger» eller «Lødingen» for å se ROBEK-badgen i toppen.</li>
+    <li><strong>Klikk «Justerbar vekting»</strong> i footer for å endre vekter og se rangering ende seg.</li>
+    <li><strong>Sammenlign to kommuner</strong> via egen side (delbar URL).</li>
+    <li><strong>Politiker-modus</strong> for forenklet visning + A4-utskrift.</li>
+  </ol>
+  <div class="legenden">
+    <span><span class="swatch good"></span> Test direkte (full kode-implementasjon)</span>
+    <span><span class="swatch accent"></span> Egen side (klikk for å åpne)</span>
+    <span><span class="swatch warn"></span> Skeleton (struktur klar, full impl. i senere PR)</span>
+    <span><span class="swatch muted"></span> Dokumentasjon / utredning</span>
+  </div>
+</div>
+
+<section class="hovedseksjon">
+  <h2>Hovedside med alle quick wins integrert</h2>
+  <p class="lead">Pakke 1, 3, 5, 6, 7, 8, 9 er aktive på hovedsiden. Klikk for å teste alt sammen.</p>
+  <div class="pakke-grid">
+    <div class="pakke test-direkte">
+      <div class="pakke-header">
+        <div class="pakke-tittel">Hovedsiden (alle quick wins integrert)</div>
+        <div class="pakke-kode">/</div>
+      </div>
+      <div class="pakke-beskrivelse">
+        Sektor-stempel (E4) · ROBEK-badge (C6) · Trend-pil + sparkline (A3) · Forklaringsbobler (A4) · Del lenke + Kopier bilde (A5) · 357 kommuner i velger (A1) · Edge-cache (B5) · Justerbar vekting overstyrer (A6).
+      </div>
+      <div class="pakke-actions">
+        <a class="pakke-link" href="/">Åpne hovedsiden →</a>
+        <a class="pakke-link sekundaer" href="/?kommune=Sør-Varanger">Test ROBEK-badge</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="hovedseksjon">
+  <h2>Nye sider du kan åpne</h2>
+  <p class="lead">Egne ruter levert som del av medium-løft og strategiske spor.</p>
+  <div class="pakke-grid">
+
+    <div class="pakke bytte-side">
+      <div class="pakke-header"><div class="pakke-tittel">Metodikk-side</div><div class="pakke-kode">E1+D6</div></div>
+      <div class="pakke-beskrivelse">6 seksjoner: oversikt, beregning, vekter med begrunnelse, datakilder (aktive + planlagte), kjente svakheter, endringslogg.</div>
+      <div class="pakke-actions"><a class="pakke-link" href="/metodikk">Åpne metodikk →</a></div>
+    </div>
+
+    <div class="pakke bytte-side">
+      <div class="pakke-header"><div class="pakke-tittel">Justerbar vekting</div><div class="pakke-kode">A6</div></div>
+      <div class="pakke-beskrivelse">Slidere for alle 12 sektorer + 4 forhåndsvalg (Standard / Oppvekst / Eldreomsorg / Økonomi). Lagrer i nettleseren.</div>
+      <div class="pakke-actions"><a class="pakke-link" href="/vekt-justering">Åpne vekt-justering →</a></div>
+    </div>
+
+    <div class="pakke bytte-side">
+      <div class="pakke-header"><div class="pakke-tittel">Sammenlign to kommuner</div><div class="pakke-kode">D2</div></div>
+      <div class="pakke-beskrivelse">Duell-side med to kommune-felter og delbar URL. Datalisten har alle 357 kommuner.</div>
+      <div class="pakke-actions">
+        <a class="pakke-link" href="/sammenlign">Åpne sammenlign →</a>
+        <a class="pakke-link sekundaer" href="/sammenlign?a=Lørenskog&b=Bærum">Eksempel: Lørenskog vs Bærum</a>
+      </div>
+    </div>
+
+    <div class="pakke bytte-side">
+      <div class="pakke-header"><div class="pakke-tittel">Politiker-visning</div><div class="pakke-kode">D5</div></div>
+      <div class="pakke-beskrivelse">Forenklet visning i light mode med trafikklys per sektor + A4-utskrift. For formannskapet.</div>
+      <div class="pakke-actions">
+        <a class="pakke-link" href="/politiker">Åpne politiker-modus →</a>
+        <a class="pakke-link sekundaer" href="/politiker?kommune=Lørenskog">Med Lørenskog forhåndsvalgt</a>
+      </div>
+    </div>
+
+    <div class="pakke skeleton">
+      <div class="pakke-header"><div class="pakke-tittel">Sektor-dypdykk: Grunnskole</div><div class="pakke-kode">D1</div></div>
+      <div class="pakke-beskrivelse">Strukturert etter KOSTRA-rapportens 4 indikatortyper. Plassholder-data i denne iterasjonen — live integrasjon kommer.</div>
+      <div class="pakke-actions"><a class="pakke-link" href="/sektor-grunnskole">Åpne grunnskole →</a></div>
+    </div>
+
+    <div class="pakke skeleton">
+      <div class="pakke-header"><div class="pakke-tittel">Sektor-dypdykk: Pleie og omsorg</div><div class="pakke-kode">D1</div></div>
+      <div class="pakke-beskrivelse">Samme 4-indikatortyper-struktur. Inkluderer en seksjon om behovsjustering (A2).</div>
+      <div class="pakke-actions"><a class="pakke-link" href="/sektor-pleie">Åpne pleie/omsorg →</a></div>
+    </div>
+
+    <div class="pakke skeleton">
+      <div class="pakke-header"><div class="pakke-tittel">KOSTRA-gruppe-analyse</div><div class="pakke-kode">D4</div></div>
+      <div class="pakke-beskrivelse">Oversikt over de 17 KOSTRA-gruppene med beskrivelser. Live medlemskap fra Klass-API kommer.</div>
+      <div class="pakke-actions"><a class="pakke-link" href="/kostra-gruppe">Åpne KOSTRA-grupper →</a></div>
+    </div>
+
+    <div class="pakke skeleton">
+      <div class="pakke-header"><div class="pakke-tittel">Kart (koroplet)</div><div class="pakke-kode">D3</div></div>
+      <div class="pakke-beskrivelse">Plassholder-side med implementasjonsplan: GeoJSON fra GeoNorge + D3.js. Egen PR for full impl.</div>
+      <div class="pakke-actions"><a class="pakke-link" href="/kart">Åpne kart-stub →</a></div>
+    </div>
+
+  </div>
+</section>
+
+<section class="hovedseksjon">
+  <h2>Quick wins — aktive på hovedsiden</h2>
+  <p class="lead">Disse vises automatisk på <code>/</code>, ingen egen side. Her er hva du kan se etter.</p>
+  <div class="pakke-grid">
+
+    <div class="pakke test-direkte">
+      <div class="pakke-header"><div class="pakke-tittel">E4 — Sist-oppdatert-stempel</div><div class="pakke-kode">Pakke 1</div></div>
+      <div class="pakke-beskrivelse">Hver sektor-kort viser «Sist oppdatert {dato} · SSB tabell {id}» med klikkbar lenke til SSB StatBank.</div>
+      <div class="pakke-actions"><a class="pakke-link sekundaer" href="/">Se på hovedsiden ↑</a></div>
+    </div>
+
+    <div class="pakke test-direkte">
+      <div class="pakke-header"><div class="pakke-tittel">A3 — Trend-pil + 4-årssnitt + sparkline</div><div class="pakke-kode">Pakke 5</div></div>
+      <div class="pakke-beskrivelse">↗/↘/→-pil med klartekst-beskrivelse + inline SVG-sparkline per sektor.</div>
+      <div class="pakke-actions"><a class="pakke-link sekundaer" href="/">Se på hovedsiden ↑</a></div>
+    </div>
+
+    <div class="pakke test-direkte">
+      <div class="pakke-header"><div class="pakke-tittel">A4 — Forklaringsbobler</div><div class="pakke-kode">Pakke 6</div></div>
+      <div class="pakke-beskrivelse">(i)-knapp ved sektor-navnet åpner popover med Hva/Hvorfor/Retning/Forbehold.</div>
+      <div class="pakke-actions"><a class="pakke-link sekundaer" href="/">Klikk en sektor-(i) ↑</a></div>
+    </div>
+
+    <div class="pakke test-direkte">
+      <div class="pakke-header"><div class="pakke-tittel">A5 — Del lenke + Kopier bilde</div><div class="pakke-kode">Pakke 7</div></div>
+      <div class="pakke-beskrivelse">To nye knapper i toolbaren. URL-en synker med valgt kommune (?kommune=...).</div>
+      <div class="pakke-actions"><a class="pakke-link sekundaer" href="/">Test toolbaren ↑</a></div>
+    </div>
+
+    <div class="pakke test-direkte">
+      <div class="pakke-header"><div class="pakke-tittel">C6 — ROBEK-badge</div><div class="pakke-kode">Pakke 3</div></div>
+      <div class="pakke-beskrivelse">Rød/oransje varsel med kommunens ROBEK-status og lovhjemmel-tekst.</div>
+      <div class="pakke-actions">
+        <a class="pakke-link sekundaer" href="/?kommune=Sør-Varanger">Test med Sør-Varanger</a>
+      </div>
+    </div>
+
+    <div class="pakke test-direkte">
+      <div class="pakke-header"><div class="pakke-tittel">A1 — 357 kommuner i velger</div><div class="pakke-kode">Pakke 9</div></div>
+      <div class="pakke-beskrivelse">Datalisten forhåndslastes fra Klass-API ved sidelast — kan velge alle kommuner.</div>
+      <div class="pakke-actions"><a class="pakke-link sekundaer" href="/">Søk i kommune-feltet ↑</a></div>
+    </div>
+
+    <div class="pakke test-direkte">
+      <div class="pakke-header"><div class="pakke-tittel">B5 — Edge-cache + brukervennlige feilmeldinger</div><div class="pakke-kode">Pakke 8</div></div>
+      <div class="pakke-beskrivelse">Vercel cacher SSB-respons i 24 t. Feilmeldinger på norsk klartekst i stedet for "HTTP 429".</div>
+      <div class="pakke-actions"><a class="pakke-link sekundaer" href="/">Bare merkbart i ytelse</a></div>
+    </div>
+
+    <div class="pakke test-direkte">
+      <div class="pakke-header"><div class="pakke-tittel">B4 — WCAG 2.2 AA-fikser (delvis)</div><div class="pakke-kode">Pakke 18</div></div>
+      <div class="pakke-beskrivelse">Skip-link, focus-visible-outline, prefers-reduced-motion. Tab-naviger for å se.</div>
+      <div class="pakke-actions"><a class="pakke-link sekundaer" href="/">Trykk Tab på hovedsiden ↑</a></div>
+    </div>
+
+  </div>
+</section>
+
+<section class="hovedseksjon">
+  <h2>Skeleton-pakker (data-helpers og dokumentasjon)</h2>
+  <p class="lead">Disse er ikke synlige i UI ennå — de er fundament for kommende PR-er. Klikk for å lese spec/utredning.</p>
+  <div class="pakke-grid">
+
+    <div class="pakke skeleton">
+      <div class="pakke-header"><div class="pakke-tittel">C1 — SSB Klass-API helpers</div><div class="pakke-kode">Pakke 2</div></div>
+      <div class="pakke-beskrivelse">fetchKlassKommuner / fetchKlassChanges i index.html. Sjekk konsoll: window.KLASS_KOMMUNER.</div>
+      <div class="pakke-actions"><a class="pakke-link disabled">Brukes av A1, B2</a></div>
+    </div>
+
+    <div class="pakke skeleton">
+      <div class="pakke-header"><div class="pakke-tittel">B2 — Dynamisk kommuneinndeling</div><div class="pakke-kode">Pakke 10</div></div>
+      <div class="pakke-beskrivelse"><code>data/kommunestruktur.js</code> — window.Kommunestruktur tilgjengelig.</div>
+      <div class="pakke-actions"><a class="pakke-link sekundaer" href="/data/kommunestruktur.js">Vis fil →</a></div>
+    </div>
+
+    <div class="pakke skeleton">
+      <div class="pakke-header"><div class="pakke-tittel">B1 — Indikator-register</div><div class="pakke-kode">Pakke 11</div></div>
+      <div class="pakke-beskrivelse">30+ indikatorer manuelt verifisert med retning + kvalitet.</div>
+      <div class="pakke-actions"><a class="pakke-link sekundaer" href="/data/indikator-register.json">Vis JSON →</a></div>
+    </div>
+
+    <div class="pakke skeleton">
+      <div class="pakke-header"><div class="pakke-tittel">C7 — Brønnøysund næringsstruktur</div><div class="pakke-kode">Pakke 15</div></div>
+      <div class="pakke-beskrivelse">window.kbBrreg-helper. CORS direkte. Klar for UI-integrasjon.</div>
+      <div class="pakke-actions"><a class="pakke-link sekundaer" href="/data/brreg-helper.js">Vis fil →</a></div>
+    </div>
+
+    <div class="pakke skeleton">
+      <div class="pakke-header"><div class="pakke-tittel">A2 — Behovsjustering</div><div class="pakke-kode">Pakke 21</div></div>
+      <div class="pakke-beskrivelse">window.kbBehovsjustering. Avhenger av C9 (KMD utgiftsbehov).</div>
+      <div class="pakke-actions"><a class="pakke-link sekundaer" href="/data/behovsjustering.js">Vis fil →</a></div>
+    </div>
+
+    <div class="pakke dokumentasjon">
+      <div class="pakke-header"><div class="pakke-tittel">C2 — Folkehelseprofil</div><div class="pakke-kode">Pakke 16 (draft)</div></div>
+      <div class="pakke-beskrivelse">Stub + utredning. Helsedirektoratet mangler offentlig API per 2026-04.</div>
+      <div class="pakke-actions"><a class="pakke-link sekundaer" href="/data/folkehelse-helper.js">Vis fil →</a></div>
+    </div>
+
+    <div class="pakke dokumentasjon">
+      <div class="pakke-header"><div class="pakke-tittel">C3 — Udir Statistikkbank</div><div class="pakke-kode">Pakke 17 (draft)</div></div>
+      <div class="pakke-beskrivelse">Skeleton + spec. Krever Vercel-rewrite og endepunkt-spike.</div>
+      <div class="pakke-actions"><a class="pakke-link sekundaer" href="/data/udir-helper.js">Vis fil →</a></div>
+    </div>
+
+    <div class="pakke dokumentasjon">
+      <div class="pakke-header"><div class="pakke-tittel">C9 — KMD inntektssystem</div><div class="pakke-kode">Pakke 20</div></div>
+      <div class="pakke-beskrivelse">Utredning av manuell innhentingsprosess (grønne hefter).</div>
+      <div class="pakke-actions"><a class="pakke-link sekundaer" href="/data/kmd-inntektssystem.md">Vis dok →</a></div>
+    </div>
+
+    <div class="pakke dokumentasjon">
+      <div class="pakke-header"><div class="pakke-tittel">C8 — DEA-effektivitetsanalyse</div><div class="pakke-kode">Pakke 23</div></div>
+      <div class="pakke-beskrivelse">Spec for SØF-data-integrasjon (årlig CSV).</div>
+      <div class="pakke-actions"><a class="pakke-link sekundaer" href="/data/dea-effektivitet.md">Vis dok →</a></div>
+    </div>
+
+    <div class="pakke dokumentasjon">
+      <div class="pakke-header"><div class="pakke-tittel">C4 — Ungdata</div><div class="pakke-kode">Pakke 24</div></div>
+      <div class="pakke-beskrivelse">Spec + utredning. NOVA/OsloMet, manuell innhenting per kommune.</div>
+      <div class="pakke-actions"><a class="pakke-link sekundaer" href="/data/ungdata.md">Vis dok →</a></div>
+    </div>
+
+    <div class="pakke dokumentasjon">
+      <div class="pakke-header"><div class="pakke-tittel">D7 — REST-API spec</div><div class="pakke-kode">Pakke 28</div></div>
+      <div class="pakke-beskrivelse">5 foreslåtte endepunkter + Vercel serverless functions-struktur.</div>
+      <div class="pakke-actions"><a class="pakke-link sekundaer" href="/api/kommune.md">Vis spec →</a></div>
+    </div>
+
+    <div class="pakke dokumentasjon">
+      <div class="pakke-header"><div class="pakke-tittel">E2+E3 — Kvalitetsmerking + CI</div><div class="pakke-kode">Pakke 29</div></div>
+      <div class="pakke-beskrivelse">Spec for kvalitet-badges og Wilson konfidensintervall i rangering.</div>
+      <div class="pakke-actions"><a class="pakke-link sekundaer" href="/data/datakvalitet.md">Vis spec →</a></div>
+    </div>
+
+  </div>
+</section>
+
+<section class="hovedseksjon">
+  <h2>Audits</h2>
+  <p class="lead">Pakker som leverte audits + targeted fixes.</p>
+  <div class="pakke-grid">
+    <div class="pakke dokumentasjon">
+      <div class="pakke-header"><div class="pakke-tittel">B4 — WCAG 2.2 AA-audit</div><div class="pakke-kode">Pakke 18</div></div>
+      <div class="pakke-beskrivelse">17 funn, 6 fikset. 11 åpne med konkrete tiltak.</div>
+      <div class="pakke-actions"><a class="pakke-link sekundaer" href="/team/WCAG-AUDIT.md">Vis audit →</a></div>
+    </div>
+
+    <div class="pakke dokumentasjon">
+      <div class="pakke-header"><div class="pakke-tittel">B3 — Mobil-audit</div><div class="pakke-kode">Pakke 22</div></div>
+      <div class="pakke-beskrivelse">11 funn, 3 fikset. Sticky filter + radar→bar foreslått.</div>
+      <div class="pakke-actions"><a class="pakke-link sekundaer" href="/team/MOBIL-AUDIT.md">Vis audit →</a></div>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<footer>
+  Forhåndsvisning generert fra branch <code>test/alle-pakker-samlet</code>. Hver pakke har også egen PR mot <code>main</code> for review.
+  Sluttrapport ligger i <a href="/team/PROSJEKTLOGG.md" style="color: var(--accent);">team/PROSJEKTLOGG.md</a>.
+</footer>
+
+</body>
+</html>
