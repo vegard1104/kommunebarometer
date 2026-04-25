@@ -14,6 +14,12 @@ Format per oppføring:
 
 ---
 
+## 2026-04-25 — Pakke 3 (C6) levert: ROBEK-status badge + statisk JSON-snapshot
+**Hvem:** Claude Code (autonom, Pakke 3)
+**Hva:** Hentet aktuell ROBEK-liste fra regjeringen.no (publisert 2026-04-20) — 27 kommuner med kommunenummer, navn og lovhjemmel-bokstaver. Lagret i `data/robek.json` med kilde-URL, hentet-dato, full beskrivelse av alle 7 hjemler (a-g i kommuneloven § 28-1). Ny `loadRobek()` og `renderRobekBadge()` i `index.html`. Badge vises kun hvis valgt kommune er i registeret — med ikon, hjemmel-liste, kilde-lenke. CSS `.robek-badge` med rød-oransje gradient. Hooked inn i `renderAll()`. Lokale kopier av `formatNorskDato`/`escapeHtml` med `typeof !== 'function'`-guard så branchen virker uavhengig av Pakke 1.
+**Hvorfor:** 2.0-rapportens C6-anbefaling — quick win som øker relevans for alle politiske brukere. Økonomisjef vet hvem som er på lista; politikere vet det ofte ikke. Synlig badge gir direkte styringsinformasjon.
+**Konsekvens for teamet:** ROBEK-data må oppdateres månedlig (KDD publiserer rundt midten av hver måned). Egen HANDOFF-rad åpnet for å vurdere automatisering: enten Vercel cron som scraper regjeringen.no, eller manuell oppdatering i kalender. Frontend-impl. på politiker-modus (D5) bør gjenbruke samme badge-mønster.
+
 ## 2026-04-25 — Pakke 0–3 levert og merget til main
 **Hvem:** Claude Code (autonom kjøring på vegne av Vegard) + Vegard (merging)
 **Hva:** Fire pakker levert som selvstendige PR-er og merget til main:

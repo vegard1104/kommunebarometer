@@ -93,6 +93,51 @@
   .merger-context .mc-chip.parent { background: rgba(76,201,240,0.15); border-color: var(--accent); color: var(--accent); font-weight: 600; }
   .merger-context .mc-chip.parent:hover { background: var(--accent); color: #0f1724; }
   .merger-context strong { color: var(--text); }
+
+  /* C6: ROBEK-badge — vises kun for kommuner i Register om betinget godkjenning og kontroll */
+  .robek-badge {
+    background: linear-gradient(135deg, rgba(248,113,113,0.12) 0%, rgba(251,191,36,0.10) 100%);
+    border: 1px solid rgba(248,113,113,0.35);
+    border-radius: 10px;
+    padding: 14px 18px;
+    margin: 0 0 20px;
+    font-size: 13px;
+    line-height: 1.55;
+    display: flex;
+    gap: 12px;
+    align-items: flex-start;
+  }
+  .robek-badge .robek-icon {
+    flex: 0 0 auto;
+    font-size: 22px;
+    line-height: 1;
+    color: var(--bad);
+  }
+  .robek-badge .robek-content { flex: 1; }
+  .robek-badge .robek-label {
+    color: var(--bad);
+    font-weight: 600;
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 4px;
+  }
+  .robek-badge .robek-text { color: var(--text); }
+  .robek-badge .robek-text strong { color: var(--bad); }
+  .robek-badge .robek-hjemler {
+    margin-top: 8px;
+    font-size: 12px;
+    color: var(--muted);
+  }
+  .robek-badge .robek-hjemler li { margin: 3px 0; }
+  .robek-badge .robek-source {
+    margin-top: 8px;
+    font-size: 11px;
+    color: var(--muted);
+  }
+  .robek-badge .robek-source a { color: var(--accent); text-decoration: none; }
+  .robek-badge .robek-source a:hover,
+  .robek-badge .robek-source a:focus { text-decoration: underline; }
   .score-row { display: flex; gap: 24px; margin-top: 14px; flex-wrap: wrap; }
   .score-row .item { flex: 1; min-width: 110px; }
   .score-row .value { font-size: 24px; font-weight: 600; }
@@ -197,6 +242,8 @@
   </div>
 
   <div class="merger-context" id="merger-context" hidden></div>
+  <!-- C6: ROBEK-status. Vises kun hvis valgt kommune er i registeret. -->
+  <div class="robek-badge" id="robek-badge" hidden></div>
   <div class="hero">
     <div class="card">
       <h2>Samlet plassering</h2>
@@ -400,6 +447,83 @@ async function fetchTableV2(tableId, params) {
   const r = await fetch(url);
   if (!r.ok) throw new Error(`Data ${tableId}: HTTP ${r.status}`);
   return r.json();
+}
+
+// ============================================================
+//  C6: ROBEK — Register om betinget godkjenning og kontroll
+// ============================================================
+//
+// Liste over kommuner i økonomisk kontroll (kommuneloven § 28-1).
+// Datakilden er regjeringen.no, oppdateres månedlig av KDD.
+// Vi henter en statisk JSON-snapshot fra /data/robek.json (oppdateres
+// manuelt periodisk — egen HANDOFF-rad åpnet for automatisk oppdatering).
+
+let ROBEK_DATA = null;
+
+async function loadRobek() {
+  if (ROBEK_DATA) return ROBEK_DATA;
+  try {
+    const r = await fetch('/data/robek.json', { cache: 'no-cache' });
+    if (!r.ok) throw new Error(`HTTP ${r.status}`);
+    ROBEK_DATA = await r.json();
+    log(`ROBEK: ${ROBEK_DATA.kommuner.length} kommuner i registeret (publisert ${ROBEK_DATA.publisert})`);
+    return ROBEK_DATA;
+  } catch (e) {
+    log(`ROBEK feilet (ikke-kritisk): ${e.message}`);
+    ROBEK_DATA = { kommuner: [], hjemler: {}, kilde: '', kildeUrl: '', publisert: '' };
+    return ROBEK_DATA;
+  }
+}
+
+function getRobekStatus(muniCode) {
+  if (!ROBEK_DATA) return null;
+  return ROBEK_DATA.kommuner.find(k => k.kommunenummer === muniCode) || null;
+}
+
+// Lokal helper for ROBEK-rendering. Hvis E4-pakken (Pakke 1) er merget
+// tidligere, finnes formatNorskDato/escapeHtml allerede globalt og denne
+// definisjonen blir overskrevet uten konsekvenser. Vi sikrer at ROBEK
+// fungerer selv på en branch hvor E4 ikke er på plass.
+if (typeof window.formatNorskDato !== 'function') {
+  window.formatNorskDato = function (isoString) {
+    if (!isoString) return '';
+    const d = new Date(isoString);
+    if (isNaN(d.getTime())) return '';
+    const m = ['januar','februar','mars','april','mai','juni','juli','august','september','oktober','november','desember'];
+    return `${d.getDate()}. ${m[d.getMonth()]} ${d.getFullYear()}`;
+  };
+}
+if (typeof window.escapeHtml !== 'function') {
+  window.escapeHtml = function (s) {
+    return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+  };
+}
+
+function renderRobekBadge() {
+  const el = document.getElementById('robek-badge');
+  if (!el || !ROBEK_DATA) return;
+  const status = getRobekStatus(CURRENT_MUNI_CODE);
+  if (!status) {
+    el.hidden = true;
+    el.innerHTML = '';
+    return;
+  }
+  const bokstaver = (status.hjemmel || '').match(/[a-g]/gi) || [];
+  const hjemmelLi = bokstaver
+    .map(b => b.toLowerCase())
+    .map(b => `<li><strong>${b}.</strong> ${window.escapeHtml(ROBEK_DATA.hjemler[b] || 'Ukjent hjemmel')}</li>`)
+    .join('');
+  const datoFmt = window.formatNorskDato(ROBEK_DATA.publisert) || ROBEK_DATA.publisert;
+  el.hidden = false;
+  el.innerHTML = `
+    <div class="robek-icon" aria-hidden="true">⚠</div>
+    <div class="robek-content">
+      <div class="robek-label">ROBEK</div>
+      <div class="robek-text"><strong>${window.escapeHtml(status.kommune)}</strong> er oppført i Register om betinget godkjenning og kontroll. Låneopptak og langsiktige leieavtaler krever godkjenning fra statsforvalter.</div>
+      ${hjemmelLi ? `<ul class="robek-hjemler" aria-label="Lovhjemmel for registreringen">${hjemmelLi}</ul>` : ''}
+      <div class="robek-source">Kilde: <a href="${window.escapeHtml(ROBEK_DATA.kildeUrl)}" target="_blank" rel="noopener">Kommunal- og distriktsdepartementet</a> · publisert ${window.escapeHtml(datoFmt)}</div>
+    </div>
+  `;
 }
 
 // Parse JSON-stat2 til { [muni]: { [indicator]: { [year]: value } } }
@@ -1215,6 +1339,7 @@ function renderCompare() {
 function renderAll() {
   renderOverall();
   renderMergerPanel();
+  renderRobekBadge(); // C6: viser ROBEK-status hvis valgt kommune er i registeret
   renderSectors();
   renderTop10();
   renderHistory();
@@ -1295,6 +1420,9 @@ function downloadXlsx() {
 async function main() {
   setStatus('Henter metadata og data fra SSB…');
   log(`Starter innhenting for ${SECTORS.length} sektorer`);
+
+  // C6: ROBEK-data lastes parallelt med KOSTRA. Lite payload, ikke-blokkerende.
+  loadRobek();
 
   const loaded = [];
   // parallell henting i batcher av 4
