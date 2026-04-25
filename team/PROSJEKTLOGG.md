@@ -14,6 +14,12 @@ Format per oppføring:
 
 ---
 
+## 2026-04-25 — Pakke 14 (D5) levert: Politiker-visning
+**Hvem:** Claude Code (autonom, Pakke 14)
+**Hva:** Ny `politiker.html` i light-mode med rødt/gult/grønt-trafikklys per sektor + én forklaringssetning per sektor (gjenbruker `data/sektor-forklaringer.json`). A4-print-styling med `@page` og `break-inside: avoid`. URL-state `?kommune=…`. Knapp for "Skriv ut" og "Se full visning →".
+**Hvorfor:** Rapport D5: politikere orker ikke detaljer; de vil ha sammendrag på A4 til formannskapsmøtet.
+**Konsekvens for teamet:** LIVE_SCORES per sektor må synkes fra hovedsiden — denne PR-en bruker forklarings-setninger som fallback når scorer mangler. Frontend kan lage en script-bro som lagrer ALL_SECTOR_SCORES i sessionStorage etter `main()` for politiker-siden å plukke opp.
+
 ## 2026-04-25 — Pakke 0–3 levert og merget til main
 **Hvem:** Claude Code (autonom kjøring på vegne av Vegard) + Vegard (merging)
 **Hva:** Fire pakker levert som selvstendige PR-er og merget til main:
