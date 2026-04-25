@@ -241,6 +241,8 @@
     <button id="refresh-btn">↻ Oppdater</button>
     <button id="csv-btn" class="primary">⬇ CSV</button>
     <button id="xlsx-btn" class="primary">⬇ Excel</button>
+    <button id="image-btn" type="button" title="Kopier sektor-radar som bilde til utklippstavlen">⎙ Bilde</button>
+    <button id="share-btn" type="button" title="Kopier lenke til denne kommune-visningen">🔗 Del lenke</button>
     <div class="status" id="status"><span class="spinner"></span>Starter opp…</div>
   </div>
 
@@ -853,6 +855,7 @@ function renderMuniList() {
       CURRENT_MUNI_CODE = code;
       COMPARE_MUNIS = [code];
       renderAll();
+      syncUrlToCurrentMuni(); // A5: hold ?kommune=… synket
     }
   });
 
@@ -870,6 +873,7 @@ function renderMuniList() {
         COMPARE_MUNIS = [code];
         input.value = MUNI_NAMES[code];
         renderAll();
+        syncUrlToCurrentMuni(); // A5
       } else {
         input.value = MUNI_NAMES[code];
       }
@@ -1513,17 +1517,29 @@ async function main() {
   CURRENT_YEAR = yearsWithData[yearsWithData.length - 1] || years[years.length - 1] || null;
   log(`Ferdig. ${yearsWithData.length} år med data. Viser: ${CURRENT_YEAR}`);
 
-  // Sett Lørenskog kode ved å finne i muni-listen
-  const lrCode = findMuniCode('Lørenskog');
-  if (lrCode) {
-    CURRENT_MUNI_CODE = lrCode;
-    COMPARE_MUNIS = [lrCode]; // Start sammenligning med bare Lørenskog
+  // A5: Foretrekker kommune fra ?kommune=… hvis URL-en spesifiserer den.
+  // Faller tilbake til Lørenskog som default.
+  const urlMuniCode = readKommuneFromUrl();
+  if (urlMuniCode) {
+    CURRENT_MUNI_CODE = urlMuniCode;
+    COMPARE_MUNIS = [urlMuniCode];
+    log(`Kommune fra URL: ${MUNI_NAMES[urlMuniCode] || urlMuniCode}`);
+    // Oppdater søkefelt-input slik at det matcher
+    const searchInput = document.getElementById('kommune-search');
+    if (searchInput) searchInput.value = MUNI_NAMES[urlMuniCode] || urlMuniCode;
+  } else {
+    const lrCode = findMuniCode('Lørenskog');
+    if (lrCode) {
+      CURRENT_MUNI_CODE = lrCode;
+      COMPARE_MUNIS = [lrCode];
+    }
   }
 
   renderMuniList();
   renderYearSelect();
   renderSources();
   renderAll();
+  syncUrlToCurrentMuni();
 
   const covered = Object.values(ALL_SECTOR_DATA).filter(s => !s.error).length;
   const yearCov = Object.keys(OVERALL[CURRENT_YEAR] || {}).length;
@@ -1535,47 +1551,90 @@ document.getElementById('csv-btn').onclick = downloadCsv;
 document.getElementById('xlsx-btn').onclick = downloadXlsx;
 
 // ============================================================
-//  B5: Brukervennlige feilmeldinger + observabilitet
+//  A5: Del lenke + Kopier bilde + URL-synkronisering av kommune
 // ============================================================
-//
-// kbReportError(err, context) sender feilen til Sentry hvis konfigurert
-// og logger uansett til API-loggen. Hooks står klare for Sentry-init via
-// CDN — Vegard må sette opp gratis Sentry-konto og legge inn DSN i
-// window.KB_SENTRY_DSN før denne fila lastes (f.eks. via en lite
-// inline-script-tag).
-function kbReportError(err, context) {
-  const msg = err && err.message ? err.message : String(err);
-  log(`FEIL [${context || 'ukjent'}]: ${msg}`);
-  if (err && err.stack) log(err.stack);
-  // Sentry-integrasjon (valgfri). Aktiver ved å legge inn:
-  //   <script src="https://browser.sentry-cdn.com/8.0.0/bundle.min.js"></script>
-  //   <script>Sentry.init({ dsn: "din-dsn-her" })</script>
-  // FØR <script>-blokken som har denne koden.
-  if (typeof window.Sentry !== 'undefined' && typeof window.Sentry.captureException === 'function') {
-    window.Sentry.captureException(err, { tags: { context: context || 'unknown' } });
+
+// Synkroniserer ?kommune=… i URL-en med valgt kommune.
+// Bruker history.replaceState så det ikke blir browser-history-spam.
+function syncUrlToCurrentMuni() {
+  if (!CURRENT_MUNI_CODE) return;
+  const name = MUNI_NAMES[CURRENT_MUNI_CODE];
+  const u = new URL(window.location.href);
+  // Foretrekker navn for delbarhet (lesbart), faller tilbake til kode.
+  u.searchParams.set('kommune', name || CURRENT_MUNI_CODE);
+  window.history.replaceState({}, '', u.toString());
+}
+
+// Leser ?kommune=… fra URL ved oppstart og returnerer kode hvis funnet.
+function readKommuneFromUrl() {
+  const u = new URL(window.location.href);
+  const q = (u.searchParams.get('kommune') || '').trim();
+  if (!q) return null;
+  // Hvis q allerede er en 4-sifret kode og finnes i muni-listen, bruk direkte.
+  if (/^\d{4}$/.test(q) && MUNI_NAMES[q]) return q;
+  // Ellers slå opp via findMuniCode (case-insensitiv navnesøk).
+  const code = findMuniCode(q);
+  return code || null;
+}
+
+// Vis kort flash-melding i status-feltet uten å bryte spinner-tilstand.
+function flashStatus(msg, type = 'ok') {
+  const original = $status.innerHTML;
+  $status.className = 'status ' + type;
+  $status.textContent = msg;
+  setTimeout(() => {
+    $status.innerHTML = original;
+    $status.className = 'status';
+  }, 2500);
+}
+
+// Del lenke: kopierer URL med ?kommune=… til utklippstavlen.
+async function shareLink() {
+  syncUrlToCurrentMuni();
+  const url = window.location.href;
+  try {
+    await navigator.clipboard.writeText(url);
+    flashStatus('Lenke kopiert til utklippstavlen', 'ok');
+  } catch (e) {
+    // Fallback: prompt med URL hvis clipboard-API blokkeres
+    flashStatus('Kunne ikke kopiere automatisk', 'err');
+    window.prompt('Kopier lenken manuelt (Ctrl+C / Cmd+C):', url);
   }
 }
 
-// Mapper teknisk feil til en brukervennlig melding.
-function brukerVennligFeil(err) {
-  const msg = (err && err.message) ? err.message : String(err);
-  if (/HTTP 429/.test(msg)) {
-    return 'SSB svarer for mange forespørsler akkurat nå. Prøv igjen om noen minutter.';
+// Kopier bilde: tar radar-charten og legger PNG på utklippstavlen.
+// Bruker Chart.js sin innebygde toBase64Image() — krever ingen ny CDN.
+async function copyChartImage() {
+  if (!radarChart) {
+    flashStatus('Radar-grafen er ikke klar', 'err');
+    return;
   }
-  if (/HTTP 5\d\d/.test(msg)) {
-    return 'SSB-tjenesten er midlertidig nede. Vi viser tidligere data hvis tilgjengelig — prøv "Oppdater" om noen minutter.';
+  try {
+    // Chart.js gir oss base64-PNG. Konverter til Blob for clipboard-API.
+    const dataUrl = radarChart.toBase64Image('image/png', 1.0);
+    const res = await fetch(dataUrl);
+    const blob = await res.blob();
+    if (navigator.clipboard && window.ClipboardItem) {
+      await navigator.clipboard.write([new ClipboardItem({ 'image/png': blob })]);
+      flashStatus('Bilde kopiert til utklippstavlen', 'ok');
+    } else {
+      // Fallback: åpne i ny fane så bruker kan lagre manuelt.
+      const win = window.open();
+      if (win) {
+        win.document.write(`<title>Sektor-radar — ${MUNI_NAMES[CURRENT_MUNI_CODE] || ''}</title><img src="${dataUrl}" alt="Sektor-radar">`);
+        flashStatus('Bilde åpnet i ny fane', 'ok');
+      } else {
+        flashStatus('Kunne ikke åpne nytt vindu', 'err');
+      }
+    }
+  } catch (e) {
+    log(`Bilde-kopi feilet: ${e.message}`);
+    flashStatus('Kunne ikke kopiere bilde', 'err');
   }
-  if (/HTTP 404/.test(msg)) {
-    return 'Fant ikke dataene hos SSB. Tabellen kan være flyttet — sjekk metodikk-siden for kildelenker.';
-  }
-  if (/timeout|abort/i.test(msg)) {
-    return 'Forespørselen tok for lang tid. Sjekk nettforbindelsen og prøv "Oppdater".';
-  }
-  if (/Failed to fetch|NetworkError/i.test(msg)) {
-    return 'Mistet kontakt med nettet. Sjekk forbindelsen og prøv "Oppdater".';
-  }
-  return `Noe gikk galt: ${msg}`;
 }
+
+document.getElementById('share-btn').onclick = shareLink;
+document.getElementById('image-btn').onclick = copyChartImage;
 
 main().catch(e => {
   setStatus(brukerVennligFeil(e), 'err');
