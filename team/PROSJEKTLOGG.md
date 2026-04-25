@@ -308,6 +308,22 @@ I `index.html`:
 **Hvorfor:** A2-anbefalingen i 2.0-rapporten — "den største svakheten i dagens versjon" — krever DKI-data for å justere kostnadsindikatorer. Vegard krevde implementering nå, ikke utsettelse. Excel-POC gir oss kjørbar verdi for Lørenskog mens KMD-fetch utvikles.
 
 **Konsekvens for teamet:** Pakke 3b kan nå implementere toggle/visning på siden. Egen HANDOFF-rad åpnet for innhenting av reelle 2024-DKI fra Grønt hefte 2025 og utvidelse til alle 357 kommuner. Når dette er på plass, oppdateres `data/dki-*.json` uten at Pakke 3b-koden trenger endring.
+## 2026-04-25 — Pakke 3b (feature/a2-behovsjustert-visning) levert: A2 toggle + scoring
+**Hvem:** Claude Code (autonom)
+**Hva:** Implementert behovsjustert visning som modus-toggle med URL+localStorage-state. Endringer i `index.html`:
+- Toggle "Rådata" / "Behovsjustert" som segmented radio i toolbar (semantisk fieldset for skjermleser)
+- `BEHOVSJUSTERT` global flag, `DKI_DATA` lastet fra `/data/dki-{år}.json` ved oppstart
+- `SECTOR_DKI_MAP` mapper SECTORS.id til DKI-felt-navn (7 sektorer; resterende uten DKI)
+- `ER_KOSTNADSINDIKATOR`-regex som whitelist for hvilke indikatorer som faktisk justeres (utgift/kostnad/kr per/gjeld i prosent/frie inntekter)
+- `computeSectorScores` deler verdien på DKI for kostnadsindikatorer FØR normalisering når mode=justert. Resultatindikatorer (dekning, fagutdanning, trivsel, mobbing) er IKKE justert.
+- `dkiBadge()` på sektor-kort i justert-modus: viser "DKI 0,81" med fargekoding (grønn < 0,95, rød > 1,05) og tooltip i klartekst
+- Toggle-handler re-kjører `computeSectorScores` for alle sektorer + `computeOverall` + `renderAll` UTEN ny SSB-fetch — instant respons.
+
+`data/behovsjustering-readme.md` (ny): full dokumentasjon av hvilke indikatorer som justeres vs ikke. Skal flettes inn i `metodikk.html` når den branchen merges.
+
+**Hvorfor:** A2 er rapportens "største svakhet i dagens versjon" — kostnader uten korreksjon for utgiftsbehov gir feilrangering for kommuner med yngre/eldre befolkning. Toggle gir bruker valg + transparent visualisering av hva som justeres.
+
+**Konsekvens for teamet:** Lørenskog DKI=0,81 for pleie betyr at i justert modus blir kostnaden delt på 0,81 (12% høyere) — kommunen får dårligere score for pleie-kostnad i justert modus. Det er korrekt — Lørenskog har yngre befolkning enn snittet, så den "burde" bruke mindre. Når DKI-data utvides til alle 357 kommuner vil rangering endre seg merkbart for kommuner med skjev demografi. Frontend kan legge "Behovsjustert"-info i sektor-dypdykk-sider (Pakke 4).
 
 ## 2026-04-25 — Pakke 0–3 levert og merget til main
 ## 2026-04-25 — Pakke 2 (C1) levert: SSB Klass-API integrert med 30-dagers cache

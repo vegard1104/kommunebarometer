@@ -243,6 +243,39 @@
   }
   .sector.missing { opacity: 0.55; }
 
+  /* A2: Behovsjustert toggle (segmented control) */
+  .mode-toggle {
+    border: 1px solid var(--border); border-radius: 7px; padding: 0;
+    margin: 0; background: var(--panel-2);
+    display: inline-flex; overflow: hidden;
+  }
+  .mode-toggle legend.sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0, 0, 0, 0); }
+  .mode-toggle label {
+    display: inline-flex; align-items: center; cursor: pointer;
+    padding: 6px 12px; font-size: 13px; color: var(--muted);
+    transition: background .12s, color .12s;
+  }
+  .mode-toggle label:hover { color: var(--text); }
+  .mode-toggle input { position: absolute; opacity: 0; pointer-events: none; }
+  .mode-toggle label:has(input:checked) {
+    background: var(--accent); color: #0b1220; font-weight: 600;
+  }
+  .mode-toggle label:has(input:focus-visible) {
+    box-shadow: inset 0 0 0 2px var(--accent);
+  }
+
+  /* A2: DKI-badge på sektorkort */
+  .sector .dki-badge {
+    display: inline-block;
+    margin-top: 6px; padding: 2px 8px;
+    border-radius: 4px; font-size: 11px; font-weight: 600;
+    background: rgba(76,201,240,0.12); color: var(--accent);
+    border: 1px solid rgba(76,201,240,0.3);
+    cursor: help;
+  }
+  .sector .dki-badge.dki-low { background: rgba(74,222,128,0.12); color: var(--good); border-color: rgba(74,222,128,0.3); }
+  .sector .dki-badge.dki-high { background: rgba(248,113,113,0.12); color: var(--bad); border-color: rgba(248,113,113,0.3); }
+
   .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 20px; }
   @media (max-width: 900px) { .two-col { grid-template-columns: 1fr; } }
   table { width: 100%; border-collapse: collapse; font-size: 13px; }
@@ -347,6 +380,12 @@
     <button id="xlsx-btn" class="primary">⬇ Excel</button>
     <button id="image-btn" type="button" title="Kopier sektor-radar som bilde til utklippstavlen">⎙ Bilde</button>
     <button id="share-btn" type="button" title="Kopier lenke til denne kommune-visningen">🔗 Del lenke</button>
+    <!-- A2: Behovsjustert toggle. Lagres i URL (?mode=justert) og localStorage. -->
+    <fieldset class="mode-toggle" aria-label="Visningsmodus">
+      <legend class="sr-only">Visningsmodus</legend>
+      <label><input type="radio" name="kb-mode" value="raa" checked><span>Rådata</span></label>
+      <label><input type="radio" name="kb-mode" value="justert"><span>Behovsjustert</span></label>
+    </fieldset>
     <div class="status" id="status"><span class="spinner"></span>Starter opp…</div>
   </div>
 
@@ -1009,6 +1048,50 @@ function normalize(values, dir) {
   };
 }
 
+// A2: SECTOR_DKI_MAP — kobler sektor-id i SECTORS til DKI-felt-navn i data/dki-*.json.
+// Sektorer uten kjent DKI (kultur, eiendom, var, klima, saksbehandling) er ikke
+// med — for dem gjøres ingen behovsjustering (DKI=1 implisitt).
+const SECTOR_DKI_MAP = {
+  grunnskole: 'grunnskole',
+  pleie: 'pleie',
+  helse: 'kommunehelse',
+  barnehage: 'barnehage',
+  barnevern: 'barnevern',
+  sosial: 'sosial',
+  okonomi: 'administrasjon'
+};
+
+// A2: Whitelist for behovsjustering. Kun ekte kostnadsindikatorer (kr per
+// innbygger/bruker) skal divideres med DKI. Resultatindikatorer (dekning,
+// poeng, andel m/utdanning, ventetid, sykefravær osv) skal ALDRI justeres.
+const ER_KOSTNADSINDIKATOR = /netto driftsutgift|brutto driftsutgift|driftsutgift.*kr|kostnad.*kr|kroner per|kr per innbygger|kr per bruker|gjeld i prosent|gjeld ex|frie inntekter/i;
+
+let BEHOVSJUSTERT = false;
+let DKI_DATA = null; // { år: data fra /data/dki-{år}.json }
+
+async function loadDKI(år) {
+  if (!år) return null;
+  const cacheKey = `kb_dki_${år}`;
+  // Bruk samme år for "siste tilgjengelige DKI" hvis ikke filen finnes
+  const fil = ['2025', '2024'].includes(String(år)) ? år : '2025';
+  try {
+    const r = await fetch(`/data/dki-${fil}.json`, { cache: 'force-cache' });
+    if (!r.ok) return null;
+    return await r.json();
+  } catch (_) {
+    return null;
+  }
+}
+
+// A2: Returnerer DKI-faktor for en kommune i en sektor for et gitt år.
+// Returnerer 1.0 (ingen justering) hvis data mangler.
+function dkiFor(kommunenr, sectorId, år) {
+  if (!DKI_DATA || !DKI_DATA[år]) return 1.0;
+  const felt = SECTOR_DKI_MAP[sectorId];
+  if (!felt) return 1.0;
+  return DKI_DATA[år]?.kommuner?.[kommunenr]?.[felt] ?? 1.0;
+}
+
 function computeSectorScores(sectorData) {
   // Returnerer { muniId: { score, rank } } per år og samlet per sektor
   const scoresByYear = {};
@@ -1017,9 +1100,15 @@ function computeSectorScores(sectorData) {
     for (const [muniId, info] of Object.entries(sectorData.data)) {
       const indScores = [];
       for (const ind of sectorData.indicators) {
-        const v = info.indicators[ind.code]?.years?.[year];
+        let v = info.indicators[ind.code]?.years?.[year];
         if (v === undefined) continue;
-        // Sett fn for denne indikatoren (lazy)
+        // A2: Behovsjuster KUN kostnadsindikatorer for sektorer som har DKI.
+        // (kostnad × 1) / DKI → kommuner med høyt utgiftsbehov gir lavere
+        // justert kostnad ⇒ bedre score når lav-er-bedre.
+        if (BEHOVSJUSTERT && ER_KOSTNADSINDIKATOR.test(ind.label) && v != null) {
+          const dki = dkiFor(muniId, sectorData.sector.id, year);
+          if (dki && dki !== 1.0) v = v / dki;
+        }
         indScores.push({ code: ind.code, label: ind.label, value: v });
       }
       if (indScores.length > 0) perMuni[muniId] = indScores;
@@ -1616,6 +1705,19 @@ async function copyChartImage() {
   }
 }
 
+// A2: Bygger DKI-badge for en sektor hvis behovsjustert er aktiv og DKI-data finnes.
+function dkiBadge(sectorId, kommunenr, år) {
+  if (!BEHOVSJUSTERT) return '';
+  const dki = dkiFor(kommunenr, sectorId, år);
+  if (!dki || dki === 1.0) return '';
+  const cls = dki < 0.95 ? 'dki-low' : (dki > 1.05 ? 'dki-high' : '');
+  const pct = Math.round(Math.abs(1 - dki) * 100);
+  const tooltip = dki < 1
+    ? `Forventes å bruke ${pct}% mindre enn landsgjennomsnittet (yngre/billigere befolkning).`
+    : `Forventes å bruke ${pct}% mer enn landsgjennomsnittet (eldre/dyrere befolkning).`;
+  return `<div class="dki-badge ${cls}" title="${tooltip}" tabindex="0">DKI ${dki.toFixed(2)}</div>`;
+}
+
 function renderSectors() {
   const grid = document.getElementById('sectors-grid');
   grid.innerHTML = SECTORS.map(sec => {
@@ -1645,7 +1747,8 @@ function renderSectors() {
         ${info ? `
         <div class="score-bar"><div class="score-bar-fill" style="width:${info.score}%;background:${info.score > 66 ? 'var(--good)' : info.score > 33 ? 'var(--warn)' : 'var(--bad)'}"></div></div>
         <div class="meta"><span>Score ${info.score}</span>${pill(info.rank, info.total)}</div>
-        ${renderTrendRow(sec.id, CURRENT_MUNI_CODE)}` : ''}
+        ${renderTrendRow(sec.id, CURRENT_MUNI_CODE)}
+        ${dkiBadge(sec.id, CURRENT_MUNI_CODE, CURRENT_YEAR)}` : ''}
         ${stempel}
       </div>
     `;
@@ -2048,6 +2151,23 @@ async function main() {
   // A4: Sektor-forklaringer parallelt.
   loadSektorForklaringer();
 
+  // A2: Last DKI-data parallelt — lite payload, ikke-blokkerende.
+  // Lastes for begge år vi viser; primær er 2025.
+  Promise.all([loadDKI('2024'), loadDKI('2025')]).then(([d24, d25]) => {
+    DKI_DATA = { '2024': d24, '2025': d25 };
+    if (d25) log(`DKI 2025 lastet: ${Object.keys(d25.kommuner || {}).length} kommuner`);
+  }).catch(e => log(`DKI-load feilet: ${e.message}`));
+
+  // A2: Les ?mode= fra URL eller localStorage. Sett initial mode.
+  try {
+    const u = new URL(window.location.href);
+    const fromUrl = u.searchParams.get('mode');
+    const fromLs = localStorage.getItem('kb_mode');
+    BEHOVSJUSTERT = (fromUrl || fromLs) === 'justert';
+    const inp = document.querySelector(`input[name="kb-mode"][value="${BEHOVSJUSTERT ? 'justert' : 'raa'}"]`);
+    if (inp) inp.checked = true;
+  } catch (_) {}
+
   const loaded = [];
   // parallell henting i batcher av 4
   for (let i = 0; i < SECTORS.length; i += 4) {
@@ -2221,6 +2341,32 @@ function brukerVennligFeil(err) {
   }
   return `Noe gikk galt: ${msg}`;
 }
+
+// A2: Toggle "Rådata" / "Behovsjustert" — re-beregner scoring uten ny SSB-fetch.
+document.querySelectorAll('input[name="kb-mode"]').forEach(inp => {
+  inp.addEventListener('change', (e) => {
+    BEHOVSJUSTERT = e.target.value === 'justert';
+    // Persist i URL og localStorage
+    try {
+      const u = new URL(window.location.href);
+      if (BEHOVSJUSTERT) u.searchParams.set('mode', 'justert');
+      else u.searchParams.delete('mode');
+      window.history.replaceState({}, '', u.toString());
+      localStorage.setItem('kb_mode', BEHOVSJUSTERT ? 'justert' : 'raa');
+    } catch (_) {}
+    // Re-kjør scoring fra rå-data uten å hente fra SSB på nytt
+    log(`Behovsjustert: ${BEHOVSJUSTERT ? 'PÅ' : 'AV'} — beregner score på nytt`);
+    if (window.ALL_SECTOR_DATA && Object.keys(ALL_SECTOR_DATA).length > 0) {
+      for (const [secId, sd] of Object.entries(ALL_SECTOR_DATA)) {
+        if (!sd.error && Object.keys(sd.data || {}).length > 0) {
+          ALL_SECTOR_SCORES[secId] = computeSectorScores(sd);
+        }
+      }
+      OVERALL = computeOverall(ALL_SECTOR_SCORES);
+      renderAll();
+    }
+  });
+});
 
 main().catch(e => {
   setStatus(brukerVennligFeil(e), 'err');
