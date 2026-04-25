@@ -1730,90 +1730,53 @@ document.getElementById('csv-btn').onclick = downloadCsv;
 document.getElementById('xlsx-btn').onclick = downloadXlsx;
 
 // ============================================================
-//  A5: Del lenke + Kopier bilde + URL-synkronisering av kommune
+//  A1: Universell kommunevelger
 // ============================================================
-
-// Synkroniserer ?kommune=… i URL-en med valgt kommune.
-// Bruker history.replaceState så det ikke blir browser-history-spam.
-function syncUrlToCurrentMuni() {
-  if (!CURRENT_MUNI_CODE) return;
-  const name = MUNI_NAMES[CURRENT_MUNI_CODE];
-  const u = new URL(window.location.href);
-  // Foretrekker navn for delbarhet (lesbart), faller tilbake til kode.
-  u.searchParams.set('kommune', name || CURRENT_MUNI_CODE);
-  window.history.replaceState({}, '', u.toString());
-}
-
-// Leser ?kommune=… fra URL ved oppstart og returnerer kode hvis funnet.
-function readKommuneFromUrl() {
-  const u = new URL(window.location.href);
-  const q = (u.searchParams.get('kommune') || '').trim();
-  if (!q) return null;
-  // Hvis q allerede er en 4-sifret kode og finnes i muni-listen, bruk direkte.
-  if (/^\d{4}$/.test(q) && MUNI_NAMES[q]) return q;
-  // Ellers slå opp via findMuniCode (case-insensitiv navnesøk).
-  const code = findMuniCode(q);
-  return code || null;
-}
-
-// Vis kort flash-melding i status-feltet uten å bryte spinner-tilstand.
-function flashStatus(msg, type = 'ok') {
-  const original = $status.innerHTML;
-  $status.className = 'status ' + type;
-  $status.textContent = msg;
-  setTimeout(() => {
-    $status.innerHTML = original;
-    $status.className = 'status';
-  }, 2500);
-}
-
-// Del lenke: kopierer URL med ?kommune=… til utklippstavlen.
-async function shareLink() {
-  syncUrlToCurrentMuni();
-  const url = window.location.href;
+//
+// Forhåndsbefolker kommune-velgeren med alle ~357 norske kommuner
+// fra SSB Klass-API klassifikasjon 131, slik at brukeren kan velge
+// hvilken som helst kommune før KOSTRA-data har lastet ferdig.
+async function preloadKommunevelger() {
+  const KEY = 'kb_klass_kommuner_v1';
+  const dl = document.getElementById('kommune-list');
+  if (!dl) return;
+  let kommuner = null;
   try {
-    await navigator.clipboard.writeText(url);
-    flashStatus('Lenke kopiert til utklippstavlen', 'ok');
-  } catch (e) {
-    // Fallback: prompt med URL hvis clipboard-API blokkeres
-    flashStatus('Kunne ikke kopiere automatisk', 'err');
-    window.prompt('Kopier lenken manuelt (Ctrl+C / Cmd+C):', url);
-  }
-}
-
-// Kopier bilde: tar radar-charten og legger PNG på utklippstavlen.
-// Bruker Chart.js sin innebygde toBase64Image() — krever ingen ny CDN.
-async function copyChartImage() {
-  if (!radarChart) {
-    flashStatus('Radar-grafen er ikke klar', 'err');
-    return;
-  }
-  try {
-    // Chart.js gir oss base64-PNG. Konverter til Blob for clipboard-API.
-    const dataUrl = radarChart.toBase64Image('image/png', 1.0);
-    const res = await fetch(dataUrl);
-    const blob = await res.blob();
-    if (navigator.clipboard && window.ClipboardItem) {
-      await navigator.clipboard.write([new ClipboardItem({ 'image/png': blob })]);
-      flashStatus('Bilde kopiert til utklippstavlen', 'ok');
-    } else {
-      // Fallback: åpne i ny fane så bruker kan lagre manuelt.
-      const win = window.open();
-      if (win) {
-        win.document.write(`<title>Sektor-radar — ${MUNI_NAMES[CURRENT_MUNI_CODE] || ''}</title><img src="${dataUrl}" alt="Sektor-radar">`);
-        flashStatus('Bilde åpnet i ny fane', 'ok');
-      } else {
-        flashStatus('Kunne ikke åpne nytt vindu', 'err');
-      }
+    const cached = sessionStorage.getItem(KEY);
+    if (cached) kommuner = JSON.parse(cached);
+  } catch (_) {}
+  if (!kommuner) {
+    try {
+      const today = new Date().toISOString().slice(0, 10);
+      const url = (location.protocol === 'file:' || location.hostname === '')
+        ? `https://data.ssb.no/api/klass/v1/classifications/131/codesAt?date=${today}&language=nb`
+        : `/api/klass/classifications/131/codesAt?date=${today}&language=nb`;
+      const r = await fetch(url);
+      if (!r.ok) throw new Error(`Klass HTTP ${r.status}`);
+      const data = await r.json();
+      kommuner = (data.codes || [])
+        .filter(c => /^\d{4}$/.test(c.code))
+        .map(c => ({ code: c.code, name: c.name || '' }))
+        .sort((a, b) => a.name.localeCompare(b.name, 'nb'));
+      try { sessionStorage.setItem(KEY, JSON.stringify(kommuner)); } catch (_) {}
+      log(`Kommunevelger forhåndslastet: ${kommuner.length} kommuner fra Klass-API`);
+    } catch (e) {
+      log(`Kommunevelger-forhåndslast feilet (faller tilbake på KOSTRA-deteksjon): ${e.message}`);
+      return;
     }
-  } catch (e) {
-    log(`Bilde-kopi feilet: ${e.message}`);
-    flashStatus('Kunne ikke kopiere bilde', 'err');
+  }
+  const eksisterende = new Set(Array.from(dl.options).map(o => o.value.toLowerCase()));
+  for (const k of kommuner) {
+    if (!k.name) continue;
+    if (!eksisterende.has(k.name.toLowerCase())) {
+      const opt = document.createElement('option');
+      opt.value = k.name;
+      dl.appendChild(opt);
+    }
   }
 }
 
-document.getElementById('share-btn').onclick = shareLink;
-document.getElementById('image-btn').onclick = copyChartImage;
+preloadKommunevelger();
 
 main().catch(e => {
   setStatus(brukerVennligFeil(e), 'err');

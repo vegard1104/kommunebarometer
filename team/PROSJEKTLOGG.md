@@ -70,6 +70,11 @@ Egen HANDOFF-rad åpnet for Sentry-oppsett (krever Vegards Sentry-konto, gratis-
 **Hva:** Hentet aktuell ROBEK-liste fra regjeringen.no (publisert 2026-04-20) — 27 kommuner med kommunenummer, navn og lovhjemmel-bokstaver. Lagret i `data/robek.json` med kilde-URL, hentet-dato, full beskrivelse av alle 7 hjemler (a-g i kommuneloven § 28-1). Ny `loadRobek()` og `renderRobekBadge()` i `index.html`. Badge vises kun hvis valgt kommune er i registeret — med ikon, hjemmel-liste, kilde-lenke. CSS `.robek-badge` med rød-oransje gradient. Hooked inn i `renderAll()`. Lokale kopier av `formatNorskDato`/`escapeHtml` med `typeof !== 'function'`-guard så branchen virker uavhengig av Pakke 1.
 **Hvorfor:** 2.0-rapportens C6-anbefaling — quick win som øker relevans for alle politiske brukere. Økonomisjef vet hvem som er på lista; politikere vet det ofte ikke. Synlig badge gir direkte styringsinformasjon.
 **Konsekvens for teamet:** ROBEK-data må oppdateres månedlig (KDD publiserer rundt midten av hver måned). Egen HANDOFF-rad åpnet for å vurdere automatisering: enten Vercel cron som scraper regjeringen.no, eller manuell oppdatering i kalender. Frontend-impl. på politiker-modus (D5) bør gjenbruke samme badge-mønster.
+## 2026-04-25 — Pakke 9 (A1) levert: Universell kommunevelger
+**Hvem:** Claude Code (autonom, Pakke 9)
+**Hva:** `preloadKommunevelger()` henter alle ~357 norske kommuner fra Klass-API ved sidelast, sorterer alfabetisk og fyller `<datalist id="kommune-list">` før KOSTRA-data er ferdig lastet. SessionStorage-cache. Faller tilbake til KOSTRA-deteksjon hvis Klass feiler.
+**Hvorfor:** 2.0-rapportens A1-anbefaling — låser opp v1 fra Lørenskog til alle 357. Forutsetning for de fleste D-pakkene.
+**Konsekvens for teamet:** B2 kan utvide samme cache med sammenslåings-data. URL-state (?kommune=) implementeres i Pakke 7.
 
 ## 2026-04-25 — Pakke 0–3 levert og merget til main
 ## 2026-04-25 — Pakke 2 (C1) levert: SSB Klass-API integrert med 30-dagers cache
