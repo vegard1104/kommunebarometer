@@ -305,6 +305,31 @@ const LOWER_IS_BETTER = /kostnad|utgift|netto driftsutgift|brutto driftsutgift|g
 // Nøkkelord som tydelig indikerer at høy verdi er bra
 const HIGHER_IS_BETTER = /dekning|andel med|andel barn|tilskudd|netto driftsresultat|disposisjonsfond|grunnbemanning|lærertetthet|årsverk per|fagutdanning|barnehagelærer|leke- og oppholdsareal/i;
 
+// B1-forstadiet: sektor-spesifikke retning-overstyringer for indikatorer der
+// generisk regex gir feil tolkning. Hver regel matches FØR generic regex.
+// Dokumentert i team/PROSJEKTLOGG.md (sosial-rangering-fix).
+const SECTOR_DIR_OVERRIDE = {
+  sosial: [
+    // Sosialhjelpsmottakere: andel/antall som mottar hjelp — færre = bedre integrering.
+    // Den generiske HIGHER_IS_BETTER matcher "andel" og gir feil retning.
+    { match: /sosialhjelpsmottakere?|andel\s+sosialhjelp|sosialhjelp.*?mottak|mottak.*?sosialhjelp|stønadslengde|stønadsmåned|gjennomsnittlig\s+utbetaling/i, dir: 'low' },
+    { match: /barn.*?fattigdom|barn.*?lavinnt|fattigdom.*?barn/i, dir: 'low' },
+    // Aktivisering: deltakelse/kvalifisering = positivt.
+    { match: /aktivitetsplikt|kvalifiseringsprogram|deltakelse|i\s+arbeid|i\s+jobb|overgang.*?arbeid/i, dir: 'high' }
+  ],
+  barnevern: [
+    // Barnevern: undersøkelser/meldinger/tiltak — færre = bedre forebygging, men kan også
+    // tolkes som underrapportering. Vi velger "færre = bedre" basert på rapport KOSTRA-dypdykket.
+    { match: /undersøkelse|melding|tiltak.*?barn|barn.*?tiltak/i, dir: 'low' },
+    // Saksbehandlingstid og frist-brudd: kortere = bedre.
+    { match: /saksbehandlingstid|frist.*?brudd|brudd.*?frist/i, dir: 'low' }
+  ],
+  okonomi: [
+    { match: /netto\s+driftsresultat|disposisjonsfond|frie\s+inntekter/i, dir: 'high' },
+    { match: /gjeld|underskudd|akkumulert\s+merforbruk/i, dir: 'low' }
+  ]
+};
+
 // ============================================================
 //  SAMMENSLÅINGER (MERGERS) — omdøpte kommuner fra regionreformene
 // ============================================================
@@ -608,7 +633,13 @@ async function loadSector(sec) {
 //  NORMALISERING OG SCORING
 // ============================================================
 
-function determineDirection(label) {
+function determineDirection(label, sektorId) {
+  // Sjekk sektor-spesifikk override først (B1-forstadiet for sosial/barnevern/okonomi)
+  if (sektorId && SECTOR_DIR_OVERRIDE[sektorId]) {
+    for (const rule of SECTOR_DIR_OVERRIDE[sektorId]) {
+      if (rule.match.test(label)) return rule.dir;
+    }
+  }
   if (HIGHER_IS_BETTER.test(label)) return 'high';
   if (LOWER_IS_BETTER.test(label)) return 'low';
   return 'high'; // default
@@ -649,7 +680,7 @@ function computeSectorScores(sectorData) {
     const normFns = {};
     for (const ind of sectorData.indicators) {
       const vals = Object.values(perMuni).map(arr => arr.find(x => x.code === ind.code)?.value).filter(v => v !== undefined && !isNaN(v));
-      const dir = determineDirection(ind.label);
+      const dir = determineDirection(ind.label, sectorData.sector?.id);
       const fn = normalize(vals, dir);
       if (fn) normFns[ind.code] = fn;
     }
