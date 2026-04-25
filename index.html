@@ -105,7 +105,14 @@
   .sector {
     background: var(--panel); border: 1px solid var(--border); border-radius: 10px;
     padding: 16px; position: relative; overflow: hidden;
+    /* Pakke 5: hele kortet er klikkbart — ankerlenke arver styling */
+    display: block; color: inherit; text-decoration: none;
+    transition: border-color .15s, transform .15s;
+    min-height: 130px;
   }
+  a.sector { cursor: pointer; }
+  a.sector:hover, a.sector:focus { border-color: var(--accent); transform: translateY(-2px); outline: none; }
+  a.sector:focus-visible { box-shadow: 0 0 0 2px var(--accent); }
   .sector .head { display: flex; justify-content: space-between; align-items: start; margin-bottom: 10px; }
   .sector .name { font-weight: 600; font-size: 14px; }
   .sector .weight { font-size: 11px; color: var(--muted); margin-top: 2px; }
@@ -915,11 +922,23 @@ function renderMergerPanel() {
 
 function renderSectors() {
   const grid = document.getElementById('sectors-grid');
+  // Pakke 5: hver sektor er en lenke til sektor.html med kommune/år/mode i URL.
+  // Bruker MUNI_NAMES for lesbar kommune-param.
+  const kommuneNavn = (typeof MUNI_NAMES !== 'undefined' && MUNI_NAMES[CURRENT_MUNI_CODE]) || CURRENT_MUNI_CODE || '';
+  const modus = (typeof BEHOVSJUSTERT !== 'undefined' && BEHOVSJUSTERT) ? 'justert' : 'raa';
   grid.innerHTML = SECTORS.map(sec => {
     const info = ALL_SECTOR_SCORES[sec.id]?.[CURRENT_YEAR]?.[CURRENT_MUNI_CODE];
     const missing = !info;
+    const params = new URLSearchParams({
+      id: sec.id,
+      kommune: kommuneNavn,
+      'år': CURRENT_YEAR || '',
+      mode: modus
+    });
+    const lenke = `/sektor.html?${params.toString()}`;
+    const ariaLabel = `Vis dypdykk for ${sec.name}${info ? `, rangering ${info.rank} av ${info.total}` : ''}`;
     return `
-      <div class="sector ${missing ? 'missing' : ''}">
+      <a class="sector ${missing ? 'missing' : ''}" href="${lenke}" aria-label="${ariaLabel}">
         <div class="head">
           <div>
             <div class="name">${sec.name}</div>
@@ -930,7 +949,7 @@ function renderSectors() {
         ${info ? `
         <div class="score-bar"><div class="score-bar-fill" style="width:${info.score}%;background:${info.score > 66 ? 'var(--good)' : info.score > 33 ? 'var(--warn)' : 'var(--bad)'}"></div></div>
         <div class="meta"><span>Score ${info.score}</span>${pill(info.rank, info.total)}</div>` : ''}
-      </div>
+      </a>
     `;
   }).join('');
 }

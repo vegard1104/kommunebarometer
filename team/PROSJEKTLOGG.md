@@ -14,6 +14,20 @@ Format per oppføring:
 
 ---
 
+## 2026-04-25 — Pakke 5 (feature/forside-klikkbare-sektorer) levert: klikkbare sektor-kort
+**Hvem:** Claude Code (autonom)
+**Hva:** Hver sektor-kort på forsiden er nå en `<a>`-lenke til `sektor.html?id=...&kommune=...&år=...&mode=...` med kontekst som følger med. Endringer i `index.html`:
+- `renderSectors` bygger `<a class="sector">` i stedet for `<div>` med URLSearchParams for params
+- ARIA-label: "Vis dypdykk for {sektor}, rangering X av Y" — leses opp av skjermleser
+- CSS: `display: block`, `color: inherit`, `text-decoration: none` på `.sector` så den ser ut som før, men er klikkbar
+- `a.sector:hover` / `:focus`: `border-color: var(--accent)` + `transform: translateY(-2px)` for tydelig affordance
+- `a.sector:focus-visible`: 2px accent-box-shadow for tastatur-brukere (WCAG 2.2 AA)
+- `min-height: 130px` sikrer touch-target ≥ 44×44 px (WCAG 2.5.5 AA)
+
+**Hvorfor:** Bygger på Pakke 4. Hovedside → dypdykk-flyt skal ha lavest mulig friksjon. Klikkbare kort er forventet UX-mønster, og passer rapportens D1-anbefaling.
+
+**Konsekvens for teamet:** Tester på mobil 375 px viser ingen overflow, klikk virker. Tab-naviger viser fokus-ring på hver sektor-kort. Klikker man et kort åpnes sektor-dypdykk-siden med riktig kommune, år og modus pre-valgt. Kombinasjonen av Pakke 1+3a+3b+4+5 gir en komplett kommune-til-sektor-flyt med behovsjustering.
+
 ## 2026-04-25 — Pakke 0–3 levert og merget til main
 **Hvem:** Claude Code (autonom kjøring på vegne av Vegard) + Vegard (merging)
 **Hva:** Fire pakker levert som selvstendige PR-er og merget til main:
