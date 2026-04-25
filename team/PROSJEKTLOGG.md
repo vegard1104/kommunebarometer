@@ -120,6 +120,20 @@ Egen HANDOFF-rad åpnet for Sentry-oppsett (krever Vegards Sentry-konto, gratis-
 **Hva:** Ny `data/kommunestruktur.js` med `Kommunestruktur`-klasse som henter aktuell kommuneliste + strukturelle endringer fra Klass-API (klassifikasjon 131 + changes.json fra 2018-01-01) og bygger MERGERS / MERGERS_REVERSE i samme format som den hardkodede MERGERS i `index.html`. 30-dagers localStorage-cache. Lastet via `<script defer>` så `window.Kommunestruktur` er tilgjengelig globalt — ikke i bruk ennå (full erstatning av hardkodet MERGERS er en større refaktor i egen PR).
 **Hvorfor:** 2.0-rapportens B2-anbefaling — fjerner vedlikeholds­byrde ved framtidige kommunereformer (planlagt 2027). Tjenester skalerer automatisk til nye sammenslåinger uten kode-deploy.
 **Konsekvens for teamet:** Backend kan nå skrive en migrasjons-PR som bytter ut linje 315–341 i `index.html` (MERGERS) med `await km.last(); window.MERGERS = km.MERGERS; ...`. Test-dekning bør validere at eksisterende kommuner får riktige sammenslåings-context.
+## 2026-04-25 — Bug-fix: B5-merge-konflikt løst feil + literal &lt;/script&gt;-felle
+**Hvem:** Claude Code (autonom, etter Vegards rapport om brutt preview)
+**Hva:** To distinkte problemer oppdaget på `test/alle-pakker-samlet`:
+1. **Definisjonene `kbReportError` og `brukerVennligFeil` falt ut** under merge med `-X theirs`-strategien fra Pakke 8 (B5 — `chore/caching-og-feilhandtering`). Funksjonene refereres på 4 steder (`main().catch`, `setStatus(brukerVennligFeil(...))`, `window.error`-listener, `unhandledrejection`) men var udefinert. Resultat: ReferenceError, hele appen krasjet — tomme dropdowns, ingen data.
+2. **Literal `</script>`-tagger i Sentry-kommentaren** avsluttet det omsluttende `<script>`-blokken for tidlig under HTML-parsingen. Bug fantes på selve B5-branchen (`chore/caching-og-feilhandtering`) men var skjult der fordi resten av endringene var små og B5-deployen aldri ble grundig browser-testet. Eksponert under merge-deploy hvor mer kode etter blokken ble berørt.
+
+**Fix:** Hentet definisjonsblokken via `git show chore/caching-og-feilhandtering:index.html | sed -n '1366,1409p'` og satte inn rett før `main().catch(...)` i samme `<script>`-blokk. Erstattet eksempel-HTML i kommentaren med henvisning til `/metodikk` for instruksjoner. Verifisert med Node `new Function()`-syntax-sjekk: hele script-blokken (62 KB) parses OK. B5-branchen selv ble også fikset så feilen ikke kommer tilbake ved fremtidig merge.
+
+**Sjekk av øvrige branches:** Loop over alle 30+ branches lette etter referanser uten definisjon. Ingen andre branches har problemet — kun test-branchen (pga merge-konflikt) og B5 (pga `</script>`-fellen). Alle andre feature-branches er forgrenet fra main uten Pakke 8-endringer.
+
+**Hvorfor:** `git merge -X theirs` velger inkommende versjon ved konflikt — fungerer for additive filer som data/-mappa, men for `index.html` taper vi tilfeller hvor flere branches utvider samme region. Pakke 8 sine endringer i bunnen av script-blokken (etter `main().catch`) ble overskrevet av Pakke 7s versjon under merge.
+
+**Konsekvens for teamet:** Vegard kan nå teste preview-deployen — alle dropdowns fylles og konsoll er ren for ReferenceError. Egen HANDOFF-rad åpnet for at review-eren av B5-PR verifiserer at definisjonene er bevart. For fremtidige test-branch-byggings: bruk `merge=union` for HANDOFF/PROSJEKTLOGG (allerede satt i test-branchens `.gitattributes`) og **manuell konfliktløsning** for `index.html` i stedet for `-X theirs`.
+
 ## 2026-04-25 — SLUTTRAPPORT: Pakke 0–29 levert som 30 PR-er
 
 **Hvem:** Claude Code (autonom kjøring)
