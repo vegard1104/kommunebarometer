@@ -19,6 +19,22 @@ Format per oppføring:
 **Hva:** Fjernet feilaktig "CP-foreningen / fundraising / påvirkningsarbeid"-kontekst som hadde sneket seg inn i `CLAUDE.md` (linje 7, 57), `team/BRIEF.md` (linje 8, 79), `team/DESIGN-TOKENS.md` (linje 43) og `team/agents/05-ux-ui-designer.md` (linje 34). Erstattet med riktig sluttbrukerprofil fra 2.0-rapporten kapittel 2: rådmann/kommunedirektør, økonomisjef/controller, kommunalsjefer (oppvekst, helse/omsorg), planlegger/samfunnsanalytiker, politiker (formannskap), tillitsvalgt/innbygger. Restrukturert `BRIEF.md` sine suksesskriterier til å speile 2.0-rapportens egen tre-deling: §6.1 quick wins (8 pakker), §6.2 medium-løft (11 pakker), §6.3 strategiske spor (10 pakker). Hver pakke har rapport-kode (A1, B5 osv) som peker tilbake til kapittel 5. WCAG-krav oppdatert til 2.2 AA gjennomgående. Bedrekommune.no (C5) eksplisitt parkert som HANDOFF-pakke for Vegard pga lisens-avtale.
 **Hvorfor:** Tidligere CLAUDE.md/BRIEF antok en interesseorganisasjons-kontekst som ikke passer det rapportens panel beskriver. Panelet er sammensatt av kommunalt ansatte og kommunalt-rettede roller; brukerprofilene i kapittel 2 er entydig styrings-/forvaltnings-orientert. Feil kontekst ville ført til feil prioritering (f.eks. "påvirkningsbruk" som begrunnelse for politiker-modus, når den egentlige verdien ligger i å gi formannskapet et lesbart styringsbilde).
 **Konsekvens for teamet:** Alle videre pakker (1–29) bygges nå mot kommune-styrings-bruk, ikke fundraising. Politiker-modus (D5) får riktig begrunnelse. Designsystem-spørsmål rundt visuell identitet er omformulert fra "merkevare" til "profesjonell/nøytral for kommunalt ansatt-bruk". Roadmap-strukturen i BRIEF følger nå rapportens egen kapittel-6-prioritering, så agenter som planlegger arbeid kan referere direkte mellom BRIEF og rapport uten oversettelse.
+## 2026-04-25 — Pakke 8 (B5) levert: Edge-cache + brukervennlige feilmeldinger + Sentry-stub
+**Hvem:** Claude Code (autonom, Pakke 8)
+**Hva:** `vercel.json` utvidet med tre cache-headers:
+- `/api/ssb/*` — `s-maxage=86400, stale-while-revalidate=604800` (24 t edge-cache, 1 uke stale)
+- `/api/klass/*` — `s-maxage=2592000, stale-while-revalidate=7776000` (30 dager / 90 dager — Klass endres svært sjelden)
+- `/data/*.json` — `s-maxage=3600, max-age=300` (statiske data lokal cache 5 min, edge 1 t)
+
+I `index.html`:
+- `kbReportError(err, context)` — sender til Sentry hvis konfigurert, logger uansett til API-loggen
+- `brukerVennligFeil(err)` — mapper tekniske feil til norsk klartekst (429, 5xx, 404, timeout, network)
+- `window.error` og `unhandledrejection`-listeners så bug-rapporter ikke faller bak — main()-catch bruker brukerVennligFeil
+- Sentry-stub: kommentar-blokk forklarer hvordan Vegard kan aktivere via CDN-script-tags + DSN. Ingen avhengighet uten DSN — koden er trygg i begge tilstander.
+
+Egen HANDOFF-rad åpnet for Sentry-oppsett (krever Vegards Sentry-konto, gratis-tier).
+**Hvorfor:** 2.0-rapportens B5-anbefaling — stabilitet og tillit. AP-04-spiken viste p50 cold = 620 ms; uten edge-cache tar hver kommune-bytte 600+ ms. Med cache: ~50 ms warm. Brukervennlige feilmeldinger erstatter "HTTP 429" med "SSB svarer for mange forespørsler akkurat nå".
+**Konsekvens for teamet:** Vercel deployer headers automatisk ved merge. Vegard må vurdere Sentry-konto (gratis-tier dekker ~5000 events/mnd, mer enn nok for v1+v2 trafikk). DevOps kan teste edge-cache via `curl -I` mot Vercel-URL etter deploy. Frontend-utviklere bør bruke `kbReportError(e, 'kontekst')` i stedet for `console.error` for å få Sentry-rapportering.
 
 ## 2026-04-25 — Pakke 0–3 levert og merget til main
 **Hvem:** Claude Code (autonom kjøring på vegne av Vegard) + Vegard (merging)
