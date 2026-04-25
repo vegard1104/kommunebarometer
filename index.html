@@ -114,18 +114,27 @@
   .sector .score-bar { height: 6px; background: var(--panel-2); border-radius: 3px; margin-top: 10px; overflow: hidden; }
   .sector .score-bar-fill { height: 100%; border-radius: 3px; transition: width .4s; }
   .sector .meta { display: flex; justify-content: space-between; font-size: 11px; color: var(--muted); margin-top: 6px; }
-  /* E4: Sist-oppdatert-stempel per sektor */
-  .sector .sector-stamp {
+  /* A3: trend-pil og 4-årsgjennomsnitt */
+  .sector .trend-row {
+    display: flex; align-items: center; gap: 10px;
     margin-top: 10px; padding-top: 8px;
     border-top: 1px solid var(--border);
-    font-size: 10px; color: var(--muted);
-    line-height: 1.4;
+    font-size: 12px;
   }
-  .sector .sector-stamp a {
-    color: var(--accent); text-decoration: none;
+  .sector .trend-arrow {
+    font-size: 16px; line-height: 1; font-weight: 700;
+    flex: 0 0 auto;
   }
-  .sector .sector-stamp a:hover,
-  .sector .sector-stamp a:focus { text-decoration: underline; }
+  .sector .trend-arrow.up { color: var(--good); }
+  .sector .trend-arrow.down { color: var(--bad); }
+  .sector .trend-arrow.flat { color: var(--muted); }
+  .sector .trend-text { color: var(--muted); flex: 1; }
+  .sector .trend-text strong { color: var(--text); }
+  .sector .sparkline {
+    flex: 0 0 auto;
+    width: 70px; height: 22px;
+    display: block;
+  }
   .sector.missing { opacity: 0.55; }
 
   .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 20px; }
@@ -930,15 +939,94 @@ function renderMergerPanel() {
   });
 }
 
-// E4: formaterer ISO-dato til norsk lesbar form ("16. mars 2026").
-// Brukes for "Sist oppdatert"-stempelet på hver sektor og indikator.
-function formatNorskDato(isoString) {
-  if (!isoString) return '';
-  const d = new Date(isoString);
-  if (isNaN(d.getTime())) return '';
-  const måneder = ['januar', 'februar', 'mars', 'april', 'mai', 'juni',
-                   'juli', 'august', 'september', 'oktober', 'november', 'desember'];
-  return `${d.getDate()}. ${måneder[d.getMonth()]} ${d.getFullYear()}`;
+// A3: Bygger en tidsserie av sektor-score for valgt kommune.
+// Returnerer { years: [...], scores: [...] } i kronologisk rekkefølge,
+// kun år hvor det finnes data (filterer bort null/undefined).
+function buildSectorSeries(secId, muniCode) {
+  const byYear = ALL_SECTOR_SCORES[secId] || {};
+  const years = Object.keys(byYear).sort();
+  const series = [];
+  for (const y of years) {
+    const v = byYear[y]?.[muniCode]?.score;
+    if (v != null && !isNaN(v)) series.push({ year: y, score: +v });
+  }
+  return series;
+}
+
+// A3: Beregner 4-årsgjennomsnitt — mer robust enn ettårsverdier
+// for politisk/økonomisk styring (jf. KR-metodikken og rapport-anbefaling A3).
+// Returnerer null hvis vi har færre enn 2 datapunkter.
+function compute4YearAvg(series) {
+  const last4 = series.slice(-4);
+  if (last4.length < 2) return null;
+  const sum = last4.reduce((a, b) => a + b.score, 0);
+  return +(sum / last4.length).toFixed(1);
+}
+
+// A3: Sammenligner siste års verdi med snittet av tidligere 3 år.
+// Returnerer { dir: 'up'|'down'|'flat', delta: number, magnitude: 'weak'|'strong' }.
+// Terskler er valgt for å være stabile mot støy: 3 poeng = svak, 8 poeng = sterk.
+function computeTrend(series) {
+  if (series.length < 2) return null;
+  const last = series[series.length - 1].score;
+  const prior = series.slice(-4, -1);
+  if (prior.length === 0) return null;
+  const baseline = prior.reduce((a, b) => a + b.score, 0) / prior.length;
+  const delta = +(last - baseline).toFixed(1);
+  const abs = Math.abs(delta);
+  let dir = 'flat';
+  if (delta > 3) dir = 'up';
+  else if (delta < -3) dir = 'down';
+  const magnitude = abs >= 8 ? 'strong' : 'weak';
+  return { dir, delta, magnitude };
+}
+
+// A3: Tegner en mini-sparkline som inline SVG, normalisert til serien
+// sin egen min-max så små svingninger blir synlige. Hvis < 2 punkter
+// returnerer tom streng.
+function renderSparkline(series) {
+  if (series.length < 2) return '';
+  const w = 70, h = 22, pad = 2;
+  const scores = series.map(p => p.score);
+  const min = Math.min(...scores);
+  const max = Math.max(...scores);
+  const range = max - min || 1;
+  const points = series.map((p, i) => {
+    const x = pad + (i / (series.length - 1)) * (w - 2 * pad);
+    const y = h - pad - ((p.score - min) / range) * (h - 2 * pad);
+    return `${x.toFixed(1)},${y.toFixed(1)}`;
+  }).join(' ');
+  // Tittel for hover/skjermleser. Viser score per år.
+  const titleText = series.map(p => `${p.year}: ${p.score}`).join(', ');
+  return `<svg class="sparkline" viewBox="0 0 ${w} ${h}" role="img" aria-label="Trend ${series[0].year}–${series[series.length-1].year}: ${titleText}"><title>${titleText}</title><polyline points="${points}" fill="none" stroke="var(--accent)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
+}
+
+// A3: Bygger HTML for trend-row (pil, klartekst, sparkline).
+// Plasseres etter score-bar i renderSectors.
+function renderTrendRow(secId, muniCode) {
+  const series = buildSectorSeries(secId, muniCode);
+  if (series.length < 2) {
+    return '<div class="trend-row"><span class="trend-text">For lite historikk for trend</span></div>';
+  }
+  const avg = compute4YearAvg(series);
+  const trend = computeTrend(series);
+  const arrows = {
+    'up': { weak: '↗', strong: '↗↗' },
+    'down': { weak: '↘', strong: '↘↘' },
+    'flat': { weak: '→', strong: '→' }
+  };
+  const arrow = trend ? arrows[trend.dir][trend.magnitude] : '→';
+  const arrowClass = trend ? trend.dir : 'flat';
+  const trendLabels = {
+    'up': trend && trend.magnitude === 'strong' ? 'Sterk forbedring' : 'Forbedring',
+    'down': trend && trend.magnitude === 'strong' ? 'Sterk svekkelse' : 'Svekkelse',
+    'flat': 'Stabil'
+  };
+  const trendText = trend ? trendLabels[trend.dir] : 'Stabil';
+  const deltaText = trend && trend.dir !== 'flat' ? ` (${trend.delta > 0 ? '+' : ''}${trend.delta})` : '';
+  const avgText = avg != null ? ` · 4-årssnitt <strong>${avg}</strong>` : '';
+  const sparkSvg = renderSparkline(series);
+  return `<div class="trend-row"><span class="trend-arrow ${arrowClass}" aria-hidden="true">${arrow}</span><span class="trend-text">${trendText}${deltaText}${avgText}</span>${sparkSvg}</div>`;
 }
 
 function renderSectors() {
@@ -966,8 +1054,8 @@ function renderSectors() {
         </div>
         ${info ? `
         <div class="score-bar"><div class="score-bar-fill" style="width:${info.score}%;background:${info.score > 66 ? 'var(--good)' : info.score > 33 ? 'var(--warn)' : 'var(--bad)'}"></div></div>
-        <div class="meta"><span>Score ${info.score}</span>${pill(info.rank, info.total)}</div>` : ''}
-        ${stempel}
+        <div class="meta"><span>Score ${info.score}</span>${pill(info.rank, info.total)}</div>
+        ${renderTrendRow(sec.id, CURRENT_MUNI_CODE)}` : ''}
       </div>
     `;
   }).join('');
