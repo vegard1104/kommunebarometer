@@ -14,6 +14,12 @@ Format per oppføring:
 
 ---
 
+## 2026-04-25 — Pakke 17 (C3) levert: Udir Statistikkbank skeleton
+**Hvem:** Claude Code (autonom, Pakke 17, draft)
+**Hva:** Ny `data/udir-helper.js` med `kbUdir.fetchUdir()`, `fetchGrunnskolepoeng()` og `lagUdirKort()`. Bruker proxy `/api/udir/` (krever vercel.json-rewrite til api.udir-statistikkbanken.no — egen HANDOFF). 7-dagers cache.
+**Hvorfor:** Rapport C3: Grunnskole har 20 % vekt, men vi måler bare kostnad. Udir gir resultat-siden.
+**Konsekvens for teamet:** Vercel-rewrite må legges til. Endelig endepunkt-struktur trenger validering via egen mini-spike.
+
 ## 2026-04-25 — Pakke 0–3 levert og merget til main
 **Hvem:** Claude Code (autonom kjøring på vegne av Vegard) + Vegard (merging)
 **Hva:** Fire pakker levert som selvstendige PR-er og merget til main:
