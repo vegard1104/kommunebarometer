@@ -14,11 +14,17 @@ Format per oppføring:
 
 ---
 
-## 2026-04-25 — AP-01 v2-arkitektur ADR levert (anbefaling: Astro)
-**Hvem:** Claude Code (autonom, Pakke 3, Tech Lead-rolle)
-**Hva:** Skrevet `team/adr/001-v2-arkitektur.md` med Context / Decision / Alternatives considered / Consequences-format. Vurdert fire alternativer: (A) forbli vanilla HTML, (B) Astro med islands [anbefalt], (C) Vite + Preact, (D) Next.js. Anbefaling Astro begrunnet i AP-04-funn (SSG passer for data oppdatert 2x/år, islands-arkitektur lar oss laste Chart.js bare der det trengs, filbasert routing skalerer naturlig til 12 sektorer × 357 kommuner). Eksplisitt akseptert trade-off: build-steg innføres, bryter v1-prinsippet "ingen build-steg" — gevinst (FCP <200ms, skalerbarhet, vedlikeholdbarhet) overstiger kostnaden (npm install, lockfile). Implementasjonsplan skissert i 4 steg, hver som egen PR. **Implementasjon ikke startet i denne PR-en — venter Vegards eksplisitte OK på ADR.** BRIEF.md sin tech-stack-seksjon **er ikke oppdatert** — det skjer i steg 1 av implementasjonen etter godkjenning.
-**Hvorfor:** v2-rapportenes ambisjonsnivå (8 må-ha + 8 bør-ha med flere ruter, flere visninger, eksterne datakilder i v2.x) gjør at status quo (én 1500-linjers `index.html`) ikke skalerer. Astro gir oss en migrasjonsvennlig vei: v1-koden kan portes bit for bit, og vi kan beholde vanilla HTML/JS som hovedspråk i template og scripts.
-**Konsekvens for teamet:** UX/UI-designer (AP-02) kan begynne å tegne wireframes med vissheten om at Astro støtter SSG + islands. Release Manager (AP-03) bør oppdatere DEPLOY.md med build-kommando når implementasjonen starter. Frontend (når rollen aktiveres) får en tydelig fil-routing-modell å bygge mot. Hvis Vegard avviser eller justerer ADR-en: ny ADR-runde + plan tilpasses før implementasjon. Hvis Vegard godkjenner: åpne `feature/astro-init`-branch som første implementasjons-PR.
+## 2026-04-25 — Pakke 0–3 levert og merget til main
+**Hvem:** Claude Code (autonom kjøring på vegne av Vegard) + Vegard (merging)
+**Hva:** Fire pakker levert som selvstendige PR-er og merget til main:
+- **Pakke 0** (PR #3, denne): BRIEF forankret i rapportene. 5 må-ha → 8 må-ha med rapport-sporbarhet (A1, B1, A3, E4, B5). 8 bør-ha med behovsjustering (A2), politiker-modus (D5), ROBEK, dynamisk Klass-API. WCAG 2.1 → 2.2 AA. v2.x-seksjon for eksterne kilder (FHI, Udir, Ungdata, Brønnøysund, DEA, KMD). Eksplisitt utenfor scope: Bedrekommune.no, mikrodata, API/abonnement.
+- **Pakke 1** (PR #2, AP-04): SSB-spike. Målt p50=620 ms, p95=757 ms cold for én kommune. Single batch ikke mulig (URL >4000 tegn). Sweet spot: batchSize 100–200, concurrency 1, total 3–4 s for hele datasettet. Strategi-anbefaling i `API-KONTRAKT.md`.
+- **Pakke 2** (PR #4, AP-03): `.gitattributes` + `.gitignore` utvidet + `team/DEPLOY.md` med branch-strategi, deploy-flyt, rollback og 6 manuelle Vegard-sjekkpunkter. Edge-cache-anbefaling fra AP-04 dokumentert (ikke implementert i `vercel.json`).
+- **Pakke 3** (PR #5, AP-01): `team/adr/001-v2-arkitektur.md` anbefaler Astro 4.x med Chart.js/SheetJS som islands. Tre alternativer (vanilla, Vite+Preact, Next.js) vurdert og avvist. Implementasjonsplan i 4 steg. Implementasjon ikke startet — venter Vegards eksplisitte godkjenning av tech-stack-bytte.
+
+Tekstuttrekk fra `.docx` gjort med PowerShell `[System.IO.Compression.ZipFile]` mot `word/document.xml` — ingen Word-installasjon nødvendig. Verifisert at Vercel deployer fra main automatisk.
+**Hvorfor:** CEO-rapportens hovedbudskap er at "KOSTRA alene er utilstrekkelig" og metodikken må være transparent. KOSTRA-rapporten understreker sammenligning på tre nivåer (egen utvikling, KOSTRA-gruppe, landet uten Oslo). v1's status quo (én 1500-linjers `index.html`) skalerer ikke til 12 sektorer × 357 kommuner. AP-04-funnene viser at edge-caching og pre-compute er kritisk uavhengig av framework-valg.
+**Konsekvens for teamet:** AP-02 (wireframes) er eneste åpne oppgave. UX/UI-designer kan tegne både ekspertvisning og politiker-modus (D5). Vegard må godkjenne ADR-001 før Astro-implementasjon kan starte. Vegard må verifisere 6 manuelle sjekkpunkter i DEPLOY.md (branch-protection, Vercel-konfig, edge-cache-headers, miljøvariabler, konto-grense). Edge-cache-headers i `vercel.json` venter på Vegards OK.
 
 ## 2026-04-24 — Foreløpige suksesskriterier + fire arbeidspakker åpnet
 **Hvem:** Claude (Cowork-bootstrap, på vegne av Vegard)
