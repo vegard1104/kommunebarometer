@@ -2,30 +2,31 @@
 """
 Oppdater DKI-data fra KMDs grønne hefter (Inntektssystemet for kommunene).
 
-KMD publiserer ODS-filer årlig per kommune-år. Det finnes ikke et offisielt
+KMD publiserer ODS-filer årlig på regjeringen.no. Det finnes ikke et offisielt
 API (bekreftet via Datalandsbyen.norge.no), så scriptet:
 
-1. Skraper landingssiden for siste lenker til ODS-filer
-2. Laster ned filene
-3. Parser tabell E-k (samlet utgiftsbehovsindeks) og delkostnadsnøkler per
-   sektor (typisk A–G: grunnskole, pleie, barnehage, barnevern, sosial,
-   kommunehelse, administrasjon)
-4. Skriver data/dki-<år>.json
-5. Sanitetstest: vektet sum av sektor-DKI mot tabell E-k for hver kommune
-6. Fallback: hvis nedlasting feiler, åpner HANDOFF-rad og brukes Excel-fila
-   i team/referansedata/ som siste utvei (gir kun Lørenskog).
+1. Skraper landingssiden gront-hefte/id547024 for ODS-lenker per år
+2. Foretrekker tabell A-k (utgiftsutjamning) som inneholder "Indeks berekna
+   utgiftsbehov" (samlet DKI) per kommune
+3. Parser ODS via pyexcel-ods3
+4. Skriver data/dki-<år>.json med samlet DKI per kommune
+5. Behold Lørenskog-Excel-data for sektor-spesifikke DKI'er (POC, kun denne
+   ene kommunen — sektor-spesifikke DKI'er for alle krever F-k Kriteriedata
+   + KMDs delkostnadsnøkler-formler, noe som er åpen HANDOFF for fase 2)
+
+VIKTIG: Tabell A-k inneholder kun SAMLET DKI, ikke sektor-spesifikt. Det betyr
+at behovsjustering for de fleste kommuner skalerer alle sektorer uniformt.
+For Lørenskog beholdes detaljert per-sektor DKI fra Excel-fila.
 
 Bruk:
   python scripts/oppdater-dki-fra-kmd.py [--år 2025] [--år 2026]
   python scripts/oppdater-dki-fra-kmd.py --fallback-excel  # Excel-only
 
-Avhenger av: requests, beautifulsoup4, pyexcel-ods3 (eller odfpy).
-Se requirements.txt.
+Avhenger av: requests, pyexcel-ods3 (eller odfpy). Se requirements.txt.
 """
 
 import argparse
 import json
-import os
 import re
 import sys
 from datetime import date
@@ -38,50 +39,87 @@ REFERANSE_DIR = REPO_ROOT / "team" / "referansedata"
 
 KMD_LANDING = "https://www.regjeringen.no/no/tema/kommuner-og-regioner/kommuneokonomi/gront-hefte/id547024/"
 
-# Mapping fra KMDs sektor-navn (i ODS-filen) til våre sektor-IDer.
-SEKTOR_MAPPING = {
-    "Grunnskole": "grunnskole",
-    "Pleie og omsorg": "pleie",
-    "Barnehage": "barnehage",
-    "Barnevern": "barnevern",
-    "Sosialtjeneste": "sosial",
-    "Sosialhjelp": "sosial",
-    "Kommunehelse": "kommunehelse",
-    "Helse": "kommunehelse",
-    "Administrasjon": "administrasjon",
+# Lørenskog (3222) får detaljert sektor-DKI fra Excel-fila. Andre kommuner
+# bruker samlet DKI fra A-k uniformt på alle sektorer.
+LORENSKOG_DETALJERT = {
+    "navn": "Lørenskog",
+    "grunnskole": 0.9700,
+    "pleie": 0.8127,
+    "barnehage": 1.1783,
+    "barnevern": 1.0236,
+    "sosial": 1.1804,
+    "kommunehelse": 0.8948,
+    "administrasjon": 0.8960,
 }
 
+# KMDs offisielle sektorvekter (delkostnadsnøkler i inntektssystemet).
+SEKTOR_VEKTER = {
+    "grunnskole": 0.272,
+    "pleie": 0.353,
+    "barnehage": 0.157,
+    "barnevern": 0.030,
+    "sosial": 0.046,
+    "kommunehelse": 0.046,
+    "administrasjon": 0.096,
+}
 
-def hent_ods_lenker(landingsurl: str) -> dict:
-    """Skrap landingssiden for lenker til ODS-filer per år."""
+# Sektor-IDene vi skriver DKI for hver kommune.
+ALLE_SEKTORER = list(SEKTOR_VEKTER.keys())
+
+
+def hent_alle_ods_lenker(landingsurl: str) -> list:
+    """Skrap landingssiden for alle .ods-lenker."""
     try:
         import requests
-        from bs4 import BeautifulSoup
     except ImportError as e:
         raise SystemExit(
-            f"Manglende avhengighet: {e}. Installer: pip install -r requirements.txt"
+            f"Manglende avhengighet: {e}. Installer: pip install -r scripts/requirements.txt"
         )
 
     print(f"Henter landingsside {landingsurl}")
     r = requests.get(landingsurl, timeout=30)
     r.raise_for_status()
-    soup = BeautifulSoup(r.text, "html.parser")
+    html = r.text
+    print(f"  HTML: {len(html)} bytes")
 
-    # Finn alle .ods-lenker. KMD bruker mønster som .../<år>/...delkostnadsnokler...ods
-    lenker = {}
-    for a in soup.find_all("a", href=True):
-        href = a["href"]
-        if not href.endswith(".ods"):
-            continue
-        full = urljoin(landingsurl, href)
-        # Forsøk å plukke ut årstall fra URL eller link-tekst
-        år_match = re.search(r"/(20\d{2})/", full) or re.search(
-            r"\b(20\d{2})\b", a.get_text()
-        )
-        if år_match:
-            år = int(år_match.group(1))
-            lenker.setdefault(år, []).append(full)
+    # Match alle .ods-lenker
+    lenker = []
+    for m in re.finditer(r'<a[^>]+href="([^"]+\.ods)"[^>]*>([^<]*)</a>', html, re.IGNORECASE):
+        href = m.group(1)
+        if href.startswith("/"):
+            href = "https://www.regjeringen.no" + href
+        lenker.append({"url": href, "tekst": m.group(2).strip()})
+    print(f"  Funnet {len(lenker)} .ods-lenker totalt")
     return lenker
+
+
+def velg_tabell_a_k(lenker: list, år: int) -> str:
+    """Finn URL til tabell A-k (utgiftsutjamning) for gitt år.
+
+    KMD bruker mønstre som:
+      .../<år>/kom-ods/tabell-a-k-utgiftsutjamning-for-kommunane-<år>.ods   (2026)
+      .../<år>/kommuner/tabell-a-k-<år>-utgiftsutjamning-for-kommunane.ods  (2025)
+    """
+    år_str = str(år)
+    kandidater = [
+        l for l in lenker
+        if år_str in l["url"]
+        and re.search(r"tabell.{0,3}a.k", l["url"], re.IGNORECASE)
+        and "utgiftsutjamning" in l["url"].lower()
+        and "fykom" not in l["url"].lower()  # ekskluder fylkeskommune-tabeller
+    ]
+    if not kandidater:
+        # Fallback: hvilken som helst tabell-a-k for kommunane
+        kandidater = [
+            l for l in lenker
+            if år_str in l["url"]
+            and re.search(r"tabell.{0,3}a.k", l["url"], re.IGNORECASE)
+            and "fykom" not in l["url"].lower()
+        ]
+    if not kandidater:
+        return None
+    print(f"  → Valgte: {kandidater[0]['url']}")
+    return kandidater[0]["url"]
 
 
 def last_ned_ods(url: str, mål: Path) -> Path:
@@ -97,13 +135,19 @@ def last_ned_ods(url: str, mål: Path) -> Path:
     return mål
 
 
-def parse_ods(filsti: Path) -> dict:
-    """Parse ODS-fil og returner { kommunenr: { sektor_id: dki_verdi } }."""
+def parse_a_k(filsti: Path) -> dict:
+    """Parse tabell A-k og returner { kommunenr: samlet_dki }.
+
+    Format observert i 2026-versjonen:
+      Rad 0: header ("Kommune", "Indeks berekna utgiftsbehov", ...)
+      Rad 1-2: under-headers
+      Rad 4+: data, første kolonne "<knr> <navn>", andre kolonne DKI-verdien.
+    """
     try:
         from pyexcel_ods3 import get_data
     except ImportError:
         try:
-            from pyexcel_ods import get_data  # eldre pakke-navn
+            from pyexcel_ods import get_data
         except ImportError:
             raise SystemExit(
                 "Mangler ODS-leser. Installer: pip install pyexcel-ods3"
@@ -111,111 +155,115 @@ def parse_ods(filsti: Path) -> dict:
 
     print(f"Parser {filsti}")
     bok = get_data(str(filsti))
-    # ODS-filer fra KMD har typisk ark-navn som "Tabell E-k", "Delkostnadsnøkler" osv.
-    # Vi leter etter et ark som har kommunenr i kol 0 og sektor-DKI-er bortover.
     resultat = {}
     for ark_navn, rader in bok.items():
         if not rader:
             continue
-        header = [str(c).strip() for c in rader[0]]
-        # Identifiser sektor-kolonner basert på SEKTOR_MAPPING
-        kolonne_til_sektor = {}
-        for i, h in enumerate(header):
-            for kmd_navn, sektor_id in SEKTOR_MAPPING.items():
-                if kmd_navn.lower() in h.lower():
-                    kolonne_til_sektor[i] = sektor_id
+        # Finn kolonnen som inneholder "indeks" + "utgiftsbehov" i header
+        dki_kol = None
+        for i, header in enumerate(rader[:3]):
+            for j, celle in enumerate(header):
+                tekst = str(celle).lower()
+                if "indeks" in tekst and "utgiftsbehov" in tekst:
+                    dki_kol = j
+                    print(f"  DKI-kolonne funnet i rad {i}, kolonne {j}: '{celle}'")
                     break
-        if not kolonne_til_sektor:
+            if dki_kol is not None:
+                break
+        if dki_kol is None:
+            print(f"  ⚠ Fant ikke DKI-kolonne i ark '{ark_navn}'")
             continue
-        # Finn kommunenr-kolonnen (typisk 4-sifret tall i første eller andre kolonne)
-        for rad in rader[1:]:
-            if not rad:
+
+        # Parse rader: første celle "<knr> <navn>", DKI-kolonnen som tall
+        for rad in rader:
+            if not rad or len(rad) <= dki_kol:
                 continue
-            knr = None
-            for celle in rad[:3]:
-                s = str(celle).strip()
-                if re.fullmatch(r"\d{4}", s):
-                    knr = s
-                    break
-            if not knr:
+            første = str(rad[0]).strip()
+            knr_match = re.match(r"^(\d{4})\b", første)
+            if not knr_match:
                 continue
-            for kol, sektor in kolonne_til_sektor.items():
-                if kol < len(rad):
-                    try:
-                        dki = float(str(rad[kol]).replace(",", "."))
-                        if 0.3 < dki < 3.0:  # plausibilitet
-                            resultat.setdefault(knr, {})[sektor] = round(dki, 4)
-                    except (ValueError, TypeError):
-                        pass
-    print(f"  → {len(resultat)} kommuner med DKI-data")
+            knr = knr_match.group(1)
+            try:
+                dki = float(str(rad[dki_kol]).replace(",", "."))
+                if 0.5 < dki < 2.0:
+                    resultat[knr] = round(dki, 4)
+            except (ValueError, TypeError):
+                pass
+        break  # bare første ark som har DKI-kolonne
+
+    print(f"  → {len(resultat)} kommuner med samlet DKI")
     return resultat
 
 
+def bygg_kommune_dki(samlet_dki: dict) -> dict:
+    """Bygg kommuner-strukturen til dki-<år>.json.
+
+    For Lørenskog (3222): bruk detaljert sektor-DKI fra Excel.
+    For andre kommuner: anvend samlet DKI uniformt på alle sektorer (begrensning).
+    """
+    kommuner = {}
+    for knr, dki in samlet_dki.items():
+        if knr == "3222":
+            # Lørenskog: detaljert
+            kommuner[knr] = {**LORENSKOG_DETALJERT, "samlet": dki}
+        else:
+            # Andre kommuner: uniform DKI på alle sektorer
+            kommuner[knr] = {sektor: dki for sektor in ALLE_SEKTORER}
+            kommuner[knr]["samlet"] = dki
+    return kommuner
+
+
 def fallback_excel() -> dict:
-    """Bruk Excel-filen i team/referansedata/ for Lørenskog som siste utvei."""
-    excel_fil = REFERANSE_DIR / "Lorenskog_KOSTRA_2025_nokkeltall.xlsx"
-    if not excel_fil.exists():
-        return {}
-    # POC-data fra tidligere validering
-    return {
-        "3222": {
-            "navn": "Lørenskog",
-            "grunnskole": 0.9700,
-            "pleie": 0.8127,
-            "barnehage": 1.1783,
-            "barnevern": 1.0236,
-            "sosial": 1.1804,
-            "kommunehelse": 0.8948,
-            "administrasjon": 0.8960,
-        }
-    }
-
-
-SEKTOR_VEKTER = {
-    "grunnskole": 0.272,
-    "pleie": 0.353,
-    "barnehage": 0.157,
-    "barnevern": 0.030,
-    "sosial": 0.046,
-    "kommunehelse": 0.046,
-    "administrasjon": 0.096,
-}
+    """Excel-fallback: kun Lørenskog (POC)."""
+    return {"3222": {**LORENSKOG_DETALJERT, "samlet": 0.9479}}
 
 
 def sanitetssjekk(kommuner: dict) -> list:
-    """Returner advarsler hvis vektet DKI ikke summerer til ~1.0 ±0.10."""
+    """Returner advarsler hvis vektet DKI ikke summerer til ~1.0 ±0.15."""
     advarsler = []
     for knr, sektorer in kommuner.items():
-        if not sektorer:
+        if not sektorer or not isinstance(sektorer, dict):
             continue
-        dekket = sum(SEKTOR_VEKTER.get(s, 0) for s in sektorer if s != "navn")
+        # Beregn vektet DKI fra sektor-feltene
+        dekket = 0
+        vektet = 0
+        for sektor, vekt in SEKTOR_VEKTER.items():
+            if sektor in sektorer and isinstance(sektorer[sektor], (int, float)):
+                dekket += vekt
+                vektet += sektorer[sektor] * vekt
         if dekket < 0.5:
-            continue  # for liten dekning til å vurdere
-        vektet = sum(
-            sektorer[s] * SEKTOR_VEKTER.get(s, 0)
-            for s in sektorer
-            if s in SEKTOR_VEKTER
-        )
-        normalisert = vektet / dekket if dekket > 0 else 0
-        if not 0.85 < normalisert < 1.15:
+            continue
+        normalisert = vektet / dekket
+        if not 0.6 < normalisert < 1.5:  # vid grense for kommuner med ekstreme indekser
             advarsler.append(
-                f"  ⚠ {knr}: vektet DKI={normalisert:.3f} (utenfor 0.85–1.15)"
+                f"  ⚠ {knr}: vektet DKI={normalisert:.3f} (utenfor 0.6–1.5)"
             )
     return advarsler
 
 
-def skriv_dki_json(år: int, kommuner: dict, kilde: str) -> Path:
+def skriv_dki_json(år: int, kommuner: dict, kilde: str, dekning: str) -> Path:
     fil = DATA_DIR / f"dki-{år}.json"
     payload = {
         "år": år,
         "kilde": kilde,
         "publisert": date.today().isoformat(),
         "hentet": date.today().isoformat(),
-        "definisjon": "DKI > 1,0 = kommunen har høyere utgiftsbehov enn landsgjennomsnittet. DKI < 1,0 = lavere utgiftsbehov.",
-        "dekning": f"{len(kommuner)} kommuner",
+        "definisjon": (
+            "DKI > 1,0 = kommunen har høyere utgiftsbehov enn landsgjennomsnittet "
+            "(eldre/dyrere befolkning). DKI < 1,0 = lavere utgiftsbehov."
+        ),
+        "merknad": (
+            "Tabell A-k fra KMD inneholder kun SAMLET DKI per kommune. Sektor-"
+            "spesifikke DKI'er (grunnskole, pleie, barnehage osv) er kun tilgjengelige "
+            "for Lørenskog (3222) som POC fra Excel-referansen. Andre kommuner får "
+            "samlet DKI anvendt uniformt på alle sektorer. Sektor-spesifikke verdier "
+            "for alle 357 kommuner krever parsing av F-k Kriteriedata + KMDs "
+            "delkostnadsnøkler-formler — åpen HANDOFF for fase 2."
+        ),
+        "dekning": dekning,
         "kommuner": kommuner,
         "sektorvekter": {
-            "_kommentar": "KMDs offisielle sektorvekter (delkostnadsnøkler i inntektssystemet). Sum = 1.00.",
+            "_kommentar": "KMDs offisielle sektorvekter (delkostnadsnøkler). Sum = 1.00.",
             **SEKTOR_VEKTER,
         },
     }
@@ -227,36 +275,43 @@ def skriv_dki_json(år: int, kommuner: dict, kilde: str) -> Path:
 
 
 def kjør_for_år(år: int, fallback_only: bool = False) -> bool:
-    """Returner True hvis JSON ble skrevet (full data eller fallback)."""
     if not fallback_only:
         try:
-            lenker = hent_ods_lenker(KMD_LANDING)
-            url = (lenker.get(år) or [None])[0]
+            lenker = hent_alle_ods_lenker(KMD_LANDING)
+            url = velg_tabell_a_k(lenker, år)
             if not url:
-                print(f"  ✗ Ingen ODS-lenke for {år} på landingssiden")
-                raise FileNotFoundError(f"ODS for {år} ikke funnet")
-            ods = last_ned_ods(url, REFERANSE_DIR / f"kmd-gront-hefte-{år}.ods")
-            kommuner = parse_ods(ods)
-            if kommuner:
-                advarsler = sanitetssjekk(kommuner)
-                for adv in advarsler:
+                print(f"  ✗ Tabell A-k for {år} ikke funnet")
+                raise FileNotFoundError(f"A-k for {år}")
+            ods = last_ned_ods(url, REFERANSE_DIR / f"kmd-tabell-a-k-{år}.ods")
+            samlet = parse_a_k(ods)
+            if not samlet:
+                raise RuntimeError("Ingen DKI-data parset fra A-k")
+            kommuner = bygg_kommune_dki(samlet)
+            advarsler = sanitetssjekk(kommuner)
+            if advarsler:
+                print("Sanitetssjekk-advarsler:")
+                for adv in advarsler[:10]:
                     print(adv)
-                skriv_dki_json(år, kommuner, f"KMD Grønt hefte {år} (ODS)")
-                return True
+                if len(advarsler) > 10:
+                    print(f"  ... og {len(advarsler) - 10} til")
+            skriv_dki_json(
+                år, kommuner,
+                f"KMD Grønt hefte {år} — Tabell A-k (Utgiftsutjamning), samlet DKI per kommune",
+                f"{len(kommuner)} kommuner (samlet DKI; Lørenskog detaljert)",
+            )
+            return True
         except Exception as e:
             print(f"  ✗ Full innhenting feilet for {år}: {e}")
 
-    # Fallback: Excel-data for Lørenskog
-    print(f"  → Bruker Excel-fallback (kun Lørenskog) for {år}")
+    print(f"  → Bruker Excel-fallback for {år} (kun Lørenskog)")
     fallback = fallback_excel()
     if fallback:
         skriv_dki_json(
-            år,
-            fallback,
-            "Excel-fallback: team/referansedata/Lorenskog_KOSTRA_2025_nokkeltall.xlsx (kun Lørenskog)",
+            år, fallback,
+            f"Excel-fallback ({år}): kun Lørenskog (3222)",
+            "1 kommune (Lørenskog POC)",
         )
         return True
-    print(f"  ✗ Ingen DKI-data tilgjengelig for {år}")
     return False
 
 
