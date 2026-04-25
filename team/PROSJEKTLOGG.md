@@ -80,6 +80,11 @@ Egen HANDOFF-rad åpnet for Sentry-oppsett (krever Vegards Sentry-konto, gratis-
 **Hva:** Ny `data/indikator-register.json` med 30+ KOSTRA-indikatorer manuelt verifisert med felter: navn, tabell, sektor, enhet, retning (high/low), kvalitet (hoy/medium/lav), beskrivelse. Konvensjon dokumentert. Skeleton — full erstatning av regex-heuristikken (`LOWER_IS_BETTER` / `HIGHER_IS_BETTER`) i index.html krever koordinert refaktor som er flagget som neste-steg i fila.
 **Hvorfor:** Rapport B1: Datakvalitetskritisk. "Feil match gir feil rangering og ødelegger tillit." Topp-30 dekker hovedindikatorene som styrer rangeringen.
 **Konsekvens for teamet:** Frontend kan utvide `determineDirection()` til å først sjekke registeret. Kvalitet-feltet brukes senere i E2 (kvalitetsmerking). UX/UI kan vise registeret som tabell på metodikk-siden.
+## 2026-04-25 — Pakke 12 (A6) levert: Justerbar vekting med slidere
+**Hvem:** Claude Code (autonom, Pakke 12)
+**Hva:** Ny `vekt-justering.html` med slidere for alle 12 sektorer + 4 forhåndsvalg (Standard/Oppvekst/Eldreomsorg/Økonomi). Sum-validering med farger. Lagrer i `localStorage`. `index.html` SECTORS-array leser fra localStorage og overstyrer standardvektene per sektor. Lenke fra footer.
+**Hvorfor:** Rapport A6: "Vektene er valg, ikke fasit. Gir tillit og lar kommunedirektører bruke siden i prioriteringsdiskusjoner."
+**Konsekvens for teamet:** Sliderne påvirker rangering først ved neste sidelast (siden SECTORS er evaluert på toppen). UX-forbedring senere: live oppdatering uten reload via egen rebuild-funksjon. URL-state er ikke implementert ennå (rapport-anbefaling).
 
 ## 2026-04-25 — Pakke 0–3 levert og merget til main
 ## 2026-04-25 — Pakke 2 (C1) levert: SSB Klass-API integrert med 30-dagers cache

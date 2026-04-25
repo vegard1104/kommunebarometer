@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="nb">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Justerbar vekting — Kommunebarometer 2026</title>
+<style>
+  :root {
+    --bg: #0f1724; --panel: #182134; --panel-2: #1f2b44;
+    --accent: #4cc9f0; --accent-2: #f72585;
+    --good: #4ade80; --bad: #f87171; --warn: #fbbf24;
+    --text: #e6edf6; --muted: #94a3b8; --border: #263248;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: var(--bg); color: var(--text); line-height: 1.6; }
+  header { background: linear-gradient(135deg, #1a2540 0%, #0f1724 100%); border-bottom: 1px solid var(--border); padding: 28px 32px; }
+  header .crumb { font-size: 13px; color: var(--muted); margin-bottom: 10px; }
+  header .crumb a { color: var(--accent); text-decoration: none; }
+  header h1 { margin: 0 0 8px; font-size: 26px; }
+  header p { margin: 0; color: var(--muted); font-size: 14px; max-width: 800px; }
+  main { padding: 24px 32px 60px; max-width: 800px; margin: 0 auto; }
+  .info { background: var(--panel); border: 1px solid var(--border); border-radius: 10px; padding: 16px 20px; margin-bottom: 20px; font-size: 13px; color: var(--muted); }
+  .info strong { color: var(--text); }
+  .sliders { background: var(--panel); border: 1px solid var(--border); border-radius: 12px; padding: 20px; }
+  .slider-row { display: grid; grid-template-columns: 180px 1fr 60px; gap: 14px; align-items: center; margin: 10px 0; }
+  .slider-row label { font-size: 14px; color: var(--text); }
+  .slider-row input[type="range"] { width: 100%; accent-color: var(--accent); }
+  .slider-row .value { font-size: 14px; color: var(--accent); font-weight: 600; text-align: right; }
+  .total { display: flex; justify-content: space-between; align-items: center; padding: 12px 0; margin-top: 12px; border-top: 1px solid var(--border); font-size: 14px; }
+  .total .sum { font-weight: 600; }
+  .total .sum.ok { color: var(--good); }
+  .total .sum.warn { color: var(--warn); }
+  .total .sum.bad { color: var(--bad); }
+  .actions { margin-top: 20px; display: flex; gap: 12px; flex-wrap: wrap; }
+  button { background: var(--panel-2); color: var(--text); border: 1px solid var(--border); padding: 8px 14px; border-radius: 7px; font-size: 14px; font-family: inherit; cursor: pointer; }
+  button:hover, button:focus { background: #2a3a5c; outline: none; }
+  button:focus-visible { box-shadow: 0 0 0 2px var(--accent); }
+  button.primary { background: var(--accent); color: #0b1220; font-weight: 600; border-color: var(--accent); }
+  button.primary:hover, button.primary:focus { background: #6dd5f5; }
+  .preset-row { margin-bottom: 10px; font-size: 13px; color: var(--muted); }
+  .preset-btn { background: transparent; border: 1px dashed var(--border); padding: 4px 10px; font-size: 12px; }
+  .preset-btn:hover { border-color: var(--accent); color: var(--accent); }
+</style>
+</head>
+<body>
+<header>
+  <div class="crumb"><a href="/">← Tilbake til Kommunebarometer</a></div>
+  <h1>Justerbar vekting</h1>
+  <p>Test hvordan ulike prioriteringer påvirker rangeringen. Endre vektene og se umiddelbar effekt — hovedsiden vil bruke dine vekter når du går tilbake.</p>
+</header>
+
+<main>
+  <div class="info">
+    <strong>Hva betyr dette?</strong> Standardvektene følger Kommunal Rapports offentlig kjente metodikk. Som økonomisjef vil du kanskje vektlegge sektorer din kommune satser særlig på; som politiker kan du visualisere hvordan rangering endres med dine prioriteringer. <strong>Endringene lagres i din nettleser</strong> — påvirker ikke andre brukere.
+  </div>
+
+  <div class="sliders" id="sliders">
+    <div class="preset-row">
+      Forhåndsvalg:
+      <button class="preset-btn" type="button" data-preset="standard">Standard (Kommunal Rapport)</button>
+      <button class="preset-btn" type="button" data-preset="oppvekst">Oppvekst-fokus</button>
+      <button class="preset-btn" type="button" data-preset="eldreomsorg">Eldreomsorg-fokus</button>
+      <button class="preset-btn" type="button" data-preset="okonomi">Økonomi-fokus</button>
+    </div>
+    <!-- slider-rader fylles inn av JS -->
+    <div id="slider-rows"></div>
+    <div class="total"><span>Sum av vekter</span><span class="sum" id="sum-display">100,0 %</span></div>
+    <div class="actions">
+      <button class="primary" type="button" id="apply-btn">Lagre og bruk på hovedsiden</button>
+      <button type="button" id="reset-btn">Tilbakestill til standard</button>
+    </div>
+  </div>
+</main>
+
+<script>
+// Standardvekter — speiler SECTORS-konstanten i index.html
+const STANDARD_VEKTER = {
+  grunnskole: 20.0, pleie: 20.0, barnevern: 10.0, barnehage: 10.0,
+  helse: 7.5, sosial: 7.5, okonomi: 10.0, eiendom: 5.0,
+  kultur: 2.5, saksbehandling: 2.5, var: 2.5, klima: 2.5
+};
+const SEKTOR_NAVN = {
+  grunnskole: 'Grunnskole', pleie: 'Pleie og omsorg', barnevern: 'Barnevern',
+  barnehage: 'Barnehage', helse: 'Helse', sosial: 'Sosialtjeneste',
+  okonomi: 'Økonomi', eiendom: 'Kostnadsnivå/eiendom', kultur: 'Kultur',
+  saksbehandling: 'Saksbehandling', var: 'Vann/avløp/renovasjon', klima: 'Miljø og klima'
+};
+
+// Forhåndsvalg som demonstrerer ulike prioriteringer
+const PRESETS = {
+  standard: STANDARD_VEKTER,
+  oppvekst: { grunnskole: 30, pleie: 10, barnevern: 15, barnehage: 20, helse: 5, sosial: 5, okonomi: 5, eiendom: 2, kultur: 5, saksbehandling: 1, var: 1, klima: 1 },
+  eldreomsorg: { grunnskole: 10, pleie: 35, barnevern: 5, barnehage: 5, helse: 15, sosial: 10, okonomi: 10, eiendom: 4, kultur: 2, saksbehandling: 1, var: 2, klima: 1 },
+  okonomi: { grunnskole: 12, pleie: 15, barnevern: 5, barnehage: 5, helse: 5, sosial: 5, okonomi: 30, eiendom: 12, kultur: 2, saksbehandling: 4, var: 3, klima: 2 }
+};
+
+const STORE_KEY = 'kb_vekt_justert_v1';
+
+function lesLagredeVekter() {
+  try {
+    const raw = localStorage.getItem(STORE_KEY);
+    if (!raw) return null;
+    return JSON.parse(raw);
+  } catch (_) { return null; }
+}
+
+function nåværendeVekter() {
+  const lagret = lesLagredeVekter();
+  return lagret || { ...STANDARD_VEKTER };
+}
+
+function buildSlider(id, navn, verdi) {
+  const row = document.createElement('div');
+  row.className = 'slider-row';
+  row.innerHTML = `
+    <label for="slider-${id}">${navn}</label>
+    <input type="range" id="slider-${id}" data-id="${id}" min="0" max="40" step="0.5" value="${verdi}">
+    <span class="value" id="value-${id}">${verdi.toFixed(1)} %</span>
+  `;
+  return row;
+}
+
+function renderAlle() {
+  const container = document.getElementById('slider-rows');
+  container.innerHTML = '';
+  const vekter = nåværendeVekter();
+  for (const [id, navn] of Object.entries(SEKTOR_NAVN)) {
+    container.appendChild(buildSlider(id, navn, vekter[id] ?? STANDARD_VEKTER[id]));
+  }
+  oppdaterSum();
+}
+
+function oppdaterSum() {
+  const sum = Array.from(document.querySelectorAll('input[type="range"]'))
+    .reduce((acc, el) => acc + parseFloat(el.value), 0);
+  const el = document.getElementById('sum-display');
+  el.textContent = `${sum.toFixed(1)} %`;
+  el.className = 'sum ' + (Math.abs(sum - 100) < 0.5 ? 'ok' : Math.abs(sum - 100) < 5 ? 'warn' : 'bad');
+}
+
+function settPreset(navn) {
+  const preset = PRESETS[navn];
+  if (!preset) return;
+  for (const [id, verdi] of Object.entries(preset)) {
+    const slider = document.querySelector(`input[data-id="${id}"]`);
+    if (slider) {
+      slider.value = verdi;
+      document.getElementById(`value-${id}`).textContent = `${verdi.toFixed(1)} %`;
+    }
+  }
+  oppdaterSum();
+}
+
+document.addEventListener('input', (e) => {
+  if (e.target.matches('input[type="range"]')) {
+    const id = e.target.getAttribute('data-id');
+    document.getElementById(`value-${id}`).textContent = `${parseFloat(e.target.value).toFixed(1)} %`;
+    oppdaterSum();
+  }
+});
+
+document.getElementById('apply-btn').addEventListener('click', () => {
+  const vekter = {};
+  document.querySelectorAll('input[type="range"]').forEach(el => {
+    vekter[el.getAttribute('data-id')] = parseFloat(el.value);
+  });
+  localStorage.setItem(STORE_KEY, JSON.stringify(vekter));
+  // Naviger tilbake med flagg om at vekter er endret
+  window.location.href = '/?vekt=justert';
+});
+
+document.getElementById('reset-btn').addEventListener('click', () => {
+  localStorage.removeItem(STORE_KEY);
+  renderAlle();
+});
+
+document.querySelectorAll('.preset-btn').forEach(btn => {
+  btn.addEventListener('click', () => settPreset(btn.getAttribute('data-preset')));
+});
+
+renderAlle();
+</script>
+</body>
+</html>
