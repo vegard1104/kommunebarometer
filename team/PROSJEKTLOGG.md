@@ -75,6 +75,11 @@ Egen HANDOFF-rad åpnet for Sentry-oppsett (krever Vegards Sentry-konto, gratis-
 **Hva:** `preloadKommunevelger()` henter alle ~357 norske kommuner fra Klass-API ved sidelast, sorterer alfabetisk og fyller `<datalist id="kommune-list">` før KOSTRA-data er ferdig lastet. SessionStorage-cache. Faller tilbake til KOSTRA-deteksjon hvis Klass feiler.
 **Hvorfor:** 2.0-rapportens A1-anbefaling — låser opp v1 fra Lørenskog til alle 357. Forutsetning for de fleste D-pakkene.
 **Konsekvens for teamet:** B2 kan utvide samme cache med sammenslåings-data. URL-state (?kommune=) implementeres i Pakke 7.
+## 2026-04-25 — Pakke 11 (B1) levert: Indikator-register med eksplisitt retning
+**Hvem:** Claude Code (autonom, Pakke 11)
+**Hva:** Ny `data/indikator-register.json` med 30+ KOSTRA-indikatorer manuelt verifisert med felter: navn, tabell, sektor, enhet, retning (high/low), kvalitet (hoy/medium/lav), beskrivelse. Konvensjon dokumentert. Skeleton — full erstatning av regex-heuristikken (`LOWER_IS_BETTER` / `HIGHER_IS_BETTER`) i index.html krever koordinert refaktor som er flagget som neste-steg i fila.
+**Hvorfor:** Rapport B1: Datakvalitetskritisk. "Feil match gir feil rangering og ødelegger tillit." Topp-30 dekker hovedindikatorene som styrer rangeringen.
+**Konsekvens for teamet:** Frontend kan utvide `determineDirection()` til å først sjekke registeret. Kvalitet-feltet brukes senere i E2 (kvalitetsmerking). UX/UI kan vise registeret som tabell på metodikk-siden.
 
 ## 2026-04-25 — Pakke 0–3 levert og merget til main
 ## 2026-04-25 — Pakke 2 (C1) levert: SSB Klass-API integrert med 30-dagers cache
