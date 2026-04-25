@@ -110,6 +110,11 @@ Egen HANDOFF-rad åpnet for Sentry-oppsett (krever Vegards Sentry-konto, gratis-
 **Hva:** Ny `data/folkehelse-helper.js` med `kbFolkehelse.fetchFolkehelse()` (placeholder) og `lagFolkehelseKort()` som viser lenke til Helsedirektoratets PDF. Folkehelseprofilen mangler offentlig REST-API per 2026-04 — egen HANDOFF-rad åpnet for å undersøke API-tilgang via Helsedirektoratet, alternativt scrape av kommunehelsa.no eller bruk av SSB-tabell 11342 som proxy.
 **Hvorfor:** Rapport C2: Kommunens største kostnad (pleie/omsorg) er tett koblet til folkehelse. Uten denne dimensjonen kan man ikke tolke KOSTRA-tallene riktig. Men API-strategi må avklares før full integrasjon.
 **Konsekvens for teamet:** HANDOFF-rad åpnet — Vegard / Backend bør kontakte Helsedirektoratet eller utforske kommunehelsa.no.
+## 2026-04-25 — Pakke 17 (C3) levert: Udir Statistikkbank skeleton
+**Hvem:** Claude Code (autonom, Pakke 17, draft)
+**Hva:** Ny `data/udir-helper.js` med `kbUdir.fetchUdir()`, `fetchGrunnskolepoeng()` og `lagUdirKort()`. Bruker proxy `/api/udir/` (krever vercel.json-rewrite til api.udir-statistikkbanken.no — egen HANDOFF). 7-dagers cache.
+**Hvorfor:** Rapport C3: Grunnskole har 20 % vekt, men vi måler bare kostnad. Udir gir resultat-siden.
+**Konsekvens for teamet:** Vercel-rewrite må legges til. Endelig endepunkt-struktur trenger validering via egen mini-spike.
 
 ## 2026-04-25 — Pakke 0–3 levert og merget til main
 ## 2026-04-25 — Pakke 2 (C1) levert: SSB Klass-API integrert med 30-dagers cache
