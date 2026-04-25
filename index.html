@@ -354,6 +354,11 @@ const MERGERS_REVERSE = (() => {
 const API_BASE = (location.protocol === 'file:' || location.hostname === '')
   ? 'https://data.ssb.no/api/pxwebapi/v2/tables/'
   : '/api/ssb/tables/';
+// C1: Klass-API for kommuneinndeling. Klassifikasjon 131 = Kommuner (KOSTRA).
+// Bruker /api/klass/-rewrite i prod, direkte URL ved file://.
+const KLASS_BASE = (location.protocol === 'file:' || location.hostname === '')
+  ? 'https://data.ssb.no/api/klass/v1/'
+  : '/api/klass/';
 const MUNI_CODE_KEY = 'KOKkommuneregion0000'; // typisk kode for region-dimensjon i KOSTRA-tabeller, sjekkes via metadata
 
 // ============================================================
@@ -401,6 +406,125 @@ async function fetchTableV2(tableId, params) {
   if (!r.ok) throw new Error(`Data ${tableId}: HTTP ${r.status}`);
   return r.json();
 }
+
+// ============================================================
+//  C1: SSB Klass-API — kommuneinndeling fra klassifikasjon 131
+// ============================================================
+//
+// Brukes som autoritativ kilde for hvilke kommuner som finnes per dato.
+// Foreløpig konsumerer vi to endepunkter:
+//
+//   GET /classifications/131/codesAt?date=YYYY-MM-DD
+//     → liste over koder + navn gyldige på den datoen.
+//
+//   GET /classifications/131/changes.json?from=YYYY-MM-DD&to=YYYY-MM-DD
+//     → oversikt over kommunesammenslåinger og navnebytter mellom
+//       to datoer (forutsetning for B2 — dynamisk MERGERS).
+//
+// Cacher i localStorage med 30 dagers TTL. Kommuneinndelingen endres
+// sjelden (typisk 1. januar i reform-år), så lang cache er trygt.
+
+const KLASS_CACHE_PREFIX = 'kb_klass_v1_';
+const KLASS_CACHE_TTL_MS = 30 * 24 * 60 * 60 * 1000; // 30 dager
+
+function _readKlassCache(key) {
+  try {
+    const raw = localStorage.getItem(KLASS_CACHE_PREFIX + key);
+    if (!raw) return null;
+    const obj = JSON.parse(raw);
+    if (!obj || !obj.cachedAt || !obj.payload) return null;
+    if (Date.now() - obj.cachedAt > KLASS_CACHE_TTL_MS) return null;
+    return obj.payload;
+  } catch (_) {
+    return null;
+  }
+}
+
+function _writeKlassCache(key, payload) {
+  try {
+    localStorage.setItem(KLASS_CACHE_PREFIX + key, JSON.stringify({
+      cachedAt: Date.now(),
+      payload
+    }));
+  } catch (_) {
+    // localStorage kan være full eller blokkert (private mode) — bare fortsett uten cache.
+  }
+}
+
+// Henter alle kommune-koder gyldige på en gitt dato.
+// Default = i dag. Returnerer { code, name, validFrom, validTo } per kommune.
+async function fetchKlassKommuner(date) {
+  const dateStr = date || new Date().toISOString().slice(0, 10);
+  const cacheKey = `kommuner_${dateStr}`;
+  const cached = _readKlassCache(cacheKey);
+  if (cached) {
+    log(`Klass: ${cached.length} kommuner (cache, ${dateStr})`);
+    return cached;
+  }
+  const url = `${KLASS_BASE}classifications/131/codesAt?date=${dateStr}&language=nb`;
+  log(`Klass: GET kommuner per ${dateStr}`);
+  const r = await fetch(url);
+  if (!r.ok) throw new Error(`Klass kommuner: HTTP ${r.status}`);
+  const data = await r.json();
+  // Filtrer til 4-sifrede kommune-koder (dropper fylker som har 2-sifret kode).
+  const kommuner = (data.codes || [])
+    .filter(c => /^\d{4}$/.test(c.code))
+    .map(c => ({
+      code: c.code,
+      name: c.name || '',
+      shortName: c.shortName || '',
+      validFrom: c.validFrom || null,
+      validTo: c.validToInRequestedRange || c.validTo || null
+    }));
+  _writeKlassCache(cacheKey, kommuner);
+  log(`Klass: ${kommuner.length} kommuner hentet og cachet`);
+  return kommuner;
+}
+
+// Henter strukturelle endringer (sammenslåinger, navnebytter) i et tidsintervall.
+// Format: { sourceCode, sourceName, targetCode, targetName, changeOccurred }.
+// Brukes i B2 for å bygge MERGERS dynamisk.
+async function fetchKlassChanges(fromDate, toDate) {
+  const cacheKey = `changes_${fromDate}_${toDate}`;
+  const cached = _readKlassCache(cacheKey);
+  if (cached) {
+    log(`Klass: ${cached.length} endringer ${fromDate}→${toDate} (cache)`);
+    return cached;
+  }
+  const url = `${KLASS_BASE}classifications/131/changes.json?from=${fromDate}&to=${toDate}&language=nb`;
+  log(`Klass: GET endringer ${fromDate}→${toDate}`);
+  const r = await fetch(url);
+  if (!r.ok) throw new Error(`Klass changes: HTTP ${r.status}`);
+  const data = await r.json();
+  const changes = (data.codeChanges || []).map(ch => ({
+    sourceCode: ch.oldCode,
+    sourceName: ch.oldName,
+    targetCode: ch.newCode,
+    targetName: ch.newName,
+    changeOccurred: ch.changeOccurred || null
+  }));
+  _writeKlassCache(cacheKey, changes);
+  log(`Klass: ${changes.length} endringer cachet`);
+  return changes;
+}
+
+// Manuell cache-tømming (eksponert globalt for debugging).
+// Kjør window.kbResetKlassCache() i konsollen for å tvinge ny henting.
+window.kbResetKlassCache = function () {
+  let n = 0;
+  for (const k of Object.keys(localStorage)) {
+    if (k.startsWith(KLASS_CACHE_PREFIX)) {
+      localStorage.removeItem(k);
+      n++;
+    }
+  }
+  log(`Klass: ${n} cache-oppføringer tømt`);
+  return n;
+};
+
+// Globalt resultat etter første fetchKlassKommuner-kall.
+// A1 (kommunevelger) og B2 (dynamisk MERGERS) leser herfra.
+let KLASS_KOMMUNER = null;
 
 // Parse JSON-stat2 til { [muni]: { [indicator]: { [year]: value } } }
 function parseJsonStat(ds) {
@@ -1295,6 +1419,16 @@ function downloadXlsx() {
 async function main() {
   setStatus('Henter metadata og data fra SSB…');
   log(`Starter innhenting for ${SECTORS.length} sektorer`);
+
+  // C1: Hent kommuneliste fra Klass parallelt med KOSTRA-data.
+  // Feil her er ikke-blokkerende — KOSTRA-data har sin egen kommune-deteksjon.
+  // Brukes av A1 (kommunevelger) og B2 (dynamisk MERGERS) når de implementeres.
+  fetchKlassKommuner().then(kommuner => {
+    KLASS_KOMMUNER = kommuner;
+    log(`Klass-API klar: ${kommuner.length} kommuner tilgjengelig for kommunevelger`);
+  }).catch(e => {
+    log(`Klass-API feilet (ikke-kritisk): ${e.message}`);
+  });
 
   const loaded = [];
   // parallell henting i batcher av 4

@@ -2,6 +2,7 @@
   "cleanUrls": true,
   "trailingSlash": false,
   "rewrites": [
-    { "source": "/api/ssb/:path*", "destination": "https://data.ssb.no/api/pxwebapi/v2/:path*" }
+    { "source": "/api/ssb/:path*", "destination": "https://data.ssb.no/api/pxwebapi/v2/:path*" },
+    { "source": "/api/klass/:path*", "destination": "https://data.ssb.no/api/klass/v1/:path*" }
   ]
 }

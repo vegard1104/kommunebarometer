@@ -14,7 +14,13 @@ Format per oppføring:
 
 ---
 
-## 2026-04-25 — Pakke 0–3 levert og merget til main
+## 2026-04-25 — Pakke 2 (C1) levert: SSB Klass-API integrert med 30-dagers cache
+**Hvem:** Claude Code (autonom, Pakke 2)
+**Hva:** Lagt til `/api/klass/*`-rewrite i `vercel.json` (proxy til `data.ssb.no/api/klass/v1`). Implementert `fetchKlassKommuner(date)` for kommune-koder + navn fra klassifikasjon 131, og `fetchKlassChanges(from, to)` for strukturelle endringer (sammenslåinger/navnebytter). Begge funksjonene cacher i `localStorage` med 30-dagers TTL. Globalt `KLASS_KOMMUNER`-array populeres ved oppstart i bakgrunnen, parallelt med KOSTRA-data — feil her er ikke-blokkerende. Ny `window.kbResetKlassCache()` for manuell tømming i konsoll.
+**Hvorfor:** Forutsetning for A1 (universell kommunevelger) og B2 (dynamisk MERGERS som erstatter hardkodet tabell). Klass-API ga 358 kommuner per 2026-01-01 i AP-04-spiken og er den autoritative kilden — alternativet (parsing av kommune-koder fra KOSTRA-tabeller) gir 839 historiske koder, langt mer enn nødvendig for kommunevelger.
+**Konsekvens for teamet:** A1-implementasjonen kan bruke `KLASS_KOMMUNER` direkte. B2 kan kombinere `fetchKlassChanges` med eksisterende MERGERS-fallback til å bygge mappingen dynamisk. Ingen UI-endringer i denne PR-en — bare data-lag-fundament.
+
+## 2026-04-25 — Pakke 1 (E4) levert: Sist-oppdatert-stempel per sektor
 **Hvem:** Claude Code (autonom kjøring på vegne av Vegard) + Vegard (merging)
 **Hva:** Fire pakker levert som selvstendige PR-er og merget til main:
 - **Pakke 0** (PR #3, denne): BRIEF forankret i rapportene. 5 må-ha → 8 må-ha med rapport-sporbarhet (A1, B1, A3, E4, B5). 8 bør-ha med behovsjustering (A2), politiker-modus (D5), ROBEK, dynamisk Klass-API. WCAG 2.1 → 2.2 AA. v2.x-seksjon for eksterne kilder (FHI, Udir, Ungdata, Brønnøysund, DEA, KMD). Eksplisitt utenfor scope: Bedrekommune.no, mikrodata, API/abonnement.
