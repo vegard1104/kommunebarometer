@@ -1,0 +1,1016 @@
+{
+  "kilde": "SSB Klass-API klassifikasjon 131 changes.json (2023-12-01 til 2024-02-01)",
+  "hentet": "2026-04-25",
+  "beskrivelse": "Rene kommunekode-endringer (samme navn, ny kode) ved Viken-oppløsningen og Møre og Romsdal-omnummerering 2024-01-01. Brukes til å hente data fra korrekt kode per år.",
+  "konvensjon": "newCode → { name, oldCodes: [{code, validTo}] } — oldCode gjelder for år FØR validTo.",
+  "endringer": {
+    "1508": {
+      "name": "Ålesund",
+      "oldCodes": [
+        {
+          "code": "1507",
+          "validTo": "2024-01-01"
+        }
+      ]
+    },
+    "3101": {
+      "name": "Halden",
+      "oldCodes": [
+        {
+          "code": "3001",
+          "validTo": "2024-01-01"
+        }
+      ]
+    },
+    "3103": {
+      "name": "Moss",
+      "oldCodes": [
+        {
+          "code": "3002",
+          "validTo": "2024-01-01"
+        }
+      ]
+    },
+    "3105": {
+      "name": "Sarpsborg",
+      "oldCodes": [
+        {
+          "code": "3003",
+          "validTo": "2024-01-01"
+        }
+      ]
+    },
+    "3107": {
+      "name": "Fredrikstad",
+      "oldCodes": [
+        {
+          "code": "3004",
+          "validTo": "2024-01-01"
+        }
+      ]
+    },
+    "3110": {
+      "name": "Hvaler",
+      "oldCodes": [
+        {
+          "code": "3011",
+          "validTo": "2024-01-01"
+        }
+      ]
+    },
+    "3112": {
+      "name": "Råde",
+      "oldCodes": [
+        {
+          "code": "3017",
+          "validTo": "2024-01-01"
+        }
+      ]
+    },
+    "3116": {
+      "name": "Skiptvet",
+      "oldCodes": [
+        {
+          "code": "3015",
+          "validTo": "2024-01-01"
+        }
+      ]
+    },
+    "3118": {
+      "name": "Indre Østfold",
+      "oldCodes": [
+        {
+          "code": "3014",
+          "validTo": "2024-01-01"
+        }
+      ]
+    },
+    "3120": {
+      "name": "Rakkestad",
+      "oldCodes": [
+        {
+          "code": "3016",
+          "validTo": "2024-01-01"
+        }
+      ]
+    },
+    "3122": {
+      "name": "Marker",
+      "oldCodes": [
+        {
+          "code": "3013",
+          "validTo": "2024-01-01"
+        }
+      ]
+    },
+    "3124": {
+      "name": "Aremark",
+      "oldCodes": [
+        {
+          "code": "3012",
+          "validTo": "2024-01-01"
+        }
+      ]
+    },
+    "3201": {
+      "name": "Bærum",
+      "oldCodes": [
+        {
+          "code": "3024",
+          "validTo": "2024-01-01"
+        }
+      ]
+    },
+    "3203": {
+      "name": "Asker",
+      "oldCodes": [
+        {
+          "code": "3025",
+          "validTo": "2024-01-01"
+        }
+      ]
+    },
+    "3205": {
+      "name": "Lillestrøm",
+      "oldCodes": [
+        {
+          "code": "3030",
+          "validTo": "2024-01-01"
+        }
+      ]
+    },
+    "3207": {
+      "name": "Nordre Follo",
+      "oldCodes": [
+        {
+          "code": "3020",
+          "validTo": "2024-01-01"
+        }
+      ]
+    },
+    "3209": {
+      "name": "Ullensaker",
+      "oldCodes": [
+        {
+          "code": "3033",
+          "validTo": "2024-01-01"
+        }
+      ]
+    },
+    "3212": {
+      "name": "Nesodden",
+      "oldCodes": [
+        {
+          "code": "3023",
+          "validTo": "2024-01-01"
+        }
+      ]
+    },
+    "3214": {
+      "name": "Frogn",
+      "oldCodes": [
+        {
+          "code": "3022",
+          "validTo": "2024-01-01"
+        }
+      ]
+    },
+    "3216": {
+      "name": "Vestby",
+      "oldCodes": [
+        {
+          "code": "3019",
+          "validTo": "2024-01-01"
+        }
+      ]
+    },
+    "3218": {
+      "name": "Ås",
+      "oldCodes": [
+        {
+          "code": "3021",
+          "validTo": "2024-01-01"
+        }
+      ]
+    },
+    "3220": {
+      "name": "Enebakk",
+      "oldCodes": [
+        {
+          "code": "3028",
+          "validTo": "2024-01-01"
+        }
+      ]
+    },
+    "3222": {
+      "name": "Lørenskog",
+      "oldCodes": [
+        {
+          "code": "3029",
+          "validTo": "2024-01-01"
+        }
+      ]
+    },
+    "3224": {
+      "name": "Rælingen",
+      "oldCodes": [
+        {
+          "code": "3027",
+          "validTo": "2024-01-01"
+        }
+      ]
+    },
+    "3226": {
+      "name": "Aurskog-Høland",
+      "oldCodes": [
+        {
+          "code": "3026",
+          "validTo": "2024-01-01"
+        }
+      ]
+    },
+    "3228": {
+      "name": "Nes",
+      "oldCodes": [
+        {
+          "code": "3034",
+          "validTo": "2024-01-01"
+        }
+      ]
+    },
+    "3230": {
+      "name": "Gjerdrum",
+      "oldCodes": [
+        {
+          "code": "3032",
+          "validTo": "2024-01-01"
+        }
+      ]
+    },
+    "3232": {
+      "name": "Nittedal",
+      "oldCodes": [
+        {
+          "code": "3031",
+          "validTo": "2024-01-01"
+        }
+      ]
+    },
+    "3234": {
+      "name": "Lunner",
+      "oldCodes": [
+        {
+          "code": "3054",
+          "validTo": "2024-01-01"
+        }
+      ]
+    },
+    "3236": {
+      "name": "Jevnaker",
+      "oldCodes": [
+        {
+          "code": "3053",
+          "validTo": "2024-01-01"
+        }
+      ]
+    },
+    "3238": {
+      "name": "Nannestad",
+      "oldCodes": [
+        {
+          "code": "3036",
+          "validTo": "2024-01-01"
+        }
+      ]
+    },
+    "3240": {
+      "name": "Eidsvoll",
+      "oldCodes": [
+        {
+          "code": "3035",
+          "validTo": "2024-01-01"
+        }
+      ]
+    },
+    "3242": {
+      "name": "Hurdal",
+      "oldCodes": [
+        {
+          "code": "3037",
+          "validTo": "2024-01-01"
+        }
+      ]
+    },
+    "3301": {
+      "name": "Drammen",
+      "oldCodes": [
+        {
+          "code": "3005",
+          "validTo": "2024-01-01"
+        }
+      ]
+    },
+    "3303": {
+      "name": "Kongsberg",
+      "oldCodes": [
+        {
+          "code": "3006",
+          "validTo": "2024-01-01"
+        }
+      ]
+    },
+    "3305": {
+      "name": "Ringerike",
+      "oldCodes": [
+        {
+          "code": "3007",
+          "validTo": "2024-01-01"
+        }
+      ]
+    },
+    "3310": {
+      "name": "Hole",
+      "oldCodes": [
+        {
+          "code": "3038",
+          "validTo": "2024-01-01"
+        }
+      ]
+    },
+    "3312": {
+      "name": "Lier",
+      "oldCodes": [
+        {
+          "code": "3049",
+          "validTo": "2024-01-01"
+        }
+      ]
+    },
+    "3314": {
+      "name": "Øvre Eiker",
+      "oldCodes": [
+        {
+          "code": "3048",
+          "validTo": "2024-01-01"
+        }
+      ]
+    },
+    "3316": {
+      "name": "Modum",
+      "oldCodes": [
+        {
+          "code": "3047",
+          "validTo": "2024-01-01"
+        }
+      ]
+    },
+    "3318": {
+      "name": "Krødsherad",
+      "oldCodes": [
+        {
+          "code": "3046",
+          "validTo": "2024-01-01"
+        }
+      ]
+    },
+    "3320": {
+      "name": "Flå",
+      "oldCodes": [
+        {
+          "code": "3039",
+          "validTo": "2024-01-01"
+        }
+      ]
+    },
+    "3322": {
+      "name": "Nesbyen",
+      "oldCodes": [
+        {
+          "code": "3040",
+          "validTo": "2024-01-01"
+        }
+      ]
+    },
+    "3324": {
+      "name": "Gol",
+      "oldCodes": [
+        {
+          "code": "3041",
+          "validTo": "2024-01-01"
+        }
+      ]
+    },
+    "3326": {
+      "name": "Hemsedal",
+      "oldCodes": [
+        {
+          "code": "3042",
+          "validTo": "2024-01-01"
+        }
+      ]
+    },
+    "3328": {
+      "name": "Ål",
+      "oldCodes": [
+        {
+          "code": "3043",
+          "validTo": "2024-01-01"
+        }
+      ]
+    },
+    "3330": {
+      "name": "Hol",
+      "oldCodes": [
+        {
+          "code": "3044",
+          "validTo": "2024-01-01"
+        }
+      ]
+    },
+    "3332": {
+      "name": "Sigdal",
+      "oldCodes": [
+        {
+          "code": "3045",
+          "validTo": "2024-01-01"
+        }
+      ]
+    },
+    "3334": {
+      "name": "Flesberg",
+      "oldCodes": [
+        {
+          "code": "3050",
+          "validTo": "2024-01-01"
+        }
+      ]
+    },
+    "3336": {
+      "name": "Rollag",
+      "oldCodes": [
+        {
+          "code": "3051",
+          "validTo": "2024-01-01"
+        }
+      ]
+    },
+    "3338": {
+      "name": "Nore og Uvdal",
+      "oldCodes": [
+        {
+          "code": "3052",
+          "validTo": "2024-01-01"
+        }
+      ]
+    },
+    "3901": {
+      "name": "Horten",
+      "oldCodes": [
+        {
+          "code": "3801",
+          "validTo": "2024-01-01"
+        }
+      ]
+    },
+    "3903": {
+      "name": "Holmestrand",
+      "oldCodes": [
+        {
+          "code": "3802",
+          "validTo": "2024-01-01"
+        }
+      ]
+    },
+    "3905": {
+      "name": "Tønsberg",
+      "oldCodes": [
+        {
+          "code": "3803",
+          "validTo": "2024-01-01"
+        }
+      ]
+    },
+    "3907": {
+      "name": "Sandefjord",
+      "oldCodes": [
+        {
+          "code": "3804",
+          "validTo": "2024-01-01"
+        }
+      ]
+    },
+    "3909": {
+      "name": "Larvik",
+      "oldCodes": [
+        {
+          "code": "3805",
+          "validTo": "2024-01-01"
+        }
+      ]
+    },
+    "3911": {
+      "name": "Færder",
+      "oldCodes": [
+        {
+          "code": "3811",
+          "validTo": "2024-01-01"
+        }
+      ]
+    },
+    "4001": {
+      "name": "Porsgrunn",
+      "oldCodes": [
+        {
+          "code": "3806",
+          "validTo": "2024-01-01"
+        }
+      ]
+    },
+    "4003": {
+      "name": "Skien",
+      "oldCodes": [
+        {
+          "code": "3807",
+          "validTo": "2024-01-01"
+        }
+      ]
+    },
+    "4005": {
+      "name": "Notodden",
+      "oldCodes": [
+        {
+          "code": "3808",
+          "validTo": "2024-01-01"
+        }
+      ]
+    },
+    "4010": {
+      "name": "Siljan",
+      "oldCodes": [
+        {
+          "code": "3812",
+          "validTo": "2024-01-01"
+        }
+      ]
+    },
+    "4012": {
+      "name": "Bamble",
+      "oldCodes": [
+        {
+          "code": "3813",
+          "validTo": "2024-01-01"
+        }
+      ]
+    },
+    "4014": {
+      "name": "Kragerø",
+      "oldCodes": [
+        {
+          "code": "3814",
+          "validTo": "2024-01-01"
+        }
+      ]
+    },
+    "4016": {
+      "name": "Drangedal",
+      "oldCodes": [
+        {
+          "code": "3815",
+          "validTo": "2024-01-01"
+        }
+      ]
+    },
+    "4018": {
+      "name": "Nome",
+      "oldCodes": [
+        {
+          "code": "3816",
+          "validTo": "2024-01-01"
+        }
+      ]
+    },
+    "4020": {
+      "name": "Midt-Telemark",
+      "oldCodes": [
+        {
+          "code": "3817",
+          "validTo": "2024-01-01"
+        }
+      ]
+    },
+    "4022": {
+      "name": "Seljord",
+      "oldCodes": [
+        {
+          "code": "3820",
+          "validTo": "2024-01-01"
+        }
+      ]
+    },
+    "4024": {
+      "name": "Hjartdal",
+      "oldCodes": [
+        {
+          "code": "3819",
+          "validTo": "2024-01-01"
+        }
+      ]
+    },
+    "4026": {
+      "name": "Tinn",
+      "oldCodes": [
+        {
+          "code": "3818",
+          "validTo": "2024-01-01"
+        }
+      ]
+    },
+    "4028": {
+      "name": "Kviteseid",
+      "oldCodes": [
+        {
+          "code": "3821",
+          "validTo": "2024-01-01"
+        }
+      ]
+    },
+    "4030": {
+      "name": "Nissedal",
+      "oldCodes": [
+        {
+          "code": "3822",
+          "validTo": "2024-01-01"
+        }
+      ]
+    },
+    "4032": {
+      "name": "Fyresdal",
+      "oldCodes": [
+        {
+          "code": "3823",
+          "validTo": "2024-01-01"
+        }
+      ]
+    },
+    "4034": {
+      "name": "Tokke",
+      "oldCodes": [
+        {
+          "code": "3824",
+          "validTo": "2024-01-01"
+        }
+      ]
+    },
+    "4036": {
+      "name": "Vinje",
+      "oldCodes": [
+        {
+          "code": "3825",
+          "validTo": "2024-01-01"
+        }
+      ]
+    },
+    "5501": {
+      "name": "Tromsø",
+      "oldCodes": [
+        {
+          "code": "5401",
+          "validTo": "2024-01-01"
+        }
+      ]
+    },
+    "5503": {
+      "name": "Harstad - Hárstták",
+      "oldCodes": [
+        {
+          "code": "5402",
+          "validTo": "2024-01-01"
+        }
+      ]
+    },
+    "5510": {
+      "name": "Kvæfjord",
+      "oldCodes": [
+        {
+          "code": "5411",
+          "validTo": "2024-01-01"
+        }
+      ]
+    },
+    "5512": {
+      "name": "Dielddanuorri - Tjeldsund",
+      "oldCodes": [
+        {
+          "code": "5412",
+          "validTo": "2024-01-01"
+        }
+      ]
+    },
+    "5514": {
+      "name": "Ibestad",
+      "oldCodes": [
+        {
+          "code": "5413",
+          "validTo": "2024-01-01"
+        }
+      ]
+    },
+    "5518": {
+      "name": "Loabák - Lavangen",
+      "oldCodes": [
+        {
+          "code": "5415",
+          "validTo": "2024-01-01"
+        }
+      ]
+    },
+    "5520": {
+      "name": "Bardu",
+      "oldCodes": [
+        {
+          "code": "5416",
+          "validTo": "2024-01-01"
+        }
+      ]
+    },
+    "5522": {
+      "name": "Salangen",
+      "oldCodes": [
+        {
+          "code": "5417",
+          "validTo": "2024-01-01"
+        }
+      ]
+    },
+    "5524": {
+      "name": "Målselv",
+      "oldCodes": [
+        {
+          "code": "5418",
+          "validTo": "2024-01-01"
+        }
+      ]
+    },
+    "5526": {
+      "name": "Sørreisa",
+      "oldCodes": [
+        {
+          "code": "5419",
+          "validTo": "2024-01-01"
+        }
+      ]
+    },
+    "5528": {
+      "name": "Dyrøy",
+      "oldCodes": [
+        {
+          "code": "5420",
+          "validTo": "2024-01-01"
+        }
+      ]
+    },
+    "5530": {
+      "name": "Senja",
+      "oldCodes": [
+        {
+          "code": "5421",
+          "validTo": "2024-01-01"
+        }
+      ]
+    },
+    "5532": {
+      "name": "Balsfjord",
+      "oldCodes": [
+        {
+          "code": "5422",
+          "validTo": "2024-01-01"
+        }
+      ]
+    },
+    "5534": {
+      "name": "Karlsøy",
+      "oldCodes": [
+        {
+          "code": "5423",
+          "validTo": "2024-01-01"
+        }
+      ]
+    },
+    "5536": {
+      "name": "Lyngen",
+      "oldCodes": [
+        {
+          "code": "5424",
+          "validTo": "2024-01-01"
+        }
+      ]
+    },
+    "5538": {
+      "name": "Storfjord - Omasvuotna - Omasvuono",
+      "oldCodes": [
+        {
+          "code": "5425",
+          "validTo": "2024-01-01"
+        }
+      ]
+    },
+    "5540": {
+      "name": "Gáivuotna - Kåfjord - Kaivuono",
+      "oldCodes": [
+        {
+          "code": "5426",
+          "validTo": "2024-01-01"
+        }
+      ]
+    },
+    "5542": {
+      "name": "Skjervøy",
+      "oldCodes": [
+        {
+          "code": "5427",
+          "validTo": "2024-01-01"
+        }
+      ]
+    },
+    "5544": {
+      "name": "Nordreisa - Ráisa - Raisi",
+      "oldCodes": [
+        {
+          "code": "5428",
+          "validTo": "2024-01-01"
+        }
+      ]
+    },
+    "5546": {
+      "name": "Kvænangen",
+      "oldCodes": [
+        {
+          "code": "5429",
+          "validTo": "2024-01-01"
+        }
+      ]
+    },
+    "5601": {
+      "name": "Alta",
+      "oldCodes": [
+        {
+          "code": "5403",
+          "validTo": "2024-01-01"
+        }
+      ]
+    },
+    "5603": {
+      "name": "Hammerfest - Hámmerfeasta",
+      "oldCodes": [
+        {
+          "code": "5406",
+          "validTo": "2024-01-01"
+        }
+      ]
+    },
+    "5605": {
+      "name": "Sør-Varanger",
+      "oldCodes": [
+        {
+          "code": "5444",
+          "validTo": "2024-01-01"
+        }
+      ]
+    },
+    "5607": {
+      "name": "Vadsø",
+      "oldCodes": [
+        {
+          "code": "5405",
+          "validTo": "2024-01-01"
+        }
+      ]
+    },
+    "5610": {
+      "name": "Kárášjohka - Karasjok",
+      "oldCodes": [
+        {
+          "code": "5437",
+          "validTo": "2024-01-01"
+        }
+      ]
+    },
+    "5612": {
+      "name": "Guovdageaidnu - Kautokeino",
+      "oldCodes": [
+        {
+          "code": "5430",
+          "validTo": "2024-01-01"
+        }
+      ]
+    },
+    "5614": {
+      "name": "Loppa",
+      "oldCodes": [
+        {
+          "code": "5432",
+          "validTo": "2024-01-01"
+        }
+      ]
+    },
+    "5616": {
+      "name": "Hasvik",
+      "oldCodes": [
+        {
+          "code": "5433",
+          "validTo": "2024-01-01"
+        }
+      ]
+    },
+    "5618": {
+      "name": "Måsøy",
+      "oldCodes": [
+        {
+          "code": "5434",
+          "validTo": "2024-01-01"
+        }
+      ]
+    },
+    "5620": {
+      "name": "Nordkapp",
+      "oldCodes": [
+        {
+          "code": "5435",
+          "validTo": "2024-01-01"
+        }
+      ]
+    },
+    "5622": {
+      "name": "Porsanger - Porsángu - Porsanki",
+      "oldCodes": [
+        {
+          "code": "5436",
+          "validTo": "2024-01-01"
+        }
+      ]
+    },
+    "5624": {
+      "name": "Lebesby",
+      "oldCodes": [
+        {
+          "code": "5438",
+          "validTo": "2024-01-01"
+        }
+      ]
+    },
+    "5626": {
+      "name": "Gamvik",
+      "oldCodes": [
+        {
+          "code": "5439",
+          "validTo": "2024-01-01"
+        }
+      ]
+    },
+    "5628": {
+      "name": "Deatnu - Tana",
+      "oldCodes": [
+        {
+          "code": "5441",
+          "validTo": "2024-01-01"
+        }
+      ]
+    },
+    "5630": {
+      "name": "Berlevåg",
+      "oldCodes": [
+        {
+          "code": "5440",
+          "validTo": "2024-01-01"
+        }
+      ]
+    },
+    "5632": {
+      "name": "Båtsfjord",
+      "oldCodes": [
+        {
+          "code": "5443",
+          "validTo": "2024-01-01"
+        }
+      ]
+    },
+    "5634": {
+      "name": "Vardø",
+      "oldCodes": [
+        {
+          "code": "5404",
+          "validTo": "2024-01-01"
+        }
+      ]
+    },
+    "5636": {
+      "name": "Unjárga - Nesseby",
+      "oldCodes": [
+        {
+          "code": "5442",
+          "validTo": "2024-01-01"
+        }
+      ]
+    }
+  }
+}
