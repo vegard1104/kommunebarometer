@@ -70,6 +70,29 @@
     -webkit-background-clip: text; -webkit-text-fill-color: transparent;
   }
   .overall-rank small { display: block; font-size: 13px; color: var(--muted); font-weight: 400; margin-top: 6px; background: none; -webkit-text-fill-color: var(--muted); letter-spacing: normal; }
+
+  .merger-context {
+    background: linear-gradient(135deg, rgba(76,201,240,0.08) 0%, rgba(247,37,133,0.08) 100%);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 14px 18px;
+    margin: 0 0 20px;
+    font-size: 13px;
+    line-height: 1.55;
+  }
+  .merger-context .mc-title { color: var(--muted); font-size: 12px; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 8px; }
+  .merger-context .mc-chips { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 6px; }
+  .merger-context .mc-chip {
+    display: inline-flex; align-items: center; gap: 4px;
+    padding: 5px 10px; border-radius: 999px;
+    background: var(--panel-2); border: 1px solid var(--border);
+    color: var(--text); font-size: 12px; cursor: pointer;
+    transition: all .12s ease;
+  }
+  .merger-context .mc-chip:hover { background: var(--accent); color: #0f1724; border-color: var(--accent); }
+  .merger-context .mc-chip.parent { background: rgba(76,201,240,0.15); border-color: var(--accent); color: var(--accent); font-weight: 600; }
+  .merger-context .mc-chip.parent:hover { background: var(--accent); color: #0f1724; }
+  .merger-context strong { color: var(--text); }
   .score-row { display: flex; gap: 24px; margin-top: 14px; flex-wrap: wrap; }
   .score-row .item { flex: 1; min-width: 110px; }
   .score-row .value { font-size: 24px; font-weight: 600; }
@@ -173,6 +196,7 @@
     <div class="status" id="status"><span class="spinner"></span>Starter opp…</div>
   </div>
 
+  <div class="merger-context" id="merger-context" hidden></div>
   <div class="hero">
     <div class="card">
       <h2>Samlet plassering</h2>
@@ -280,6 +304,50 @@ const LOWER_IS_BETTER = /kostnad|utgift|netto driftsutgift|brutto driftsutgift|g
 
 // Nøkkelord som tydelig indikerer at høy verdi er bra
 const HIGHER_IS_BETTER = /dekning|andel med|andel barn|tilskudd|netto driftsresultat|disposisjonsfond|grunnbemanning|lærertetthet|årsverk per|fagutdanning|barnehagelærer|leke- og oppholdsareal/i;
+
+// ============================================================
+//  SAMMENSLÅINGER (MERGERS) — omdøpte kommuner fra regionreformene
+// ============================================================
+// Når en sammenslåing gir ny kommune et NYTT navn (ikke identisk med noen av komponentene),
+// klarer ikke label-baserte merging å koble historiske data. Her er mappingen eksplisitt:
+// ny kode → komponenter (gamle koder + navn). Brukeren kan velge selve sammenslåtte kommunen
+// (data fra sammenslåingsåret og fremover) eller en enkelt komponent (historisk data).
+const MERGERS = {
+  '5054': { name: 'Indre Fosen', year: 2018, components: [ { code: '1624', name: 'Rissa' }, { code: '1718', name: 'Leksvik' } ]},
+  '3911': { name: 'Færder', year: 2018, components: [ { code: '0722', name: 'Nøtterøy' }, { code: '0723', name: 'Tjøme' } ]},
+  '3203': { name: 'Asker', year: 2020, components: [ { code: '0220', name: 'Asker' }, { code: '0628', name: 'Hurum' }, { code: '0627', name: 'Røyken' } ]},
+  '3207': { name: 'Nordre Follo', year: 2020, components: [ { code: '0217', name: 'Oppegård' }, { code: '0213', name: 'Ski' } ]},
+  '3205': { name: 'Lillestrøm', year: 2020, components: [ { code: '0231', name: 'Skedsmo' }, { code: '0227', name: 'Fet' }, { code: '0226', name: 'Sørum' } ]},
+  '3226': { name: 'Aurskog-Høland', year: 2020, components: [ { code: '0221', name: 'Aurskog-Høland' }, { code: '0121', name: 'Rømskog' } ]},
+  '3118': { name: 'Indre Østfold', year: 2020, components: [ { code: '0124', name: 'Askim' }, { code: '0125', name: 'Eidsberg' }, { code: '0138', name: 'Hobøl' }, { code: '0122', name: 'Trøgstad' }, { code: '0123', name: 'Spydeberg' } ]},
+  '3301': { name: 'Drammen', year: 2020, components: [ { code: '0602', name: 'Drammen' }, { code: '0625', name: 'Nedre Eiker' }, { code: '0711', name: 'Svelvik' } ]},
+  '3903': { name: 'Holmestrand', year: 2020, components: [ { code: '0702', name: 'Holmestrand' }, { code: '0713', name: 'Sande' } ]},
+  '4020': { name: 'Midt-Telemark', year: 2020, components: [ { code: '0821', name: 'Bø (Telemark)' }, { code: '0822', name: 'Sauherad' } ]},
+  '4204': { name: 'Kristiansand', year: 2020, components: [ { code: '1001', name: 'Kristiansand' }, { code: '1018', name: 'Søgne' }, { code: '1017', name: 'Songdalen' } ]},
+  '4205': { name: 'Lindesnes', year: 2020, components: [ { code: '1002', name: 'Mandal' }, { code: '1021', name: 'Marnardal' }, { code: '1029', name: 'Lindesnes' } ]},
+  '4225': { name: 'Lyngdal', year: 2020, components: [ { code: '1027', name: 'Audnedal' }, { code: '1032', name: 'Lyngdal' } ]},
+  '4618': { name: 'Ullensvang', year: 2020, components: [ { code: '1227', name: 'Jondal' }, { code: '1228', name: 'Odda' }, { code: '1231', name: 'Ullensvang' } ]},
+  '4624': { name: 'Bjørnafjorden', year: 2020, components: [ { code: '1243', name: 'Os (Hordaland)' }, { code: '1241', name: 'Fusa' } ]},
+  '4631': { name: 'Alver', year: 2020, components: [ { code: '1263', name: 'Lindås' }, { code: '1256', name: 'Meland' }, { code: '1260', name: 'Radøy' } ]},
+  '4602': { name: 'Kinn', year: 2020, components: [ { code: '1401', name: 'Flora' }, { code: '1439', name: 'Vågsøy' } ]},
+  '4647': { name: 'Sunnfjord', year: 2020, components: [ { code: '1432', name: 'Førde' }, { code: '1431', name: 'Jølster' }, { code: '1433', name: 'Naustdal' }, { code: '1430', name: 'Gaular' } ]},
+  '4649': { name: 'Stad', year: 2020, components: [ { code: '1443', name: 'Eid' }, { code: '1441', name: 'Selje' } ]},
+  '1508': { name: 'Ålesund', year: 2020, components: [ { code: '1504', name: 'Ålesund' }, { code: '1546', name: 'Sandøy' }, { code: '1529', name: 'Skodje' }, { code: '1523', name: 'Ørskog' } ]},
+  '1579': { name: 'Hustadvika', year: 2020, components: [ { code: '1551', name: 'Eide' }, { code: '1548', name: 'Fræna' } ]},
+  '5055': { name: 'Heim', year: 2020, components: [ { code: '1612', name: 'Hemne' }, { code: '1571', name: 'Halsa' } ]},
+  '5059': { name: 'Orkland', year: 2020, components: [ { code: '1638', name: 'Orkdal' }, { code: '1636', name: 'Meldal' }, { code: '1622', name: 'Agdenes' } ]},
+  '5512': { name: 'Dielddanuorri - Tjeldsund', year: 2020, components: [ { code: '1852', name: 'Tjeldsund' }, { code: '1913', name: 'Skånland' } ]},
+  '5530': { name: 'Senja', year: 2020, components: [ { code: '1929', name: 'Berg' }, { code: '1931', name: 'Lenvik' }, { code: '1928', name: 'Torsken' }, { code: '1927', name: 'Tranøy' } ]}
+};
+const MERGERS_REVERSE = (() => {
+  const rev = {};
+  for (const [pCode, m] of Object.entries(MERGERS)) {
+    for (const c of m.components) {
+      rev[c.code] = { parentCode: pCode, parentName: m.name, year: m.year, name: c.name, siblings: m.components.filter(s => s.code !== c.code) };
+    }
+  }
+  return rev;
+})();
 
 // Bruk Vercel rewrite /api/ssb/* → data.ssb.no for å unngå CORS i nettleser.
 // Fallback til direkte SSB-URL ved lokal kjøring (file://).
@@ -492,26 +560,35 @@ async function loadSector(sec) {
     for (const [key, entries] of Object.entries(groups)) {
       // Finn "nåværende" kode — den uten årstall i parentes.
       let current = entries.find(e => !isHistoricLabel(e.info._label));
-      if (!current) continue; // ignorer helt utgåtte kommuner (ingen nåværende kode)
-      // Bruk current-kodens label (uten evt. parentes) som navn — mer korrekt enn normalisert nøkkel.
-      const displayName = stripLabel(current.info._label);
-      // Slå sammen alle år fra alle koder i gruppen inn i current-koden.
-      const merged = { _label: displayName, indicators: {} };
-      for (const entry of entries) {
-        for (const [ci, iData] of Object.entries(entry.info.indicators || {})) {
-          if (!merged.indicators[ci]) {
-            merged.indicators[ci] = { _label: iData._label, years: {} };
-          }
-          for (const [yr, val] of Object.entries(iData.years || {})) {
-            // Ta første ikke-null verdi — historiske og nåværende koder har data for ulike år,
-            // så det er typisk ingen konflikt.
-            if (merged.indicators[ci].years[yr] == null && val != null) {
-              merged.indicators[ci].years[yr] = val;
+      if (current) {
+        // Standard merge: slå sammen alle koder med samme navn inn i nåværende kode.
+        const displayName = stripLabel(current.info._label);
+        const merged = { _label: displayName, indicators: {} };
+        for (const entry of entries) {
+          for (const [ci, iData] of Object.entries(entry.info.indicators || {})) {
+            if (!merged.indicators[ci]) merged.indicators[ci] = { _label: iData._label, years: {} };
+            for (const [yr, val] of Object.entries(iData.years || {})) {
+              if (merged.indicators[ci].years[yr] == null && val != null) merged.indicators[ci].years[yr] = val;
             }
           }
         }
+        commMap[current.code] = merged;
+      } else {
+        // Ingen nåværende kode med samme navn: typisk komponent av omdøpt sammenslåing
+        // (f.eks. "Rissa (-2017)" → slått sammen til Indre Fosen).
+        // Behold hver orphan-kode som egen oppføring hvis den er kjent fra MERGERS_REVERSE.
+        for (const entry of entries) {
+          if (MERGERS_REVERSE[entry.code]) {
+            const info = MERGERS_REVERSE[entry.code];
+            const displayName = stripLabel(entry.info._label) || info.name;
+            commMap[entry.code] = {
+              _label: displayName,
+              _mergerChild: info,
+              indicators: entry.info.indicators || {}
+            };
+          }
+        }
       }
-      commMap[current.code] = merged;
     }
     log(`  ✓ ${sec.id}: ${Object.keys(commMap).length} kommuner, ${codes.length} indikatorer, ${yearsToUse.length} år`);
     return {
@@ -772,6 +849,68 @@ function renderOverall() {
     const d = prev.rank - info.rank;
     document.getElementById('overall-change').innerHTML = d > 0 ? `<span style="color:var(--good)">▲ ${d}</span>` : d < 0 ? `<span style="color:var(--bad)">▼ ${Math.abs(d)}</span>` : '0';
   } else document.getElementById('overall-change').textContent = '–';
+}
+
+function renderMergerPanel() {
+  const box = document.getElementById('merger-context');
+  if (!box) return;
+  const code = CURRENT_MUNI_CODE;
+  const asMerged = MERGERS[code];       // Gjeldende kode er en sammenslått kommune
+  const asChild = MERGERS_REVERSE[code]; // Gjeldende kode er en komponent
+
+  if (!asMerged && !asChild) {
+    box.hidden = true;
+    box.innerHTML = '';
+    return;
+  }
+
+  const chip = (c, name, cls = '') =>
+    `<span class="mc-chip ${cls}" data-code="${c}">${name}</span>`;
+
+  let html = '';
+  if (asMerged) {
+    // Vis komponent-kommuner som chips
+    const chips = asMerged.components
+      .filter(c => MUNI_NAMES[c.code]) // kun de vi faktisk har data for
+      .map(c => chip(c.code, c.name))
+      .join('');
+    html = `
+      <div class="mc-title">Sammenslått kommune (fra ${asMerged.year})</div>
+      <div><strong>${asMerged.name}</strong> ble opprettet i ${asMerged.year} ved sammenslåing av ${asMerged.components.length} kommuner.
+      For år før ${asMerged.year}, se data for hver komponent:</div>
+      <div class="mc-chips">${chips || '<em style="color:var(--muted)">Ingen historiske data tilgjengelig</em>'}</div>
+    `;
+  } else if (asChild) {
+    // Vis parent + søsken
+    const siblingChips = asChild.siblings
+      .filter(s => MUNI_NAMES[s.code])
+      .map(s => chip(s.code, s.name))
+      .join('');
+    html = `
+      <div class="mc-title">Historisk kommune</div>
+      <div><strong>${asChild.name}</strong> ble slått sammen til <strong>${asChild.parentName}</strong> i ${asChild.year}. Du ser data fra før sammenslåingen.</div>
+      <div class="mc-chips">
+        ${chip(asChild.parentCode, '→ ' + asChild.parentName + ' (ny kommune)', 'parent')}
+        ${siblingChips}
+      </div>
+    `;
+  }
+
+  box.innerHTML = html;
+  box.hidden = false;
+  // Legg på klikk-handlers (erstatt, ingen duplikater)
+  box.querySelectorAll('.mc-chip').forEach(el => {
+    el.addEventListener('click', () => {
+      const newCode = el.getAttribute('data-code');
+      if (newCode && MUNI_NAMES[newCode]) {
+        CURRENT_MUNI_CODE = newCode;
+        COMPARE_MUNIS = [newCode];
+        const input = document.getElementById('kommune-search');
+        if (input) input.value = MUNI_NAMES[newCode];
+        renderAll();
+      }
+    });
+  });
 }
 
 function renderSectors() {
@@ -1075,6 +1214,7 @@ function renderCompare() {
 
 function renderAll() {
   renderOverall();
+  renderMergerPanel();
   renderSectors();
   renderTop10();
   renderHistory();
@@ -1169,12 +1309,20 @@ async function main() {
   for (const sd of loaded) {
     for (const [k, v] of Object.entries(sd.data || {})) {
       if (/^\d{4}$/.test(k) && v._label) {
-        // Fjern ev. K-prefiks og parenteser fra navnet (f.eks. "Lørenskog (-2019)")
-        MUNI_NAMES[k] = v._label.replace(/\s*\(.*?\)\s*$/, '').trim();
+        // Rent basisnavn (uten evt. parentes).
+        const base = v._label.replace(/\s*\(.*?\)\s*$/, '').trim();
+        // Komponent-kommuner får tydelig suffiks "(til NyKommune)" så brukeren ser
+        // at dette er en historisk kommune som er slått sammen.
+        if (MERGERS_REVERSE[k]) {
+          const info = MERGERS_REVERSE[k];
+          MUNI_NAMES[k] = `${base} (til ${info.parentName})`;
+        } else {
+          MUNI_NAMES[k] = base;
+        }
       }
     }
   }
-  log(`Totalt ${Object.keys(MUNI_NAMES).length} kommuner identifisert`);
+  log(`Totalt ${Object.keys(MUNI_NAMES).length} kommuner identifisert (inkl. ${Object.keys(MUNI_NAMES).filter(k => MERGERS_REVERSE[k]).length} historiske komponent-kommuner)`);
 
   // Beregn sektorscorer
   for (const sd of loaded) {
