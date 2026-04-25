@@ -14,6 +14,12 @@ Format per oppføring:
 
 ---
 
+## 2026-04-25 — Pakke 10 (B2) levert: Dynamisk kommuneinndeling skeleton
+**Hvem:** Claude Code (autonom, Pakke 10)
+**Hva:** Ny `data/kommunestruktur.js` med `Kommunestruktur`-klasse som henter aktuell kommuneliste + strukturelle endringer fra Klass-API (klassifikasjon 131 + changes.json fra 2018-01-01) og bygger MERGERS / MERGERS_REVERSE i samme format som den hardkodede MERGERS i `index.html`. 30-dagers localStorage-cache. Lastet via `<script defer>` så `window.Kommunestruktur` er tilgjengelig globalt — ikke i bruk ennå (full erstatning av hardkodet MERGERS er en større refaktor i egen PR).
+**Hvorfor:** 2.0-rapportens B2-anbefaling — fjerner vedlikeholds­byrde ved framtidige kommunereformer (planlagt 2027). Tjenester skalerer automatisk til nye sammenslåinger uten kode-deploy.
+**Konsekvens for teamet:** Backend kan nå skrive en migrasjons-PR som bytter ut linje 315–341 i `index.html` (MERGERS) med `await km.last(); window.MERGERS = km.MERGERS; ...`. Test-dekning bør validere at eksisterende kommuner får riktige sammenslåings-context.
+
 ## 2026-04-25 — Pakke 0–3 levert og merget til main
 **Hvem:** Claude Code (autonom kjøring på vegne av Vegard) + Vegard (merging)
 **Hva:** Fire pakker levert som selvstendige PR-er og merget til main:
