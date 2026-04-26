@@ -102,7 +102,10 @@
   <section id="sammendrag-seksjon" hidden>
     <h2>Sammendrag</h2>
     <div id="sammendrag-stub" class="info-banner" hidden>
-      <strong>Sammendrag mangler:</strong> Åpne <a href="/" id="hjem-lenke">Kommunebarometer-forsiden</a> først for å regne ut sektor-score, så kommer du tilbake hit.
+      <strong>Sammendrag mangler:</strong>
+      Sektor-score, rangering og 4-årssnitt beregnes på hovedsiden.
+      <a href="#" id="auto-redirect-lenke" style="color:var(--accent);font-weight:600;">Kjør beregning og kom tilbake →</a>
+      <small id="auto-redirect-status" style="display:block;margin-top:6px;color:var(--muted);"></small>
     </div>
     <div class="summary-grid">
       <div class="summary-card"><div class="label" id="raa-label">Sektor-score</div><div class="value" id="score-raa">–</div><div class="sub" id="rangering-raa">–</div></div>
@@ -322,13 +325,45 @@ async function initSide() {
   }
 }
 
+// Pakke 2: Hvis localStorage er tomt (bruker kom rett til /sektor.html), tilbyr
+// vi å åpne hovedsiden i samme fane med ?return-param. Hovedsiden redirecter
+// hit etter scoring er ferdig. Auto-trigger etter 2 sekunder hvis bruker ikke
+// klikker bevisst.
+function visSammendragStub() {
+  const stub = document.getElementById('sammendrag-stub');
+  stub.hidden = false;
+  const lenke = document.getElementById('auto-redirect-lenke');
+  const status = document.getElementById('auto-redirect-status');
+  const retur = encodeURIComponent(window.location.href);
+  const målUrl = `/?kommune=${encodeURIComponent(kommuneNavn)}&return=${retur}`;
+  lenke.href = målUrl;
+  let nedteller = 3;
+  status.textContent = `Hopper automatisk om ${nedteller} sek …`;
+  const timer = setInterval(() => {
+    nedteller--;
+    if (nedteller > 0) {
+      status.textContent = `Hopper automatisk om ${nedteller} sek …`;
+    } else {
+      clearInterval(timer);
+      window.location.href = målUrl;
+    }
+  }, 1000);
+  // Avbryt hvis bruker klikker noe på siden
+  document.addEventListener('click', (e) => {
+    if (e.target !== lenke) {
+      clearInterval(timer);
+      status.textContent = 'Auto-redirect avbrutt. Klikk lenken over når du vil ha sammendrag.';
+    }
+  }, { once: true });
+}
+
 function renderSammendrag() {
   document.getElementById('sammendrag-seksjon').hidden = false;
   const scores = lesLagretSektorScores();
   const sektorScores = scores[sektorId];
   const kommunenr = finnKommunenrFraNavn(kommuneNavn);
   if (!sektorScores || !kommunenr) {
-    document.getElementById('sammendrag-stub').hidden = false;
+    visSammendragStub();
     return;
   }
   const info = sektorScores[år]?.[kommunenr];

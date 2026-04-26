@@ -2169,6 +2169,18 @@ function renderAll() {
     }
     localStorage.setItem('kb_data_timestamp', String(Date.now()));
   } catch (_) { /* localStorage kan være avskrudd — ikke kritisk */ }
+
+  // Pakke 2: Hvis bruker kom hit fra sektor.html via ?return-param, redirect
+  // tilbake nå når sammendrag-state er på plass i localStorage.
+  try {
+    const u = new URL(window.location.href);
+    const retur = u.searchParams.get('return');
+    if (retur && /^https?:\/\//.test(retur) && new URL(retur, window.location.origin).origin === window.location.origin) {
+      log(`Returnerer til ${retur}`);
+      // Liten delay så bruker ser at scoring kjørte ferdig
+      setTimeout(() => { window.location.href = retur; }, 600);
+    }
+  } catch (_) {}
 }
 
 // ============================================================
