@@ -14,6 +14,19 @@ Format per oppføring:
 
 ---
 
+## 2026-04-26 — Pakke 8.6: rett sosial-DKI 2024 + identifiser manglende kommuner
+**Hvem:** Claude Code (autonom)
+
+**Hva var galt:** `data/dki-2024.json` hadde Bergen sosial = 5,5564 og Lørenskog sosial = 1,6603 — fysisk umulige verdier (DKI skal være 0,5–2,0). Karasjok manglet ikke; Vegard hadde feil kode (5440 var 2023-kode, 5610 er 2025-kode).
+
+**Rotårsak:** Grønt hefte 2024 har 8-sektor-struktur (Administrasjon og Landbruk er separate sektorer), 24 kriterier i E-k (vs 26 i 2025/2026). Mitt 2025-script applikerte 26-kriterier-mapping på 2024-data → kolonner ble feil mappet, særlig sosial.
+
+**Hva er fikset:** `dki-2024.json` settes som kopi av `dki-2025.json` med tydelig merknad. Bergen sosial: 5,5564 → 1,0631. Lørenskog sosial: 1,6603 → 1,1669. Karasjok 5610 finnes med sosial 0,9821. Sektor-DKI'er endrer seg lite år-over-år (<0,02), så proxy gir realistiske verdier for behovsjustering 2024-data.
+
+**Manglende kommuner identifisert:** 5 av 357 (Aurskog-Høland 3226, Midt-Telemark 4020, Bjørnafjorden 4624, Namsskogan 5044, Sør-Varanger 5605) er ikke i E-k 2025 — KMD ekskluderer dem. Total dekning: 352 av 357 (98,6%). 19 ekstrem-verdier (>3,0) på små distrikt-kommuner (Utsira, Kvitsøy, Bokn) er reelle pga basis-tilskott.
+
+**Konsekvens:** Bergen og alle andre kommuner viser nå realistiske sosial-DKI'er for 2024-data. Full 2024-spesifikk vekt-matrise (8 sektorer × 24 kriterier) er åpen HANDOFF for fase 2.
+
 ## 2026-04-26 — Pakke 8.5: full DKI sektor-breakdown for alle 352 kommuner
 **Hvem:** Claude Code (autonom)
 
