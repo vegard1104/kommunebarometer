@@ -433,7 +433,9 @@ async function renderDki() {
     return;
   }
   const kommunenr = finnKommunenrFraNavn(kommuneNavn);
-  const dki = kommunenr ? data?.kommuner?.[kommunenr]?.[sektor.dkiFelt] : null;
+  const k = kommunenr ? data?.kommuner?.[kommunenr] : null;
+  // v2-kompakt format: tall = uniform samlet DKI; objekt = per-sektor
+  const dki = (typeof k === 'number') ? k : (k?.[sektor.dkiFelt] ?? k?.samlet ?? null);
   if (dki && dki !== 1.0) {
     panel.hidden = false;
     const pct = Math.round(Math.abs(1 - dki) * 100);
@@ -608,7 +610,9 @@ async function dkiFaktor() {
   const data = await lastDkiFil(år);
   const kommunenr = finnKommunenrFraNavn(kommuneNavn);
   if (!data || !kommunenr) return null;
-  return data?.kommuner?.[kommunenr]?.[sektor.dkiFelt] ?? null;
+  const k = data?.kommuner?.[kommunenr];
+  if (typeof k === 'number') return k;
+  return k?.[sektor.dkiFelt] ?? k?.samlet ?? null;
 }
 
 async function renderIndikatorTabell(data) {

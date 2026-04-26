@@ -1187,11 +1187,18 @@ async function loadDKI(år) {
 
 // A2: Returnerer DKI-faktor for en kommune i en sektor for et gitt år.
 // Returnerer 1.0 (ingen justering) hvis data mangler.
+//
+// dki-{år}.json bruker v2-kompakt format:
+//   - tall  → samlet DKI uniformt på alle sektorer (354/355 kommuner)
+//   - objekt → sektor-spesifikt { grunnskole, pleie, ... } (Lørenskog POC)
 function dkiFor(kommunenr, sectorId, år) {
   if (!DKI_DATA || !DKI_DATA[år]) return 1.0;
+  const k = DKI_DATA[år]?.kommuner?.[kommunenr];
+  if (k == null) return 1.0;
+  if (typeof k === 'number') return k;  // uniform samlet DKI
   const felt = SECTOR_DKI_MAP[sectorId];
   if (!felt) return 1.0;
-  return DKI_DATA[år]?.kommuner?.[kommunenr]?.[felt] ?? 1.0;
+  return k[felt] ?? k.samlet ?? 1.0;
 }
 
 function computeSectorScores(sectorData) {
