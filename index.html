@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Kommunebarometer 2026 – Lørenskog</title>
+<title>Kommunebarometer 2026</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <script src="/js/kostra-rapport.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
@@ -83,6 +83,38 @@
     margin: 0 0 20px;
     font-size: 13px;
     line-height: 1.55;
+  }
+
+  .velg-kommune-tomstate {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 50vh;
+    padding: 48px 20px;
+    margin: 24px 0;
+  }
+  .velg-tomstate-inner {
+    text-align: center;
+    max-width: 520px;
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 40px 32px;
+  }
+  .velg-tomstate-inner h2 {
+    margin: 0 0 16px;
+    font-size: 28px;
+    color: var(--text);
+    text-transform: none;
+    letter-spacing: normal;
+    font-weight: 600;
+  }
+  .velg-tomstate-hjelp { font-size: 16px; color: var(--text); margin: 0 0 8px; line-height: 1.5; }
+  .velg-tomstate-tip { font-size: 14px; color: var(--muted); margin: 0 0 24px; line-height: 1.5; }
+  #velg-tomstate-fokus-btn { font-size: 15px; padding: 12px 24px; }
+  @media (max-width: 600px) {
+    .velg-tomstate-inner { padding: 28px 20px; }
+    .velg-tomstate-inner h2 { font-size: 22px; }
   }
   .merger-context .mc-title { color: var(--muted); font-size: 12px; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 8px; }
   .merger-context .mc-chips { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 6px; }
@@ -371,13 +403,13 @@
 <a href="#main-content" class="skip-link">Hopp til hovedinnhold</a>
 <header>
   <h1>Kommunebarometer 2026 <span class="tag approx">Tilnærming</span></h1>
-  <p>Rekonstruert indeks basert på SSB KOSTRA-hovedtabeller, normalisert og vektet etter samme filosofi som Kommunal Rapports <em>Kommunebarometer</em>. Data hentes direkte fra <a href="https://www.ssb.no/statbank/" style="color:var(--accent)">SSB StatBank</a> ved åpning av siden og oppdaterer seg når SSB publiserer nye tall. Fokus: <strong>Lørenskog kommune</strong>.</p>
+  <p>Rekonstruert indeks basert på SSB KOSTRA-hovedtabeller, normalisert og vektet etter samme filosofi som Kommunal Rapports <em>Kommunebarometer</em>. Data hentes direkte fra <a href="https://www.ssb.no/statbank/" style="color:var(--accent)">SSB StatBank</a> ved åpning av siden og oppdaterer seg når SSB publiserer nye tall.</p>
 </header>
 
 <main class="container" id="main-content">
   <div class="bar">
     <label>Kommune:
-      <input id="kommune-search" list="kommune-list" value="Lørenskog" style="width: 200px;">
+      <input id="kommune-search" list="kommune-list" placeholder="Søk eller velg kommune…" style="width: 200px;">
       <datalist id="kommune-list"></datalist>
     </label>
     <label>År:
@@ -398,6 +430,16 @@
     <div class="status" id="status"><span class="spinner"></span>Starter opp…</div>
   </div>
 
+  <section id="velg-kommune-tomstate" class="velg-kommune-tomstate" hidden aria-live="polite">
+    <div class="velg-tomstate-inner">
+      <h2>Velg en kommune for å starte</h2>
+      <p class="velg-tomstate-hjelp">Velg din kommune for å se KOSTRA-tall, sammenligning og rangering.</p>
+      <p class="velg-tomstate-tip">Bruk søkefeltet over, eller skriv inn første bokstav for å bla i listen.</p>
+      <button id="velg-tomstate-fokus-btn" class="primary" type="button">Åpne kommune-velger</button>
+    </div>
+  </section>
+
+  <div id="kommune-resultat" hidden>
   <div class="merger-context" id="merger-context" hidden></div>
   <!-- C6: ROBEK-status. Vises kun hvis valgt kommune er i registeret. -->
   <div class="robek-badge" id="robek-badge" hidden></div>
@@ -408,7 +450,7 @@
       <div class="score-row">
         <div class="item"><div class="value" id="overall-score">–</div><div class="label">Samlet score (0-100)</div></div>
         <div class="item"><div class="value" id="overall-change">–</div><div class="label">Endring fra i fjor</div></div>
-        <div class="item"><div class="value" id="overall-muni">Lørenskog</div><div class="label">Kommune</div></div>
+        <div class="item"><div class="value" id="overall-muni">–</div><div class="label">Kommune</div></div>
       </div>
     </div>
     <div class="card">
@@ -426,7 +468,7 @@
       <table id="top-table"><thead><tr><th>#</th><th>Kommune</th><th>Score</th></tr></thead><tbody></tbody></table>
     </div>
     <div class="card">
-      <h2>Lørenskog vs. landsgjennomsnitt – per sektor</h2>
+      <h2 id="radar-tittel">Valgt kommune vs. landsgjennomsnitt – per sektor</h2>
       <div class="chart-wrap"><canvas id="radar-chart"></canvas></div>
     </div>
   </div>
@@ -456,6 +498,7 @@
       </div>
     </div>
   </div>
+  </div><!-- /#kommune-resultat -->
 
   <details style="margin-top: 30px;">
     <summary>Metodikk og datakilder</summary>
@@ -1304,7 +1347,7 @@ let ALL_SECTOR_DATA = {};
 let ALL_SECTOR_SCORES = {};
 let OVERALL = {};
 let CURRENT_YEAR = null;
-let CURRENT_MUNI_CODE = '3222'; // Lørenskog (2024-, etter Viken-oppløsning). Oppdateres i main() via findMuniCode.
+let CURRENT_MUNI_CODE = null; // settes når brukeren velger kommune (URL-param eller dropdown)
 
 function findMuniCode(name) {
   if (!name) return null;
@@ -1387,6 +1430,7 @@ function renderMuniList() {
     if (code && code !== CURRENT_MUNI_CODE) {
       CURRENT_MUNI_CODE = code;
       COMPARE_MUNIS = [code];
+      visKommuneResultat();
       renderAll();
       syncUrlToCurrentMuni(); // A5: hold ?kommune=… synket
     }
@@ -1395,7 +1439,7 @@ function renderMuniList() {
   // Ved blur/change: tillat fuzzy match (startsWith/includes) og autofyll riktig navn.
   const commitFuzzy = () => {
     if (!input.value.trim()) {
-      // Brukeren har tømt feltet — sett det tilbake til gjeldende kommune uten å bytte
+      // Brukeren har tømt feltet — behold tom-state hvis ingen valgt, ellers rull tilbake.
       input.value = MUNI_NAMES[CURRENT_MUNI_CODE] || '';
       return;
     }
@@ -1405,13 +1449,14 @@ function renderMuniList() {
         CURRENT_MUNI_CODE = code;
         COMPARE_MUNIS = [code];
         input.value = MUNI_NAMES[code];
+        visKommuneResultat();
         renderAll();
         syncUrlToCurrentMuni(); // A5
       } else {
         input.value = MUNI_NAMES[code];
       }
     } else {
-      // Ingen treff — rull tilbake til gjeldende
+      // Ingen treff — rull tilbake til gjeldende (eller tøm hvis ingen valgt)
       input.value = MUNI_NAMES[CURRENT_MUNI_CODE] || '';
     }
   };
@@ -1767,6 +1812,30 @@ function readKommuneFromUrl() {
   return code || null;
 }
 
+// Tom-state vs. resultat-visning: før en kommune er valgt vises kun
+// søkefelt + "Velg en kommune"-skjerm. Eksport/del-knapper er deaktivert.
+const _EKSPORT_KNAPPER = ['csv-btn', 'xlsx-btn', 'kostra-rapport-btn', 'image-btn', 'share-btn'];
+function visTomState() {
+  const tom = document.getElementById('velg-kommune-tomstate');
+  const res = document.getElementById('kommune-resultat');
+  if (tom) tom.hidden = false;
+  if (res) res.hidden = true;
+  for (const id of _EKSPORT_KNAPPER) {
+    const b = document.getElementById(id);
+    if (b) { b.disabled = true; b.setAttribute('aria-disabled', 'true'); }
+  }
+}
+function visKommuneResultat() {
+  const tom = document.getElementById('velg-kommune-tomstate');
+  const res = document.getElementById('kommune-resultat');
+  if (tom) tom.hidden = true;
+  if (res) res.hidden = false;
+  for (const id of _EKSPORT_KNAPPER) {
+    const b = document.getElementById(id);
+    if (b) { b.disabled = false; b.removeAttribute('aria-disabled'); }
+  }
+}
+
 function flashStatus(msg, type = 'ok') {
   const original = $status.innerHTML;
   $status.className = 'status ' + type;
@@ -1946,6 +2015,12 @@ function renderRadar() {
   const year = CURRENT_YEAR;
   const labels = SECTORS.map(s => s.name);
   const me = SECTORS.map(s => ALL_SECTOR_SCORES[s.id]?.[year]?.[CURRENT_MUNI_CODE]?.score || null);
+  // Oppdater radar-tittel med valgt kommune
+  const tittel = document.getElementById('radar-tittel');
+  if (tittel) {
+    const navn = MUNI_NAMES[CURRENT_MUNI_CODE];
+    tittel.textContent = navn ? `${navn} vs. landsgjennomsnitt – per sektor` : 'Valgt kommune vs. landsgjennomsnitt – per sektor';
+  }
   const avg = SECTORS.map(s => {
     const vs = Object.values(ALL_SECTOR_SCORES[s.id]?.[year] || {}).map(x => x.score);
     return vs.length ? +(vs.reduce((a,b)=>a+b,0)/vs.length).toFixed(1) : null;
@@ -1990,7 +2065,7 @@ function renderSources() {
 //  SAMMENLIGNING
 // ============================================================
 
-let COMPARE_MUNIS = ['3222']; // Lørenskog som default (ny kode 2024-)
+let COMPARE_MUNIS = []; // fylles når brukeren har valgt en kommune
 const COMPARE_COLORS = ['#4cc9f0', '#f72585', '#4ade80', '#fbbf24', '#c084fc'];
 let compareRadarChart, compareHistoryChart;
 
@@ -2381,38 +2456,48 @@ async function main() {
   CURRENT_YEAR = yearsWithData[yearsWithData.length - 1] || years[years.length - 1] || null;
   log(`Ferdig. ${yearsWithData.length} år med data. Viser: ${CURRENT_YEAR}`);
 
-  // A5: Foretrekker kommune fra ?kommune=… hvis URL-en spesifiserer den.
-  // Faller tilbake til Lørenskog som default.
+  // Foretrekker kommune fra ?kommune=… hvis URL-en spesifiserer den.
+  // Hvis ikke: vis tom-state og vent på brukerens valg (ingen default-kommune).
   const urlMuniCode = readKommuneFromUrl();
+  renderMuniList();
+  renderYearSelect();
+  renderSources();
+
+  const covered = Object.values(ALL_SECTOR_DATA).filter(s => !s.error).length;
+  const yearCov = Object.keys(OVERALL[CURRENT_YEAR] || {}).length;
+
   if (urlMuniCode) {
     CURRENT_MUNI_CODE = urlMuniCode;
     COMPARE_MUNIS = [urlMuniCode];
     log(`Kommune fra URL: ${MUNI_NAMES[urlMuniCode] || urlMuniCode}`);
-    // Oppdater søkefelt-input slik at det matcher
     const searchInput = document.getElementById('kommune-search');
     if (searchInput) searchInput.value = MUNI_NAMES[urlMuniCode] || urlMuniCode;
+    visKommuneResultat();
+    renderAll();
+    syncUrlToCurrentMuni();
+    setStatus(`Ferdig · ${covered}/${SECTORS.length} sektorer · viser ${CURRENT_YEAR} (${yearCov} kommuner)`, covered === SECTORS.length ? 'ok' : 'err');
   } else {
-    const lrCode = findMuniCode('Lørenskog');
-    if (lrCode) {
-      CURRENT_MUNI_CODE = lrCode;
-      COMPARE_MUNIS = [lrCode];
-    }
+    log('Ingen kommune valgt. Velg fra søkefeltet for å starte.');
+    visTomState();
+    setStatus(`Klar · velg kommune (${yearCov} kommuner i datasettet)`, 'ok');
   }
-
-  renderMuniList();
-  renderYearSelect();
-  renderSources();
-  renderAll();
-  syncUrlToCurrentMuni();
-
-  const covered = Object.values(ALL_SECTOR_DATA).filter(s => !s.error).length;
-  const yearCov = Object.keys(OVERALL[CURRENT_YEAR] || {}).length;
-  setStatus(`Ferdig · ${covered}/${SECTORS.length} sektorer · viser ${CURRENT_YEAR} (${yearCov} kommuner)`, covered === SECTORS.length ? 'ok' : 'err');
 }
 
 document.getElementById('refresh-btn').onclick = () => { $log.textContent = ''; main(); };
 document.getElementById('csv-btn').onclick = downloadCsv;
 document.getElementById('xlsx-btn').onclick = downloadXlsx;
+
+// Tom-state CTA-knapp: fokuserer kommune-søkefeltet og åpner native dropdown.
+const _tomFokusBtn = document.getElementById('velg-tomstate-fokus-btn');
+if (_tomFokusBtn) {
+  _tomFokusBtn.onclick = () => {
+    const inp = document.getElementById('kommune-search');
+    if (inp) {
+      inp.focus();
+      try { inp.click(); } catch (_) {}
+    }
+  };
+}
 
 // Pakke 14: Full KOSTRA-rapport-eksport (alle 15 sektorer × 75 funksjoner)
 document.getElementById('kostra-rapport-btn').onclick = async () => {
