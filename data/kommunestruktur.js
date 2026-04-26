@@ -28,6 +28,29 @@
       : '/api/klass/';
   }
 
+  // Strip samisk/kvensk side-form fra dual-name fra Klass-API. Speiler
+  // bokmaalKommunenavn() i index.html — duplisert her fordi modulen
+  // lastes uavhengig. Override-tabellen vedlikeholdes parallelt.
+  const KOMMUNE_NAVN_BOKMAAL = {
+    '0301': 'Oslo', '1826': 'Hattfjelldal', '1833': 'Rana', '1841': 'Fauske',
+    '1845': 'Sørfold', '1853': 'Evenes', '1870': 'Sortland', '1875': 'Hamarøy',
+    '5001': 'Trondheim', '5006': 'Steinkjer', '5007': 'Namsos', '5025': 'Røros',
+    '5037': 'Levanger', '5041': 'Snåsa', '5043': 'Røyrvik', '5503': 'Harstad',
+    '5512': 'Tjeldsund', '5516': 'Gratangen', '5518': 'Lavangen', '5536': 'Lyngen',
+    '5538': 'Storfjord', '5540': 'Kåfjord', '5544': 'Nordreisa', '5603': 'Hammerfest',
+    '5610': 'Karasjok', '5612': 'Kautokeino', '5622': 'Porsanger', '5628': 'Tana'
+  };
+  function bokmaalKommunenavn(navn, kommunenr) {
+    if (kommunenr && KOMMUNE_NAVN_BOKMAAL[kommunenr]) return KOMMUNE_NAVN_BOKMAAL[kommunenr];
+    if (!navn) return navn;
+    const s = String(navn);
+    const deler = s.split(/\s+[-—/]\s+/).map(d => d.trim()).filter(Boolean);
+    if (deler.length < 2) return s.trim();
+    const samiskRegex = /[áčđŋšŧžǎÁČĐŊŠŦŽǍ]/;
+    const bokmaal = deler.find(d => !samiskRegex.test(d));
+    return (bokmaal || deler[0]).trim();
+  }
+
   class Kommunestruktur {
     constructor() {
       this.MERGERS = {};
@@ -55,7 +78,7 @@
       const aktuellData = await aktuellRes.json();
       this.AKTUELL_LISTE = (aktuellData.codes || [])
         .filter(c => /^\d{4}$/.test(c.code))
-        .map(c => ({ code: c.code, name: c.name || '' }));
+        .map(c => ({ code: c.code, name: bokmaalKommunenavn(c.name || '', c.code) }));
 
       // 2. Hent strukturelle endringer fra et historisk vinduspunkt (2018 dekker
       // de fleste reformer i v1-bruksområdet). Vegard kan utvide om nødvendig.
@@ -75,7 +98,7 @@
         const source = ch.oldCode;
         if (!target || !source || target === source) continue;
         if (!byTarget[target]) byTarget[target] = { components: [], earliestYear: null };
-        byTarget[target].components.push({ code: source, name: ch.oldName || '' });
+        byTarget[target].components.push({ code: source, name: bokmaalKommunenavn(ch.oldName || '', source) });
         const yr = (ch.changeOccurred || '').slice(0, 4);
         if (yr && (!byTarget[target].earliestYear || yr < byTarget[target].earliestYear)) {
           byTarget[target].earliestYear = yr;
