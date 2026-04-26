@@ -420,22 +420,36 @@ async function renderDki() {
   }
 }
 
+// SSB API-konfigurasjon — samme proxy + URL-mønster som index.html.
+const API_BASE_SEKTOR = (location.protocol === 'file:' || location.hostname === '')
+  ? 'https://data.ssb.no/api/pxwebapi/v2/tables/'
+  : '/api/ssb/tables/';
+
 // Forenklet SSB-fetch: henter kommunens egne tall + landet, for siste 7 år.
 async function hentSektorData() {
   const kommunenr = finnKommunenrFraNavn(kommuneNavn);
-  if (!kommunenr) return null;
+  if (!kommunenr) return { error: `Kjenner ikke kommunenr for "${kommuneNavn}"` };
 
-  // Bruker samme proxy som hovedsiden (/api/ssb/* → data.ssb.no)
-  // Hent metadata først for å finne contents-koder.
-  const metaUrl = `/api/ssb/v2/data/dataset/${sektor.tableId}?lang=no&format=json-stat2`;
+  // 1) Hent metadata for å finne dimensjons-navn (de varierer per tabell)
+  const metaUrl = `${API_BASE_SEKTOR}${sektor.tableId}/metadata?lang=no&outputFormat=json-px`;
+  console.log('GET metadata', metaUrl);
   const meta = await fetch(metaUrl).then(r => {
     if (!r.ok) throw new Error(`Meta ${sektor.tableId}: HTTP ${r.status}`);
     return r.json();
   });
 
+  // Dimensjons-navnene varierer (f.eks. KOKkommuneregion0000, Region, ContentsCode).
+  const ids = meta.id || [];
+  const dims = meta.dimension || {};
+  const regDim = ids.find(d => /region|kommune|fylke/i.test(d));
+  const tidDim = ids.find(d => /^Tid$|tid/i.test(d));
+  const conDim = ids.find(d => /contents/i.test(d));
+  if (!regDim || !tidDim || !conDim) {
+    throw new Error(`Manglende dimensjoner i ${sektor.tableId}: ${ids.join(',')}`);
+  }
+
   // Region-kodelista i metadataen viser hvilke kommunenumre som er gyldige.
-  const regDim = (meta.id || []).find(d => /region|kommune|fylke/i.test(d));
-  const regList = meta.dimension?.[regDim]?.category?.index || {};
+  const regList = dims[regDim]?.category?.index || {};
   const muligeKoder = Object.keys(regList);
   const harKommunenr = muligeKoder.includes(kommunenr);
   const harK0000 = muligeKoder.includes('K0000');
@@ -443,28 +457,29 @@ async function hentSektorData() {
   if (harKommunenr) region.push(kommunenr);
   if (harK0000) region.push('K0000');
   if (region.length === 0) {
-    return { error: `Region-kode ${kommunenr} ikke funnet i tabell ${sektor.tableId}` };
+    return { error: `Region-kode ${kommunenr} ikke i tabell ${sektor.tableId}` };
   }
 
   // Hent siste 7 år
-  const tidDim = (meta.id || []).find(d => /^Tid$|tid/i.test(d));
-  const tidList = meta.dimension?.[tidDim]?.category?.index || {};
-  const årSortert = Object.keys(tidList).sort();
-  const sisteÅr = årSortert.slice(-7);
+  const tidList = dims[tidDim]?.category?.index || {};
+  const sisteÅr = Object.keys(tidList).sort().slice(-7);
 
+  // 2) Bygg data-URL etter samme mønster som index.html (valueCodes[<DimNavn>])
   const usp = new URLSearchParams();
   usp.set('lang', 'no');
   usp.set('format', 'json-stat2');
-  for (const r of region) usp.append('valuecodes[Region]', r);
-  for (const t of sisteÅr) usp.append('valuecodes[Tid]', t);
+  for (const r of region) usp.append(`valueCodes[${regDim}]`, r);
+  for (const t of sisteÅr) usp.append(`valueCodes[${tidDim}]`, t);
+  // ContentsCode: la API-en returnere alle indikatorer ved å sende '*'
+  usp.append(`valueCodes[${conDim}]`, '*');
 
-  const dataUrl = `/api/ssb/v2/data/dataset/${sektor.tableId}?${usp.toString()}`;
+  const dataUrl = `${API_BASE_SEKTOR}${sektor.tableId}/data?${usp.toString()}`;
+  console.log('GET data', dataUrl);
   const ds = await fetch(dataUrl).then(r => {
     if (!r.ok) throw new Error(`Data ${sektor.tableId}: HTTP ${r.status}`);
     return r.json();
   });
 
-  // Parse JSON-stat2
   const parsed = parseJsonStatEnkel(ds);
   return {
     kommunenr,
