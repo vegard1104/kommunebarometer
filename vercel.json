@@ -4,8 +4,7 @@
   "rewrites": [
     { "source": "/api/ssb/:path*", "destination": "https://data.ssb.no/api/pxwebapi/v2/:path*" },
     { "source": "/api/klass/:path*", "destination": "https://data.ssb.no/api/klass/v1/:path*" },
-    { "source": "/kommunebarometer", "destination": "/kommunebarometer.html" },
-    { "source": "/kommunebarometer/sektor", "destination": "/sektor.html" }
+    { "source": "/kommunebarometer", "destination": "/kommunebarometer.html" }
   ],
   "headers": [
     {
