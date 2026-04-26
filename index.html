@@ -522,25 +522,39 @@ const HIGHER_IS_BETTER = /dekning|andel med|andel barn|tilskudd|netto driftsresu
 // B1-forstadiet: sektor-spesifikke retning-overstyringer for indikatorer der
 // generisk regex gir feil tolkning. Hver regel matches FØR generic regex.
 // Dokumentert i team/PROSJEKTLOGG.md (sosial-rangering-fix).
+// SOSIAL — eksplisitt indikator-register. Hver regel vinner over generic
+// HIGHER_IS_BETTER/LOWER_IS_BETTER. Begrunnelser i team/PROSJEKTLOGG.md.
 const SECTOR_DIR_OVERRIDE = {
   sosial: [
-    // Sosialhjelpsmottakere: andel/antall som mottar hjelp — færre = bedre integrering.
-    // Den generiske HIGHER_IS_BETTER matcher "andel" og gir feil retning.
-    { match: /sosialhjelpsmottakere?|andel\s+sosialhjelp|sosialhjelp.*?mottak|mottak.*?sosialhjelp|stønadslengde|stønadsmåned|gjennomsnittlig\s+utbetaling/i, dir: 'low' },
-    { match: /barn.*?fattigdom|barn.*?lavinnt|fattigdom.*?barn/i, dir: 'low' },
-    // Aktivisering: deltakelse/kvalifisering = positivt.
-    { match: /aktivitetsplikt|kvalifiseringsprogram|deltakelse|i\s+arbeid|i\s+jobb|overgang.*?arbeid/i, dir: 'high' }
+    // Sosialhjelpsmottakere (andel og antall): færre = bedre integrering.
+    { match: /sosialhjelpsmottakere?|andel\s+sosialhjelp|sosialhjelp.*?mottak|mottak.*?sosialhjelp/i, dir: 'low' },
+    // Stønadslengde og utbetalingsstørrelse: kortere/lavere = bedre integrering.
+    { match: /stønadslengde|stønadsmåned|gjennomsnittlig\s+utbetaling|gjennomsnittlig\s+stønad/i, dir: 'low' },
+    // Barnefattigdom og lavinntekt: færre = bedre.
+    { match: /barn.*?fattigdom|barn.*?lavinnt|fattigdom.*?barn|lavinntekt/i, dir: 'low' },
+    // Uføretrygd: høyere andel uføre = dårligere.
+    { match: /uføre|uføretrygd|arbeidsavklaring/i, dir: 'low' },
+    // Aktivisering: deltakelse/kvalifisering/overgang til arbeid = positivt.
+    { match: /aktivitetsplikt|kvalifiseringsprogram|deltakelse|i\s+arbeid|i\s+jobb|overgang.*?arbeid|sysselsetting/i, dir: 'high' },
+    // Kostnad per innbygger til sosialhjelp: lavere er IKKE alltid bedre — hvis kommunen
+    // har lav DKI for sosial, forventes lavere kostnad. Vi behandler det som standard
+    // kostnad → bedre med lavere (samme som LOWER_IS_BETTER).
+    { match: /netto\s+driftsutgift.*?sosial|brutto\s+driftsutgift.*?sosial/i, dir: 'low' }
   ],
   barnevern: [
-    // Barnevern: undersøkelser/meldinger/tiltak — færre = bedre forebygging, men kan også
-    // tolkes som underrapportering. Vi velger "færre = bedre" basert på rapport KOSTRA-dypdykket.
+    // Barn med tiltak/undersøkelse/melding: færre = bedre forebygging
+    // (KOSTRA-rapport understreker dette, men kan også indikere underrapportering).
     { match: /undersøkelse|melding|tiltak.*?barn|barn.*?tiltak/i, dir: 'low' },
-    // Saksbehandlingstid og frist-brudd: kortere = bedre.
-    { match: /saksbehandlingstid|frist.*?brudd|brudd.*?frist/i, dir: 'low' }
+    // Saksbehandlingstid og frist-brudd: kortere/færre = bedre.
+    { match: /saksbehandlingstid|frist.*?brudd|brudd.*?frist|behandlingstid/i, dir: 'low' },
+    // Fagutdanning og bemanning: høyere = bedre.
+    { match: /fagutdanning|bemanning|stillinger\s+per/i, dir: 'high' }
   ],
   okonomi: [
-    { match: /netto\s+driftsresultat|disposisjonsfond|frie\s+inntekter/i, dir: 'high' },
-    { match: /gjeld|underskudd|akkumulert\s+merforbruk/i, dir: 'low' }
+    // Resultat-indikatorer: høyere = bedre.
+    { match: /netto\s+driftsresultat|disposisjonsfond|frie\s+inntekter|egenkapital/i, dir: 'high' },
+    // Gjeld og underskudd: lavere = bedre.
+    { match: /gjeld|underskudd|akkumulert\s+merforbruk|negativt\s+resultat/i, dir: 'low' }
   ]
 };
 
@@ -1066,6 +1080,14 @@ async function loadSector(sec) {
       }
     }
     log(`  ✓ ${sec.id}: ${Object.keys(commMap).length} kommuner, ${codes.length} indikatorer, ${yearsToUse.length} år`);
+    // Logg retning per indikator for sektorer med override så bruker kan
+    // verifisere mot Excel-referansen at sosialhjelp er 'low' osv.
+    if (SECTOR_DIR_OVERRIDE[sec.id]) {
+      for (const c of codes) {
+        const dir = determineDirection(c.label, sec.id);
+        log(`     [${dir === 'high' ? '↗' : '↘'}] ${c.label}`);
+      }
+    }
     return {
       sector: sec,
       indicators: codes,
