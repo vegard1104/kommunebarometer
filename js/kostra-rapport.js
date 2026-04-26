@@ -302,6 +302,76 @@
     return verdier;
   }
 
+  // ---- Pakke 12: Snitt + median + rang + behovskorrigering ----
+
+  // Tar { knr: verdi } og returnerer { snitt, median, antallRangert, rangertListe }.
+  // rang #1 = LAVEST verdi (følger Excel-rapport-konvensjonen for kostnader).
+  function beregnRangering(kommunerMedVerdier) {
+    const par = Object.entries(kommunerMedVerdier)
+      .filter(([_, v]) => typeof v === 'number' && !isNaN(v));
+    const verdier = par.map(([_, v]) => v);
+    if (verdier.length === 0) {
+      return { snitt: null, median: null, antallRangert: 0, rangertListe: [] };
+    }
+    const snitt = verdier.reduce((a, b) => a + b, 0) / verdier.length;
+    const sortert = [...verdier].sort((a, b) => a - b);
+    const median = sortert.length % 2 === 0
+      ? (sortert[sortert.length / 2 - 1] + sortert[sortert.length / 2]) / 2
+      : sortert[(sortert.length - 1) / 2];
+    // Sortert stigende: rang 1 = lavest verdi
+    const sortertPar = [...par].sort((a, b) => a[1] - b[1]);
+    const rangertListe = sortertPar.map(([knr, v], i) => ({ knr, verdi: v, rang: i + 1 }));
+    return {
+      snitt: +snitt.toFixed(1),
+      median: +median.toFixed(1),
+      antallRangert: verdier.length,
+      rangertListe
+    };
+  }
+
+  // Slår opp én kommunes rang fra rangertListe.
+  function rangFraListe(rangertListe, knr) {
+    const treff = rangertListe.find(r => r.knr === knr);
+    return treff ? { verdi: treff.verdi, rang: treff.rang, totalAntall: rangertListe.length } : null;
+  }
+
+  // Behovskorrigerer en verdi: råverdi / sektorindeks.
+  // Returnerer null hvis sektorindeks mangler eller er 0.
+  function behovskorrigertVerdi(verdi, sektorindeks) {
+    if (verdi == null || isNaN(verdi)) return null;
+    if (!sektorindeks || sektorindeks <= 0) return null;
+    return +(verdi / sektorindeks).toFixed(1);
+  }
+
+  // Beregner rang basert på behovskorrigerte verdier per kommune.
+  // Krever at vi vet sektorindeks per kommune.
+  // sektorindekserPerKommune: { knr: sektorindeks }
+  // kommunerMedVerdier: { knr: råverdi }
+  function behovskorrigertRangering(kommunerMedVerdier, sektorindekserPerKommune) {
+    const korrigert = {};
+    for (const [knr, verdi] of Object.entries(kommunerMedVerdier)) {
+      const dki = sektorindekserPerKommune[knr];
+      const k = behovskorrigertVerdi(verdi, dki);
+      if (k != null) korrigert[knr] = k;
+    }
+    return beregnRangering(korrigert);
+  }
+
+  // Henter sektor-DKI fra dki-{år}.json for én sektor og alle kommuner.
+  // Returnerer { knr: sektorindeks } der sektorindeks = k.[felt] eller k.samlet eller k (tall).
+  async function hentSektorindekser(år, dkiFelt) {
+    const fil = ['2024', '2025', '2026'].includes(String(år)) ? år : '2025';
+    const r = await fetch(`/data/dki-${fil}.json`, { cache: 'force-cache' });
+    if (!r.ok) return {};
+    const data = await r.json();
+    const ut = {};
+    for (const [knr, k] of Object.entries(data.kommuner || {})) {
+      if (typeof k === 'number') ut[knr] = k;
+      else ut[knr] = k?.[dkiFelt] ?? k?.samlet ?? null;
+    }
+    return ut;
+  }
+
   // Eksponer på window.KostraRapport
   root.KostraRapport = {
     hentTabell12362,
@@ -309,6 +379,11 @@
     hentPerBrukerData,
     parseEnIndikator,
     PER_BRUKER_KONFIG,
+    beregnRangering,
+    rangFraListe,
+    behovskorrigertVerdi,
+    behovskorrigertRangering,
+    hentSektorindekser,
     API_BASE,
     TABELL_HOVEDDATA,
     INDIKATOR_BELOP_INNBYGGER,
