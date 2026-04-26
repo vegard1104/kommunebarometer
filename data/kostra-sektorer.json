@@ -1,0 +1,187 @@
+{
+  "_kommentar": "KOSTRA-sektorer slik Vegards Excel-rapport organiserer dem. 15 sektorer som dekker hele kommunens tjenesteområder. Brukes av sektor-dypdykk-sidene (sektor.html). Funksjons-koder følger SSB KOSTRA-funksjonsstandard.",
+  "_kilde": "Vegards Excel-rapport KOSTRA_2024-2025_Lorenskog_rangert.xlsx + offisiell SSB KOSTRA-funksjonsoversikt.",
+  "_oppdatert": "2026-04-26",
+  "sektorer": [
+    {
+      "id": "administrasjon",
+      "navn": "Administrasjon & styring",
+      "funksjoner": [100, 110, 120, 121, 130, 180, 190],
+      "behovskorrigering": "administrasjon"
+    },
+    {
+      "id": "barnehage",
+      "navn": "Barnehage",
+      "funksjoner": [201, 211, 221],
+      "behovskorrigering": "barnehage",
+      "perBrukerTabell": "13502",
+      "perBrukerIndikatorer": ["KOSutg020000", "KOSkorrtidkomm0000", "KOSutgtidkomm0000"]
+    },
+    {
+      "id": "grunnskole",
+      "navn": "Grunnskole",
+      "funksjoner": [202, 213, 215, 222, 223],
+      "behovskorrigering": "grunnskole",
+      "perBrukerTabeller": ["12255", "12235"],
+      "perBrukerIndikatorer": ["KOSregnind20000", "KOSKBDUperelev0000", "KOSKBDUperskyss0000"]
+    },
+    {
+      "id": "kommunehelse",
+      "navn": "Kommunehelse",
+      "funksjoner": [232, 233, 241],
+      "behovskorrigering": "kommunehelse"
+    },
+    {
+      "id": "pleie-omsorg",
+      "navn": "Pleie & omsorg",
+      "funksjoner": [234, 253, 254, 255, 256, 257, 258, 261],
+      "behovskorrigering": "pleie",
+      "perBrukerTabeller": ["12209", "12293"],
+      "perBrukerIndikatorer": ["KOSBDU253261oppd0000", "KOSaarsvbrukerom0000", "KOSBDU253261inst0000"]
+    },
+    {
+      "id": "barnevern",
+      "navn": "Barnevern",
+      "funksjoner": [244, 251, 252],
+      "behovskorrigering": "barnevern"
+    },
+    {
+      "id": "sosialtjenesten",
+      "navn": "Sosialtjenesten",
+      "funksjoner": [242, 243, 273, 275, 276, 281, 283],
+      "behovskorrigering": "sosial"
+    },
+    {
+      "id": "plan-byggesak-miljo",
+      "navn": "Plan, byggesak & miljø",
+      "funksjoner": [301, 302, 303, 304, 305, 360, 365],
+      "behovskorrigering": null
+    },
+    {
+      "id": "naering-landbruk",
+      "navn": "Næring & landbruk",
+      "funksjoner": [320, 325, 329],
+      "behovskorrigering": null
+    },
+    {
+      "id": "samferdsel",
+      "navn": "Samferdsel",
+      "funksjoner": [330, 332, 335],
+      "behovskorrigering": null
+    },
+    {
+      "id": "brann-ulykkesvern",
+      "navn": "Brann & ulykkesvern",
+      "funksjoner": [338, 339],
+      "behovskorrigering": null
+    },
+    {
+      "id": "var",
+      "navn": "Vann, avløp, renovasjon",
+      "funksjoner": [340, 345, 350, 353, 354, 355],
+      "behovskorrigering": null
+    },
+    {
+      "id": "kultur-idrett-fritid",
+      "navn": "Kultur, idrett & fritid",
+      "funksjoner": [231, 370, 373, 375, 377, 380, 381, 383, 385, 386],
+      "behovskorrigering": null
+    },
+    {
+      "id": "kirke-livssyn",
+      "navn": "Kirke & livssyn",
+      "funksjoner": [390, 392, 393],
+      "behovskorrigering": null
+    },
+    {
+      "id": "kommunale-boliger",
+      "navn": "Kommunale boliger",
+      "funksjoner": [265, 315],
+      "behovskorrigering": null
+    }
+  ],
+  "funksjonsnavn": {
+    "100": "Politisk styring",
+    "110": "Kontroll og revisjon",
+    "120": "Administrasjon",
+    "121": "Forvaltningsutgifter i eiendomsforvaltningen",
+    "130": "Administrasjonslokaler",
+    "180": "Diverse fellesutgifter",
+    "190": "Interne serviceenheter",
+    "201": "Førskole",
+    "211": "Styrket tilbud til førskolebarn",
+    "221": "Førskolelokaler og skyss",
+    "202": "Grunnskole",
+    "213": "Voksenopplæring",
+    "215": "Skolefritidstilbud",
+    "222": "Skolelokaler",
+    "223": "Skoleskyss",
+    "231": "Aktivitetstilbud barn og unge",
+    "232": "Forebygging, helsestasjons- og skolehelsetjeneste",
+    "233": "Annet forebyggende helsearbeid",
+    "234": "Aktiviserings- og servicetjenester overfor eldre og personer med funksjonsnedsettelser",
+    "241": "Diagnose, behandling og rehabilitering",
+    "242": "Råd, veiledning og sosial forebyggende arbeid",
+    "243": "Tilbud til personer med rusproblemer",
+    "244": "Barneverntjeneste",
+    "251": "Barneverntiltak når barnet ikke er plassert av barnevernet",
+    "252": "Barneverntiltak når barnet er plassert av barnevernet",
+    "253": "Helse- og omsorgstjenester i institusjon",
+    "254": "Helse- og omsorgstjenester til hjemmeboende",
+    "255": "Medfinansiering somatiske tjenester",
+    "256": "Akutthjelp helse- og omsorgstjenester",
+    "257": "Restmiddel kjøp av tjenester (tomt)",
+    "258": "Hjelp til hjemmeboende",
+    "261": "Institusjonslokaler",
+    "265": "Kommunalt disponerte boliger",
+    "273": "Arbeidsrettede tiltak i kommunal regi",
+    "275": "Introduksjonsordningen",
+    "276": "Kvalifiseringsordningen",
+    "281": "Ytelse til livsopphold",
+    "283": "Bistand til etablering og opprettholdelse av egen bolig",
+    "301": "Plansaksbehandling",
+    "302": "Bygge- og delesaksbehandling og seksjonering",
+    "303": "Kart og oppmåling",
+    "304": "Eiendomsregistrering og -takstering",
+    "305": "Eierseksjonering",
+    "315": "Boligbygging og fysiske bomiljøtiltak",
+    "320": "Kommunal næringsvirksomhet",
+    "325": "Tilrettelegging og bistand for næringslivet",
+    "329": "Landbruksforvaltning og landbruksbasert næringsutvikling",
+    "330": "Samferdselsbedrifter/transporttiltak",
+    "332": "Kommunale veier",
+    "335": "Rekreasjon i tettsted",
+    "338": "Forebygging av branner og andre ulykker",
+    "339": "Beredskap mot branner og andre ulykker",
+    "340": "Produksjon av vann",
+    "345": "Distribusjon av vann",
+    "350": "Avløpsrensing",
+    "353": "Avløpsnett/innsamling av avløpsvann",
+    "354": "Tømming av slamavskillere, septiktanker o.l.",
+    "355": "Innsamling, gjenvinning og sluttbehandling av husholdningsavfall",
+    "360": "Naturforvaltning og friluftsliv",
+    "365": "Kulturminnevern",
+    "370": "Bibliotek",
+    "373": "Kino",
+    "375": "Museer",
+    "377": "Kunstformidling",
+    "380": "Idrett og tilskudd til andres idrettsanlegg",
+    "381": "Kommunale idrettsbygg og idrettsanlegg",
+    "383": "Musikk- og kulturskoler",
+    "385": "Andre kulturaktiviteter og tilskudd til andres kulturbygg",
+    "386": "Kommunale kulturbygg",
+    "390": "Den norske kirke",
+    "392": "Andre religiøse formål",
+    "393": "Gravplasser og krematorier"
+  },
+  "_dkiSektorMapping": {
+    "_kommentar": "Mapping fra KOSTRA-sektor-id til DKI-felt i data/dki-{år}.json. Kun de 7 sektorene som er del av KMDs utgiftsutjamning.",
+    "administrasjon": "administrasjon",
+    "barnehage": "barnehage",
+    "grunnskole": "grunnskole",
+    "kommunehelse": "kommunehelse",
+    "pleie-omsorg": "pleie",
+    "barnevern": "barnevern",
+    "sosialtjenesten": "sosial"
+  }
+}
