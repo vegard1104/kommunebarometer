@@ -167,10 +167,148 @@
     return resultat;
   }
 
+  // ---- Pakke 11: Per-bruker / per-målgruppe-tabeller ----
+  //
+  // Per-bruker IKKE behovskorrigeres (dobbeltnormalisering — kostnaden er
+  // allerede normalisert mot bruker-tellet). Per-målgruppe (per innb 1-5,
+  // 6-15) får mild korrigering — flagg som forbehold.
+
+  const PER_BRUKER_KONFIG = {
+    'barnehage': {
+      tabell: '13502',
+      indikatorer: [
+        { kode: 'KOSutg020000', navn: 'Netto driftsutg. per innbygger 1-5 år', type: 'per-malgruppe', kanKorrigeres: true },
+        { kode: 'KOSkorrtidkomm0000', navn: 'Korrigerte oppholdstimer i kommunale barnehager per barn', type: 'per-bruker', kanKorrigeres: false },
+        { kode: 'KOSutgtidkomm0000', navn: 'Brutto driftsutgift per oppholdstime, kommunal barnehage', type: 'per-bruker', kanKorrigeres: false }
+      ]
+    },
+    'grunnskole': {
+      tabell: '12235',
+      indikatorer: [
+        { kode: 'KOSregnind20000', navn: 'Netto driftsutg. per innbygger 6-15 år', type: 'per-malgruppe', kanKorrigeres: true },
+        { kode: 'KOSKBDUperelev0000', navn: 'Brutto driftsutgift per elev (F202)', type: 'per-bruker', kanKorrigeres: false },
+        { kode: 'KOSKBDUperskyss0000', navn: 'Brutto driftsutgift skoleskyss per elev (F223)', type: 'per-bruker', kanKorrigeres: false }
+      ]
+    },
+    'pleie-omsorg': {
+      tabell: '12209',
+      indikatorer: [
+        { kode: 'KOSBDU253261oppd0000', navn: 'Korrigerte brutto driftsutg. institusjon, per oppholdsdøgn', type: 'per-bruker', kanKorrigeres: false },
+        { kode: 'KOSaarsvbrukerom0000', navn: 'Årsverk per bruker av omsorgstjenester', type: 'per-bruker', kanKorrigeres: false },
+        { kode: 'KOSBDU253261inst0000', navn: 'Korrigerte brutto driftsutg. per institusjonsplass', type: 'per-bruker', kanKorrigeres: false }
+      ]
+    }
+  };
+
+  // Henter per-bruker-data for én sektor og ett år. Returnerer:
+  //   { sektor, år, indikatorer: [{ kode, navn, type, kanKorrigeres, verdier: { knr: tall } }] }
+  async function hentPerBrukerData(sektorId, år) {
+    const konfig = PER_BRUKER_KONFIG[sektorId];
+    if (!konfig) return null;
+
+    const cacheKey = `kostra_perbruker_${sektorId}_${år}`;
+    const cached = lesCache(cacheKey);
+    if (cached) return cached;
+
+    const tabell = konfig.tabell;
+    const koder = konfig.indikatorer.map(i => i.kode);
+
+    // Hent metadata for å finne dimensjons-navn
+    const metaUrl = `${API_BASE}${tabell}/metadata?lang=no&outputFormat=json-px`;
+    const meta = await fetch(metaUrl).then(r => {
+      if (!r.ok) throw new Error(`Meta ${tabell}: HTTP ${r.status}`);
+      return r.json();
+    });
+
+    const ids = meta.id || [];
+    const regDim = ids.find(d => /region|kommune|fylke/i.test(d));
+    const tidDim = ids.find(d => /^Tid$|tid/i.test(d));
+    const conDim = ids.find(d => /contents/i.test(d));
+    if (!regDim || !tidDim || !conDim) {
+      throw new Error(`Manglende dim ${tabell}: ${ids.join(',')}`);
+    }
+
+    const usp = new URLSearchParams();
+    usp.set('lang', 'no');
+    usp.set('format', 'json-stat2');
+    usp.append(`valueCodes[${regDim}]`, '*');
+    usp.append(`valueCodes[${tidDim}]`, String(år));
+    for (const k of koder) usp.append(`valueCodes[${conDim}]`, k);
+
+    const dataUrl = `${API_BASE}${tabell}/data?${usp.toString()}`;
+    const ds = await fetch(dataUrl).then(r => {
+      if (!r.ok) throw new Error(`Data ${tabell}: HTTP ${r.status}`);
+      return r.json();
+    });
+
+    const indikatorer = konfig.indikatorer.map(ind => ({
+      ...ind,
+      verdier: parseEnIndikator(ds, ind.kode, regDim, tidDim, conDim)
+    }));
+
+    const resultat = { sektor: sektorId, år, tabell, indikatorer };
+    skrivCache(cacheKey, resultat);
+    return resultat;
+  }
+
+  // Parser ett spesifikt contents-kode-verdi per kommune fra jsonstat2.
+  function parseEnIndikator(ds, kode, regDim, tidDim, conDim) {
+    const ids = ds.id || [];
+    const sizes = ds.size || [];
+    const dims = ds.dimension || {};
+    const values = ds.value || [];
+
+    if (!dims[conDim].category.index[kode]) return {};
+
+    const regKeys = Object.keys(dims[regDim].category.index)
+      .sort((a, b) => dims[regDim].category.index[a] - dims[regDim].category.index[b]);
+    const tidKeys = Object.keys(dims[tidDim].category.index).sort();
+    const tidValg = tidKeys[tidKeys.length - 1];
+
+    const strides = [];
+    let s = 1;
+    for (let i = ids.length - 1; i >= 0; i--) {
+      strides[i] = s;
+      s *= sizes[i];
+    }
+    const defaultLookup = {};
+    for (const d of ids) {
+      if (d !== regDim && d !== tidDim && d !== conDim) {
+        const first = Object.entries(dims[d].category.index).sort((a, b) => a[1] - b[1])[0][0];
+        defaultLookup[d] = first;
+      }
+    }
+    const valArr = Array.isArray(values) ? values : (() => {
+      const arr = new Array(sizes.reduce((a, b) => a * b, 1)).fill(null);
+      for (const [k, v] of Object.entries(values)) arr[+k] = v;
+      return arr;
+    })();
+    function idx(lookup) {
+      let o = 0;
+      for (let i = 0; i < ids.length; i++) {
+        const d = ids[i];
+        o += dims[d].category.index[lookup[d]] * strides[i];
+      }
+      return o;
+    }
+
+    const verdier = {};
+    for (const r of regKeys) {
+      if (!/^\d{4}$/.test(r)) continue;
+      const lookup = { ...defaultLookup, [regDim]: r, [tidDim]: tidValg, [conDim]: kode };
+      const v = valArr[idx(lookup)];
+      if (v !== null && v !== undefined && !isNaN(v)) verdier[r] = +v;
+    }
+    return verdier;
+  }
+
   // Eksponer på window.KostraRapport
   root.KostraRapport = {
     hentTabell12362,
     parseJsonStatPerFunksjon,
+    hentPerBrukerData,
+    parseEnIndikator,
+    PER_BRUKER_KONFIG,
     API_BASE,
     TABELL_HOVEDDATA,
     INDIKATOR_BELOP_INNBYGGER,
