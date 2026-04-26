@@ -1,0 +1,3572 @@
+{
+  "år": 2026,
+  "kilde": "KMD Grønt hefte 2026 — Tabell A-k (Utgiftsutjamning), samlet DKI per kommune",
+  "publisert": "2026-04-26",
+  "hentet": "2026-04-26",
+  "definisjon": "DKI > 1,0 = høyere utgiftsbehov enn landsgjennomsnittet. DKI < 1,0 = lavere.",
+  "merknad": "Tabell A-k inneholder kun samlet DKI per kommune. Sektor-spesifikke DKI for alle 357 kommuner krever F-k Kriteriedata + KMDs delkostnadsnøkler-formler — åpen HANDOFF for fase 2. Lørenskog (3222) har detaljert per-sektor fra Excel-POC. Andre kommuner får samlet DKI uniformt på alle sektorer.",
+  "dekning": "355 kommuner (samlet DKI; Lørenskog detaljert)",
+  "kommuner": {
+    "1101": {
+      "samlet": 1.0138,
+      "grunnskole": 1.0138,
+      "pleie": 1.0138,
+      "barnehage": 1.0138,
+      "barnevern": 1.0138,
+      "sosial": 1.0138,
+      "kommunehelse": 1.0138,
+      "administrasjon": 1.0138
+    },
+    "1103": {
+      "samlet": 0.9525,
+      "grunnskole": 0.9525,
+      "pleie": 0.9525,
+      "barnehage": 0.9525,
+      "barnevern": 0.9525,
+      "sosial": 0.9525,
+      "kommunehelse": 0.9525,
+      "administrasjon": 0.9525
+    },
+    "1106": {
+      "samlet": 0.9781,
+      "grunnskole": 0.9781,
+      "pleie": 0.9781,
+      "barnehage": 0.9781,
+      "barnevern": 0.9781,
+      "sosial": 0.9781,
+      "kommunehelse": 0.9781,
+      "administrasjon": 0.9781
+    },
+    "1108": {
+      "samlet": 0.9879,
+      "grunnskole": 0.9879,
+      "pleie": 0.9879,
+      "barnehage": 0.9879,
+      "barnevern": 0.9879,
+      "sosial": 0.9879,
+      "kommunehelse": 0.9879,
+      "administrasjon": 0.9879
+    },
+    "1111": {
+      "samlet": 1.1326,
+      "grunnskole": 1.1326,
+      "pleie": 1.1326,
+      "barnehage": 1.1326,
+      "barnevern": 1.1326,
+      "sosial": 1.1326,
+      "kommunehelse": 1.1326,
+      "administrasjon": 1.1326
+    },
+    "1112": {
+      "samlet": 1.1425,
+      "grunnskole": 1.1425,
+      "pleie": 1.1425,
+      "barnehage": 1.1425,
+      "barnevern": 1.1425,
+      "sosial": 1.1425,
+      "kommunehelse": 1.1425,
+      "administrasjon": 1.1425
+    },
+    "1114": {
+      "samlet": 1.0979,
+      "grunnskole": 1.0979,
+      "pleie": 1.0979,
+      "barnehage": 1.0979,
+      "barnevern": 1.0979,
+      "sosial": 1.0979,
+      "kommunehelse": 1.0979,
+      "administrasjon": 1.0979
+    },
+    "1119": {
+      "samlet": 1.0308,
+      "grunnskole": 1.0308,
+      "pleie": 1.0308,
+      "barnehage": 1.0308,
+      "barnevern": 1.0308,
+      "sosial": 1.0308,
+      "kommunehelse": 1.0308,
+      "administrasjon": 1.0308
+    },
+    "1120": {
+      "samlet": 0.9835,
+      "grunnskole": 0.9835,
+      "pleie": 0.9835,
+      "barnehage": 0.9835,
+      "barnevern": 0.9835,
+      "sosial": 0.9835,
+      "kommunehelse": 0.9835,
+      "administrasjon": 0.9835
+    },
+    "1121": {
+      "samlet": 0.9942,
+      "grunnskole": 0.9942,
+      "pleie": 0.9942,
+      "barnehage": 0.9942,
+      "barnevern": 0.9942,
+      "sosial": 0.9942,
+      "kommunehelse": 0.9942,
+      "administrasjon": 0.9942
+    },
+    "1122": {
+      "samlet": 1.0384,
+      "grunnskole": 1.0384,
+      "pleie": 1.0384,
+      "barnehage": 1.0384,
+      "barnevern": 1.0384,
+      "sosial": 1.0384,
+      "kommunehelse": 1.0384,
+      "administrasjon": 1.0384
+    },
+    "1124": {
+      "samlet": 0.9674,
+      "grunnskole": 0.9674,
+      "pleie": 0.9674,
+      "barnehage": 0.9674,
+      "barnevern": 0.9674,
+      "sosial": 0.9674,
+      "kommunehelse": 0.9674,
+      "administrasjon": 0.9674
+    },
+    "1127": {
+      "samlet": 0.9898,
+      "grunnskole": 0.9898,
+      "pleie": 0.9898,
+      "barnehage": 0.9898,
+      "barnevern": 0.9898,
+      "sosial": 0.9898,
+      "kommunehelse": 0.9898,
+      "administrasjon": 0.9898
+    },
+    "1130": {
+      "samlet": 1.0451,
+      "grunnskole": 1.0451,
+      "pleie": 1.0451,
+      "barnehage": 1.0451,
+      "barnevern": 1.0451,
+      "sosial": 1.0451,
+      "kommunehelse": 1.0451,
+      "administrasjon": 1.0451
+    },
+    "1133": {
+      "samlet": 1.1943,
+      "grunnskole": 1.1943,
+      "pleie": 1.1943,
+      "barnehage": 1.1943,
+      "barnevern": 1.1943,
+      "sosial": 1.1943,
+      "kommunehelse": 1.1943,
+      "administrasjon": 1.1943
+    },
+    "1134": {
+      "samlet": 1.1765,
+      "grunnskole": 1.1765,
+      "pleie": 1.1765,
+      "barnehage": 1.1765,
+      "barnevern": 1.1765,
+      "sosial": 1.1765,
+      "kommunehelse": 1.1765,
+      "administrasjon": 1.1765
+    },
+    "1135": {
+      "samlet": 1.1076,
+      "grunnskole": 1.1076,
+      "pleie": 1.1076,
+      "barnehage": 1.1076,
+      "barnevern": 1.1076,
+      "sosial": 1.1076,
+      "kommunehelse": 1.1076,
+      "administrasjon": 1.1076
+    },
+    "1144": {
+      "samlet": 1.5624,
+      "grunnskole": 1.5624,
+      "pleie": 1.5624,
+      "barnehage": 1.5624,
+      "barnevern": 1.5624,
+      "sosial": 1.5624,
+      "kommunehelse": 1.5624,
+      "administrasjon": 1.5624
+    },
+    "1145": {
+      "samlet": 1.331,
+      "grunnskole": 1.331,
+      "pleie": 1.331,
+      "barnehage": 1.331,
+      "barnevern": 1.331,
+      "sosial": 1.331,
+      "kommunehelse": 1.331,
+      "administrasjon": 1.331
+    },
+    "1146": {
+      "samlet": 1.0584,
+      "grunnskole": 1.0584,
+      "pleie": 1.0584,
+      "barnehage": 1.0584,
+      "barnevern": 1.0584,
+      "sosial": 1.0584,
+      "kommunehelse": 1.0584,
+      "administrasjon": 1.0584
+    },
+    "1149": {
+      "samlet": 0.9905,
+      "grunnskole": 0.9905,
+      "pleie": 0.9905,
+      "barnehage": 0.9905,
+      "barnevern": 0.9905,
+      "sosial": 0.9905,
+      "kommunehelse": 0.9905,
+      "administrasjon": 0.9905
+    },
+    "1160": {
+      "samlet": 1.0547,
+      "grunnskole": 1.0547,
+      "pleie": 1.0547,
+      "barnehage": 1.0547,
+      "barnevern": 1.0547,
+      "sosial": 1.0547,
+      "kommunehelse": 1.0547,
+      "administrasjon": 1.0547
+    },
+    "1505": {
+      "samlet": 0.9841,
+      "grunnskole": 0.9841,
+      "pleie": 0.9841,
+      "barnehage": 0.9841,
+      "barnevern": 0.9841,
+      "sosial": 0.9841,
+      "kommunehelse": 0.9841,
+      "administrasjon": 0.9841
+    },
+    "1506": {
+      "samlet": 1.0117,
+      "grunnskole": 1.0117,
+      "pleie": 1.0117,
+      "barnehage": 1.0117,
+      "barnevern": 1.0117,
+      "sosial": 1.0117,
+      "kommunehelse": 1.0117,
+      "administrasjon": 1.0117
+    },
+    "1508": {
+      "samlet": 0.9675,
+      "grunnskole": 0.9675,
+      "pleie": 0.9675,
+      "barnehage": 0.9675,
+      "barnevern": 0.9675,
+      "sosial": 0.9675,
+      "kommunehelse": 0.9675,
+      "administrasjon": 0.9675
+    },
+    "1511": {
+      "samlet": 1.1573,
+      "grunnskole": 1.1573,
+      "pleie": 1.1573,
+      "barnehage": 1.1573,
+      "barnevern": 1.1573,
+      "sosial": 1.1573,
+      "kommunehelse": 1.1573,
+      "administrasjon": 1.1573
+    },
+    "1514": {
+      "samlet": 1.1839,
+      "grunnskole": 1.1839,
+      "pleie": 1.1839,
+      "barnehage": 1.1839,
+      "barnevern": 1.1839,
+      "sosial": 1.1839,
+      "kommunehelse": 1.1839,
+      "administrasjon": 1.1839
+    },
+    "1515": {
+      "samlet": 1.0295,
+      "grunnskole": 1.0295,
+      "pleie": 1.0295,
+      "barnehage": 1.0295,
+      "barnevern": 1.0295,
+      "sosial": 1.0295,
+      "kommunehelse": 1.0295,
+      "administrasjon": 1.0295
+    },
+    "1516": {
+      "samlet": 1.0207,
+      "grunnskole": 1.0207,
+      "pleie": 1.0207,
+      "barnehage": 1.0207,
+      "barnevern": 1.0207,
+      "sosial": 1.0207,
+      "kommunehelse": 1.0207,
+      "administrasjon": 1.0207
+    },
+    "1517": {
+      "samlet": 1.0817,
+      "grunnskole": 1.0817,
+      "pleie": 1.0817,
+      "barnehage": 1.0817,
+      "barnevern": 1.0817,
+      "sosial": 1.0817,
+      "kommunehelse": 1.0817,
+      "administrasjon": 1.0817
+    },
+    "1520": {
+      "samlet": 1.0499,
+      "grunnskole": 1.0499,
+      "pleie": 1.0499,
+      "barnehage": 1.0499,
+      "barnevern": 1.0499,
+      "sosial": 1.0499,
+      "kommunehelse": 1.0499,
+      "administrasjon": 1.0499
+    },
+    "1525": {
+      "samlet": 1.1017,
+      "grunnskole": 1.1017,
+      "pleie": 1.1017,
+      "barnehage": 1.1017,
+      "barnevern": 1.1017,
+      "sosial": 1.1017,
+      "kommunehelse": 1.1017,
+      "administrasjon": 1.1017
+    },
+    "1528": {
+      "samlet": 1.0235,
+      "grunnskole": 1.0235,
+      "pleie": 1.0235,
+      "barnehage": 1.0235,
+      "barnevern": 1.0235,
+      "sosial": 1.0235,
+      "kommunehelse": 1.0235,
+      "administrasjon": 1.0235
+    },
+    "1531": {
+      "samlet": 1.0466,
+      "grunnskole": 1.0466,
+      "pleie": 1.0466,
+      "barnehage": 1.0466,
+      "barnevern": 1.0466,
+      "sosial": 1.0466,
+      "kommunehelse": 1.0466,
+      "administrasjon": 1.0466
+    },
+    "1532": {
+      "samlet": 1.0328,
+      "grunnskole": 1.0328,
+      "pleie": 1.0328,
+      "barnehage": 1.0328,
+      "barnevern": 1.0328,
+      "sosial": 1.0328,
+      "kommunehelse": 1.0328,
+      "administrasjon": 1.0328
+    },
+    "1535": {
+      "samlet": 1.0482,
+      "grunnskole": 1.0482,
+      "pleie": 1.0482,
+      "barnehage": 1.0482,
+      "barnevern": 1.0482,
+      "sosial": 1.0482,
+      "kommunehelse": 1.0482,
+      "administrasjon": 1.0482
+    },
+    "1539": {
+      "samlet": 1.1067,
+      "grunnskole": 1.1067,
+      "pleie": 1.1067,
+      "barnehage": 1.1067,
+      "barnevern": 1.1067,
+      "sosial": 1.1067,
+      "kommunehelse": 1.1067,
+      "administrasjon": 1.1067
+    },
+    "1547": {
+      "samlet": 1.1144,
+      "grunnskole": 1.1144,
+      "pleie": 1.1144,
+      "barnehage": 1.1144,
+      "barnevern": 1.1144,
+      "sosial": 1.1144,
+      "kommunehelse": 1.1144,
+      "administrasjon": 1.1144
+    },
+    "1554": {
+      "samlet": 1.0346,
+      "grunnskole": 1.0346,
+      "pleie": 1.0346,
+      "barnehage": 1.0346,
+      "barnevern": 1.0346,
+      "sosial": 1.0346,
+      "kommunehelse": 1.0346,
+      "administrasjon": 1.0346
+    },
+    "1557": {
+      "samlet": 1.1355,
+      "grunnskole": 1.1355,
+      "pleie": 1.1355,
+      "barnehage": 1.1355,
+      "barnevern": 1.1355,
+      "sosial": 1.1355,
+      "kommunehelse": 1.1355,
+      "administrasjon": 1.1355
+    },
+    "1560": {
+      "samlet": 1.1663,
+      "grunnskole": 1.1663,
+      "pleie": 1.1663,
+      "barnehage": 1.1663,
+      "barnevern": 1.1663,
+      "sosial": 1.1663,
+      "kommunehelse": 1.1663,
+      "administrasjon": 1.1663
+    },
+    "1563": {
+      "samlet": 1.0861,
+      "grunnskole": 1.0861,
+      "pleie": 1.0861,
+      "barnehage": 1.0861,
+      "barnevern": 1.0861,
+      "sosial": 1.0861,
+      "kommunehelse": 1.0861,
+      "administrasjon": 1.0861
+    },
+    "1566": {
+      "samlet": 1.0839,
+      "grunnskole": 1.0839,
+      "pleie": 1.0839,
+      "barnehage": 1.0839,
+      "barnevern": 1.0839,
+      "sosial": 1.0839,
+      "kommunehelse": 1.0839,
+      "administrasjon": 1.0839
+    },
+    "1573": {
+      "samlet": 1.2204,
+      "grunnskole": 1.2204,
+      "pleie": 1.2204,
+      "barnehage": 1.2204,
+      "barnevern": 1.2204,
+      "sosial": 1.2204,
+      "kommunehelse": 1.2204,
+      "administrasjon": 1.2204
+    },
+    "1576": {
+      "samlet": 1.1746,
+      "grunnskole": 1.1746,
+      "pleie": 1.1746,
+      "barnehage": 1.1746,
+      "barnevern": 1.1746,
+      "sosial": 1.1746,
+      "kommunehelse": 1.1746,
+      "administrasjon": 1.1746
+    },
+    "1577": {
+      "samlet": 1.0284,
+      "grunnskole": 1.0284,
+      "pleie": 1.0284,
+      "barnehage": 1.0284,
+      "barnevern": 1.0284,
+      "sosial": 1.0284,
+      "kommunehelse": 1.0284,
+      "administrasjon": 1.0284
+    },
+    "1578": {
+      "samlet": 1.1732,
+      "grunnskole": 1.1732,
+      "pleie": 1.1732,
+      "barnehage": 1.1732,
+      "barnevern": 1.1732,
+      "sosial": 1.1732,
+      "kommunehelse": 1.1732,
+      "administrasjon": 1.1732
+    },
+    "1579": {
+      "samlet": 1.025,
+      "grunnskole": 1.025,
+      "pleie": 1.025,
+      "barnehage": 1.025,
+      "barnevern": 1.025,
+      "sosial": 1.025,
+      "kommunehelse": 1.025,
+      "administrasjon": 1.025
+    },
+    "1580": {
+      "samlet": 1.0576,
+      "grunnskole": 1.0576,
+      "pleie": 1.0576,
+      "barnehage": 1.0576,
+      "barnevern": 1.0576,
+      "sosial": 1.0576,
+      "kommunehelse": 1.0576,
+      "administrasjon": 1.0576
+    },
+    "1804": {
+      "samlet": 0.9547,
+      "grunnskole": 0.9547,
+      "pleie": 0.9547,
+      "barnehage": 0.9547,
+      "barnevern": 0.9547,
+      "sosial": 0.9547,
+      "kommunehelse": 0.9547,
+      "administrasjon": 0.9547
+    },
+    "1806": {
+      "samlet": 1.0054,
+      "grunnskole": 1.0054,
+      "pleie": 1.0054,
+      "barnehage": 1.0054,
+      "barnevern": 1.0054,
+      "sosial": 1.0054,
+      "kommunehelse": 1.0054,
+      "administrasjon": 1.0054
+    },
+    "1811": {
+      "samlet": 1.3873,
+      "grunnskole": 1.3873,
+      "pleie": 1.3873,
+      "barnehage": 1.3873,
+      "barnevern": 1.3873,
+      "sosial": 1.3873,
+      "kommunehelse": 1.3873,
+      "administrasjon": 1.3873
+    },
+    "1812": {
+      "samlet": 1.2008,
+      "grunnskole": 1.2008,
+      "pleie": 1.2008,
+      "barnehage": 1.2008,
+      "barnevern": 1.2008,
+      "sosial": 1.2008,
+      "kommunehelse": 1.2008,
+      "administrasjon": 1.2008
+    },
+    "1813": {
+      "samlet": 1.0667,
+      "grunnskole": 1.0667,
+      "pleie": 1.0667,
+      "barnehage": 1.0667,
+      "barnevern": 1.0667,
+      "sosial": 1.0667,
+      "kommunehelse": 1.0667,
+      "administrasjon": 1.0667
+    },
+    "1815": {
+      "samlet": 1.3057,
+      "grunnskole": 1.3057,
+      "pleie": 1.3057,
+      "barnehage": 1.3057,
+      "barnevern": 1.3057,
+      "sosial": 1.3057,
+      "kommunehelse": 1.3057,
+      "administrasjon": 1.3057
+    },
+    "1816": {
+      "samlet": 1.8484,
+      "grunnskole": 1.8484,
+      "pleie": 1.8484,
+      "barnehage": 1.8484,
+      "barnevern": 1.8484,
+      "sosial": 1.8484,
+      "kommunehelse": 1.8484,
+      "administrasjon": 1.8484
+    },
+    "1818": {
+      "samlet": 1.2146,
+      "grunnskole": 1.2146,
+      "pleie": 1.2146,
+      "barnehage": 1.2146,
+      "barnevern": 1.2146,
+      "sosial": 1.2146,
+      "kommunehelse": 1.2146,
+      "administrasjon": 1.2146
+    },
+    "1820": {
+      "samlet": 1.051,
+      "grunnskole": 1.051,
+      "pleie": 1.051,
+      "barnehage": 1.051,
+      "barnevern": 1.051,
+      "sosial": 1.051,
+      "kommunehelse": 1.051,
+      "administrasjon": 1.051
+    },
+    "1822": {
+      "samlet": 1.2455,
+      "grunnskole": 1.2455,
+      "pleie": 1.2455,
+      "barnehage": 1.2455,
+      "barnevern": 1.2455,
+      "sosial": 1.2455,
+      "kommunehelse": 1.2455,
+      "administrasjon": 1.2455
+    },
+    "1824": {
+      "samlet": 1.0336,
+      "grunnskole": 1.0336,
+      "pleie": 1.0336,
+      "barnehage": 1.0336,
+      "barnevern": 1.0336,
+      "sosial": 1.0336,
+      "kommunehelse": 1.0336,
+      "administrasjon": 1.0336
+    },
+    "1825": {
+      "samlet": 1.2839,
+      "grunnskole": 1.2839,
+      "pleie": 1.2839,
+      "barnehage": 1.2839,
+      "barnevern": 1.2839,
+      "sosial": 1.2839,
+      "kommunehelse": 1.2839,
+      "administrasjon": 1.2839
+    },
+    "1826": {
+      "samlet": 1.3535,
+      "grunnskole": 1.3535,
+      "pleie": 1.3535,
+      "barnehage": 1.3535,
+      "barnevern": 1.3535,
+      "sosial": 1.3535,
+      "kommunehelse": 1.3535,
+      "administrasjon": 1.3535
+    },
+    "1827": {
+      "samlet": 1.304,
+      "grunnskole": 1.304,
+      "pleie": 1.304,
+      "barnehage": 1.304,
+      "barnevern": 1.304,
+      "sosial": 1.304,
+      "kommunehelse": 1.304,
+      "administrasjon": 1.304
+    },
+    "1828": {
+      "samlet": 1.2467,
+      "grunnskole": 1.2467,
+      "pleie": 1.2467,
+      "barnehage": 1.2467,
+      "barnevern": 1.2467,
+      "sosial": 1.2467,
+      "kommunehelse": 1.2467,
+      "administrasjon": 1.2467
+    },
+    "1832": {
+      "samlet": 1.1632,
+      "grunnskole": 1.1632,
+      "pleie": 1.1632,
+      "barnehage": 1.1632,
+      "barnevern": 1.1632,
+      "sosial": 1.1632,
+      "kommunehelse": 1.1632,
+      "administrasjon": 1.1632
+    },
+    "1833": {
+      "samlet": 0.9878,
+      "grunnskole": 0.9878,
+      "pleie": 0.9878,
+      "barnehage": 0.9878,
+      "barnevern": 0.9878,
+      "sosial": 0.9878,
+      "kommunehelse": 0.9878,
+      "administrasjon": 0.9878
+    },
+    "1834": {
+      "samlet": 1.5896,
+      "grunnskole": 1.5896,
+      "pleie": 1.5896,
+      "barnehage": 1.5896,
+      "barnevern": 1.5896,
+      "sosial": 1.5896,
+      "kommunehelse": 1.5896,
+      "administrasjon": 1.5896
+    },
+    "1835": {
+      "samlet": 1.7385,
+      "grunnskole": 1.7385,
+      "pleie": 1.7385,
+      "barnehage": 1.7385,
+      "barnevern": 1.7385,
+      "sosial": 1.7385,
+      "kommunehelse": 1.7385,
+      "administrasjon": 1.7385
+    },
+    "1836": {
+      "samlet": 1.4924,
+      "grunnskole": 1.4924,
+      "pleie": 1.4924,
+      "barnehage": 1.4924,
+      "barnevern": 1.4924,
+      "sosial": 1.4924,
+      "kommunehelse": 1.4924,
+      "administrasjon": 1.4924
+    },
+    "1837": {
+      "samlet": 1.1415,
+      "grunnskole": 1.1415,
+      "pleie": 1.1415,
+      "barnehage": 1.1415,
+      "barnevern": 1.1415,
+      "sosial": 1.1415,
+      "kommunehelse": 1.1415,
+      "administrasjon": 1.1415
+    },
+    "1838": {
+      "samlet": 1.2085,
+      "grunnskole": 1.2085,
+      "pleie": 1.2085,
+      "barnehage": 1.2085,
+      "barnevern": 1.2085,
+      "sosial": 1.2085,
+      "kommunehelse": 1.2085,
+      "administrasjon": 1.2085
+    },
+    "1839": {
+      "samlet": 1.4663,
+      "grunnskole": 1.4663,
+      "pleie": 1.4663,
+      "barnehage": 1.4663,
+      "barnevern": 1.4663,
+      "sosial": 1.4663,
+      "kommunehelse": 1.4663,
+      "administrasjon": 1.4663
+    },
+    "1840": {
+      "samlet": 1.1173,
+      "grunnskole": 1.1173,
+      "pleie": 1.1173,
+      "barnehage": 1.1173,
+      "barnevern": 1.1173,
+      "sosial": 1.1173,
+      "kommunehelse": 1.1173,
+      "administrasjon": 1.1173
+    },
+    "1841": {
+      "samlet": 1.0227,
+      "grunnskole": 1.0227,
+      "pleie": 1.0227,
+      "barnehage": 1.0227,
+      "barnevern": 1.0227,
+      "sosial": 1.0227,
+      "kommunehelse": 1.0227,
+      "administrasjon": 1.0227
+    },
+    "1845": {
+      "samlet": 1.2589,
+      "grunnskole": 1.2589,
+      "pleie": 1.2589,
+      "barnehage": 1.2589,
+      "barnevern": 1.2589,
+      "sosial": 1.2589,
+      "kommunehelse": 1.2589,
+      "administrasjon": 1.2589
+    },
+    "1848": {
+      "samlet": 1.1961,
+      "grunnskole": 1.1961,
+      "pleie": 1.1961,
+      "barnehage": 1.1961,
+      "barnevern": 1.1961,
+      "sosial": 1.1961,
+      "kommunehelse": 1.1961,
+      "administrasjon": 1.1961
+    },
+    "1851": {
+      "samlet": 1.2702,
+      "grunnskole": 1.2702,
+      "pleie": 1.2702,
+      "barnehage": 1.2702,
+      "barnevern": 1.2702,
+      "sosial": 1.2702,
+      "kommunehelse": 1.2702,
+      "administrasjon": 1.2702
+    },
+    "1853": {
+      "samlet": 1.2001,
+      "grunnskole": 1.2001,
+      "pleie": 1.2001,
+      "barnehage": 1.2001,
+      "barnevern": 1.2001,
+      "sosial": 1.2001,
+      "kommunehelse": 1.2001,
+      "administrasjon": 1.2001
+    },
+    "1856": {
+      "samlet": 1.6901,
+      "grunnskole": 1.6901,
+      "pleie": 1.6901,
+      "barnehage": 1.6901,
+      "barnevern": 1.6901,
+      "sosial": 1.6901,
+      "kommunehelse": 1.6901,
+      "administrasjon": 1.6901
+    },
+    "1857": {
+      "samlet": 1.6049,
+      "grunnskole": 1.6049,
+      "pleie": 1.6049,
+      "barnehage": 1.6049,
+      "barnevern": 1.6049,
+      "sosial": 1.6049,
+      "kommunehelse": 1.6049,
+      "administrasjon": 1.6049
+    },
+    "1859": {
+      "samlet": 1.3015,
+      "grunnskole": 1.3015,
+      "pleie": 1.3015,
+      "barnehage": 1.3015,
+      "barnevern": 1.3015,
+      "sosial": 1.3015,
+      "kommunehelse": 1.3015,
+      "administrasjon": 1.3015
+    },
+    "1860": {
+      "samlet": 1.0566,
+      "grunnskole": 1.0566,
+      "pleie": 1.0566,
+      "barnehage": 1.0566,
+      "barnevern": 1.0566,
+      "sosial": 1.0566,
+      "kommunehelse": 1.0566,
+      "administrasjon": 1.0566
+    },
+    "1865": {
+      "samlet": 1.0349,
+      "grunnskole": 1.0349,
+      "pleie": 1.0349,
+      "barnehage": 1.0349,
+      "barnevern": 1.0349,
+      "sosial": 1.0349,
+      "kommunehelse": 1.0349,
+      "administrasjon": 1.0349
+    },
+    "1866": {
+      "samlet": 1.0682,
+      "grunnskole": 1.0682,
+      "pleie": 1.0682,
+      "barnehage": 1.0682,
+      "barnevern": 1.0682,
+      "sosial": 1.0682,
+      "kommunehelse": 1.0682,
+      "administrasjon": 1.0682
+    },
+    "1867": {
+      "samlet": 1.2003,
+      "grunnskole": 1.2003,
+      "pleie": 1.2003,
+      "barnehage": 1.2003,
+      "barnevern": 1.2003,
+      "sosial": 1.2003,
+      "kommunehelse": 1.2003,
+      "administrasjon": 1.2003
+    },
+    "1868": {
+      "samlet": 1.0916,
+      "grunnskole": 1.0916,
+      "pleie": 1.0916,
+      "barnehage": 1.0916,
+      "barnevern": 1.0916,
+      "sosial": 1.0916,
+      "kommunehelse": 1.0916,
+      "administrasjon": 1.0916
+    },
+    "1870": {
+      "samlet": 1.0359,
+      "grunnskole": 1.0359,
+      "pleie": 1.0359,
+      "barnehage": 1.0359,
+      "barnevern": 1.0359,
+      "sosial": 1.0359,
+      "kommunehelse": 1.0359,
+      "administrasjon": 1.0359
+    },
+    "1871": {
+      "samlet": 1.1302,
+      "grunnskole": 1.1302,
+      "pleie": 1.1302,
+      "barnehage": 1.1302,
+      "barnevern": 1.1302,
+      "sosial": 1.1302,
+      "kommunehelse": 1.1302,
+      "administrasjon": 1.1302
+    },
+    "1874": {
+      "samlet": 1.3318,
+      "grunnskole": 1.3318,
+      "pleie": 1.3318,
+      "barnehage": 1.3318,
+      "barnevern": 1.3318,
+      "sosial": 1.3318,
+      "kommunehelse": 1.3318,
+      "administrasjon": 1.3318
+    },
+    "1875": {
+      "samlet": 1.2168,
+      "grunnskole": 1.2168,
+      "pleie": 1.2168,
+      "barnehage": 1.2168,
+      "barnevern": 1.2168,
+      "sosial": 1.2168,
+      "kommunehelse": 1.2168,
+      "administrasjon": 1.2168
+    },
+    "3101": {
+      "samlet": 1.0071,
+      "grunnskole": 1.0071,
+      "pleie": 1.0071,
+      "barnehage": 1.0071,
+      "barnevern": 1.0071,
+      "sosial": 1.0071,
+      "kommunehelse": 1.0071,
+      "administrasjon": 1.0071
+    },
+    "3103": {
+      "samlet": 0.9822,
+      "grunnskole": 0.9822,
+      "pleie": 0.9822,
+      "barnehage": 0.9822,
+      "barnevern": 0.9822,
+      "sosial": 0.9822,
+      "kommunehelse": 0.9822,
+      "administrasjon": 0.9822
+    },
+    "3105": {
+      "samlet": 1.0225,
+      "grunnskole": 1.0225,
+      "pleie": 1.0225,
+      "barnehage": 1.0225,
+      "barnevern": 1.0225,
+      "sosial": 1.0225,
+      "kommunehelse": 1.0225,
+      "administrasjon": 1.0225
+    },
+    "3107": {
+      "samlet": 0.9845,
+      "grunnskole": 0.9845,
+      "pleie": 0.9845,
+      "barnehage": 0.9845,
+      "barnevern": 0.9845,
+      "sosial": 0.9845,
+      "kommunehelse": 0.9845,
+      "administrasjon": 0.9845
+    },
+    "3110": {
+      "samlet": 1.0035,
+      "grunnskole": 1.0035,
+      "pleie": 1.0035,
+      "barnehage": 1.0035,
+      "barnevern": 1.0035,
+      "sosial": 1.0035,
+      "kommunehelse": 1.0035,
+      "administrasjon": 1.0035
+    },
+    "3112": {
+      "samlet": 1.0455,
+      "grunnskole": 1.0455,
+      "pleie": 1.0455,
+      "barnehage": 1.0455,
+      "barnevern": 1.0455,
+      "sosial": 1.0455,
+      "kommunehelse": 1.0455,
+      "administrasjon": 1.0455
+    },
+    "3114": {
+      "samlet": 1.0548,
+      "grunnskole": 1.0548,
+      "pleie": 1.0548,
+      "barnehage": 1.0548,
+      "barnevern": 1.0548,
+      "sosial": 1.0548,
+      "kommunehelse": 1.0548,
+      "administrasjon": 1.0548
+    },
+    "3116": {
+      "samlet": 1.043,
+      "grunnskole": 1.043,
+      "pleie": 1.043,
+      "barnehage": 1.043,
+      "barnevern": 1.043,
+      "sosial": 1.043,
+      "kommunehelse": 1.043,
+      "administrasjon": 1.043
+    },
+    "3118": {
+      "samlet": 1.0055,
+      "grunnskole": 1.0055,
+      "pleie": 1.0055,
+      "barnehage": 1.0055,
+      "barnevern": 1.0055,
+      "sosial": 1.0055,
+      "kommunehelse": 1.0055,
+      "administrasjon": 1.0055
+    },
+    "3120": {
+      "samlet": 1.047,
+      "grunnskole": 1.047,
+      "pleie": 1.047,
+      "barnehage": 1.047,
+      "barnevern": 1.047,
+      "sosial": 1.047,
+      "kommunehelse": 1.047,
+      "administrasjon": 1.047
+    },
+    "3122": {
+      "samlet": 1.1214,
+      "grunnskole": 1.1214,
+      "pleie": 1.1214,
+      "barnehage": 1.1214,
+      "barnevern": 1.1214,
+      "sosial": 1.1214,
+      "kommunehelse": 1.1214,
+      "administrasjon": 1.1214
+    },
+    "3124": {
+      "samlet": 1.2483,
+      "grunnskole": 1.2483,
+      "pleie": 1.2483,
+      "barnehage": 1.2483,
+      "barnevern": 1.2483,
+      "sosial": 1.2483,
+      "kommunehelse": 1.2483,
+      "administrasjon": 1.2483
+    },
+    "3201": {
+      "samlet": 0.9985,
+      "grunnskole": 0.9985,
+      "pleie": 0.9985,
+      "barnehage": 0.9985,
+      "barnevern": 0.9985,
+      "sosial": 0.9985,
+      "kommunehelse": 0.9985,
+      "administrasjon": 0.9985
+    },
+    "3203": {
+      "samlet": 0.9827,
+      "grunnskole": 0.9827,
+      "pleie": 0.9827,
+      "barnehage": 0.9827,
+      "barnevern": 0.9827,
+      "sosial": 0.9827,
+      "kommunehelse": 0.9827,
+      "administrasjon": 0.9827
+    },
+    "3205": {
+      "samlet": 0.9614,
+      "grunnskole": 0.9614,
+      "pleie": 0.9614,
+      "barnehage": 0.9614,
+      "barnevern": 0.9614,
+      "sosial": 0.9614,
+      "kommunehelse": 0.9614,
+      "administrasjon": 0.9614
+    },
+    "3207": {
+      "samlet": 0.981,
+      "grunnskole": 0.981,
+      "pleie": 0.981,
+      "barnehage": 0.981,
+      "barnevern": 0.981,
+      "sosial": 0.981,
+      "kommunehelse": 0.981,
+      "administrasjon": 0.981
+    },
+    "3209": {
+      "samlet": 0.9769,
+      "grunnskole": 0.9769,
+      "pleie": 0.9769,
+      "barnehage": 0.9769,
+      "barnevern": 0.9769,
+      "sosial": 0.9769,
+      "kommunehelse": 0.9769,
+      "administrasjon": 0.9769
+    },
+    "3212": {
+      "samlet": 0.9889,
+      "grunnskole": 0.9889,
+      "pleie": 0.9889,
+      "barnehage": 0.9889,
+      "barnevern": 0.9889,
+      "sosial": 0.9889,
+      "kommunehelse": 0.9889,
+      "administrasjon": 0.9889
+    },
+    "3214": {
+      "samlet": 0.9544,
+      "grunnskole": 0.9544,
+      "pleie": 0.9544,
+      "barnehage": 0.9544,
+      "barnevern": 0.9544,
+      "sosial": 0.9544,
+      "kommunehelse": 0.9544,
+      "administrasjon": 0.9544
+    },
+    "3216": {
+      "samlet": 0.991,
+      "grunnskole": 0.991,
+      "pleie": 0.991,
+      "barnehage": 0.991,
+      "barnevern": 0.991,
+      "sosial": 0.991,
+      "kommunehelse": 0.991,
+      "administrasjon": 0.991
+    },
+    "3218": {
+      "samlet": 0.9521,
+      "grunnskole": 0.9521,
+      "pleie": 0.9521,
+      "barnehage": 0.9521,
+      "barnevern": 0.9521,
+      "sosial": 0.9521,
+      "kommunehelse": 0.9521,
+      "administrasjon": 0.9521
+    },
+    "3220": {
+      "samlet": 0.9844,
+      "grunnskole": 0.9844,
+      "pleie": 0.9844,
+      "barnehage": 0.9844,
+      "barnevern": 0.9844,
+      "sosial": 0.9844,
+      "kommunehelse": 0.9844,
+      "administrasjon": 0.9844
+    },
+    "3222": {
+      "navn": "Lørenskog",
+      "grunnskole": 0.97,
+      "pleie": 0.8127,
+      "barnehage": 1.1783,
+      "barnevern": 1.0236,
+      "sosial": 1.1804,
+      "kommunehelse": 0.8948,
+      "administrasjon": 0.896,
+      "samlet": 0.9551
+    },
+    "3224": {
+      "samlet": 0.9803,
+      "grunnskole": 0.9803,
+      "pleie": 0.9803,
+      "barnehage": 0.9803,
+      "barnevern": 0.9803,
+      "sosial": 0.9803,
+      "kommunehelse": 0.9803,
+      "administrasjon": 0.9803
+    },
+    "3226": {
+      "samlet": 1.0136,
+      "grunnskole": 1.0136,
+      "pleie": 1.0136,
+      "barnehage": 1.0136,
+      "barnevern": 1.0136,
+      "sosial": 1.0136,
+      "kommunehelse": 1.0136,
+      "administrasjon": 1.0136
+    },
+    "3228": {
+      "samlet": 0.993,
+      "grunnskole": 0.993,
+      "pleie": 0.993,
+      "barnehage": 0.993,
+      "barnevern": 0.993,
+      "sosial": 0.993,
+      "kommunehelse": 0.993,
+      "administrasjon": 0.993
+    },
+    "3230": {
+      "samlet": 0.9734,
+      "grunnskole": 0.9734,
+      "pleie": 0.9734,
+      "barnehage": 0.9734,
+      "barnevern": 0.9734,
+      "sosial": 0.9734,
+      "kommunehelse": 0.9734,
+      "administrasjon": 0.9734
+    },
+    "3232": {
+      "samlet": 0.9852,
+      "grunnskole": 0.9852,
+      "pleie": 0.9852,
+      "barnehage": 0.9852,
+      "barnevern": 0.9852,
+      "sosial": 0.9852,
+      "kommunehelse": 0.9852,
+      "administrasjon": 0.9852
+    },
+    "3234": {
+      "samlet": 1.0101,
+      "grunnskole": 1.0101,
+      "pleie": 1.0101,
+      "barnehage": 1.0101,
+      "barnevern": 1.0101,
+      "sosial": 1.0101,
+      "kommunehelse": 1.0101,
+      "administrasjon": 1.0101
+    },
+    "3236": {
+      "samlet": 1.035,
+      "grunnskole": 1.035,
+      "pleie": 1.035,
+      "barnehage": 1.035,
+      "barnevern": 1.035,
+      "sosial": 1.035,
+      "kommunehelse": 1.035,
+      "administrasjon": 1.035
+    },
+    "3238": {
+      "samlet": 0.9837,
+      "grunnskole": 0.9837,
+      "pleie": 0.9837,
+      "barnehage": 0.9837,
+      "barnevern": 0.9837,
+      "sosial": 0.9837,
+      "kommunehelse": 0.9837,
+      "administrasjon": 0.9837
+    },
+    "3240": {
+      "samlet": 0.9934,
+      "grunnskole": 0.9934,
+      "pleie": 0.9934,
+      "barnehage": 0.9934,
+      "barnevern": 0.9934,
+      "sosial": 0.9934,
+      "kommunehelse": 0.9934,
+      "administrasjon": 0.9934
+    },
+    "3242": {
+      "samlet": 1.1384,
+      "grunnskole": 1.1384,
+      "pleie": 1.1384,
+      "barnehage": 1.1384,
+      "barnevern": 1.1384,
+      "sosial": 1.1384,
+      "kommunehelse": 1.1384,
+      "administrasjon": 1.1384
+    },
+    "3301": {
+      "samlet": 0.9941,
+      "grunnskole": 0.9941,
+      "pleie": 0.9941,
+      "barnehage": 0.9941,
+      "barnevern": 0.9941,
+      "sosial": 0.9941,
+      "kommunehelse": 0.9941,
+      "administrasjon": 0.9941
+    },
+    "3303": {
+      "samlet": 0.9791,
+      "grunnskole": 0.9791,
+      "pleie": 0.9791,
+      "barnehage": 0.9791,
+      "barnevern": 0.9791,
+      "sosial": 0.9791,
+      "kommunehelse": 0.9791,
+      "administrasjon": 0.9791
+    },
+    "3305": {
+      "samlet": 1.0061,
+      "grunnskole": 1.0061,
+      "pleie": 1.0061,
+      "barnehage": 1.0061,
+      "barnevern": 1.0061,
+      "sosial": 1.0061,
+      "kommunehelse": 1.0061,
+      "administrasjon": 1.0061
+    },
+    "3310": {
+      "samlet": 1.024,
+      "grunnskole": 1.024,
+      "pleie": 1.024,
+      "barnehage": 1.024,
+      "barnevern": 1.024,
+      "sosial": 1.024,
+      "kommunehelse": 1.024,
+      "administrasjon": 1.024
+    },
+    "3312": {
+      "samlet": 0.9959,
+      "grunnskole": 0.9959,
+      "pleie": 0.9959,
+      "barnehage": 0.9959,
+      "barnevern": 0.9959,
+      "sosial": 0.9959,
+      "kommunehelse": 0.9959,
+      "administrasjon": 0.9959
+    },
+    "3314": {
+      "samlet": 1.0043,
+      "grunnskole": 1.0043,
+      "pleie": 1.0043,
+      "barnehage": 1.0043,
+      "barnevern": 1.0043,
+      "sosial": 1.0043,
+      "kommunehelse": 1.0043,
+      "administrasjon": 1.0043
+    },
+    "3316": {
+      "samlet": 1.0393,
+      "grunnskole": 1.0393,
+      "pleie": 1.0393,
+      "barnehage": 1.0393,
+      "barnevern": 1.0393,
+      "sosial": 1.0393,
+      "kommunehelse": 1.0393,
+      "administrasjon": 1.0393
+    },
+    "3318": {
+      "samlet": 1.1887,
+      "grunnskole": 1.1887,
+      "pleie": 1.1887,
+      "barnehage": 1.1887,
+      "barnevern": 1.1887,
+      "sosial": 1.1887,
+      "kommunehelse": 1.1887,
+      "administrasjon": 1.1887
+    },
+    "3320": {
+      "samlet": 1.3517,
+      "grunnskole": 1.3517,
+      "pleie": 1.3517,
+      "barnehage": 1.3517,
+      "barnevern": 1.3517,
+      "sosial": 1.3517,
+      "kommunehelse": 1.3517,
+      "administrasjon": 1.3517
+    },
+    "3322": {
+      "samlet": 1.1167,
+      "grunnskole": 1.1167,
+      "pleie": 1.1167,
+      "barnehage": 1.1167,
+      "barnevern": 1.1167,
+      "sosial": 1.1167,
+      "kommunehelse": 1.1167,
+      "administrasjon": 1.1167
+    },
+    "3324": {
+      "samlet": 1.1128,
+      "grunnskole": 1.1128,
+      "pleie": 1.1128,
+      "barnehage": 1.1128,
+      "barnevern": 1.1128,
+      "sosial": 1.1128,
+      "kommunehelse": 1.1128,
+      "administrasjon": 1.1128
+    },
+    "3326": {
+      "samlet": 1.1101,
+      "grunnskole": 1.1101,
+      "pleie": 1.1101,
+      "barnehage": 1.1101,
+      "barnevern": 1.1101,
+      "sosial": 1.1101,
+      "kommunehelse": 1.1101,
+      "administrasjon": 1.1101
+    },
+    "3328": {
+      "samlet": 1.0991,
+      "grunnskole": 1.0991,
+      "pleie": 1.0991,
+      "barnehage": 1.0991,
+      "barnevern": 1.0991,
+      "sosial": 1.0991,
+      "kommunehelse": 1.0991,
+      "administrasjon": 1.0991
+    },
+    "3330": {
+      "samlet": 1.0518,
+      "grunnskole": 1.0518,
+      "pleie": 1.0518,
+      "barnehage": 1.0518,
+      "barnevern": 1.0518,
+      "sosial": 1.0518,
+      "kommunehelse": 1.0518,
+      "administrasjon": 1.0518
+    },
+    "3332": {
+      "samlet": 1.119,
+      "grunnskole": 1.119,
+      "pleie": 1.119,
+      "barnehage": 1.119,
+      "barnevern": 1.119,
+      "sosial": 1.119,
+      "kommunehelse": 1.119,
+      "administrasjon": 1.119
+    },
+    "3334": {
+      "samlet": 1.1498,
+      "grunnskole": 1.1498,
+      "pleie": 1.1498,
+      "barnehage": 1.1498,
+      "barnevern": 1.1498,
+      "sosial": 1.1498,
+      "kommunehelse": 1.1498,
+      "administrasjon": 1.1498
+    },
+    "3336": {
+      "samlet": 1.3325,
+      "grunnskole": 1.3325,
+      "pleie": 1.3325,
+      "barnehage": 1.3325,
+      "barnevern": 1.3325,
+      "sosial": 1.3325,
+      "kommunehelse": 1.3325,
+      "administrasjon": 1.3325
+    },
+    "3338": {
+      "samlet": 1.2083,
+      "grunnskole": 1.2083,
+      "pleie": 1.2083,
+      "barnehage": 1.2083,
+      "barnevern": 1.2083,
+      "sosial": 1.2083,
+      "kommunehelse": 1.2083,
+      "administrasjon": 1.2083
+    },
+    "3401": {
+      "samlet": 1.039,
+      "grunnskole": 1.039,
+      "pleie": 1.039,
+      "barnehage": 1.039,
+      "barnevern": 1.039,
+      "sosial": 1.039,
+      "kommunehelse": 1.039,
+      "administrasjon": 1.039
+    },
+    "3403": {
+      "samlet": 1.0006,
+      "grunnskole": 1.0006,
+      "pleie": 1.0006,
+      "barnehage": 1.0006,
+      "barnevern": 1.0006,
+      "sosial": 1.0006,
+      "kommunehelse": 1.0006,
+      "administrasjon": 1.0006
+    },
+    "3405": {
+      "samlet": 0.9951,
+      "grunnskole": 0.9951,
+      "pleie": 0.9951,
+      "barnehage": 0.9951,
+      "barnevern": 0.9951,
+      "sosial": 0.9951,
+      "kommunehelse": 0.9951,
+      "administrasjon": 0.9951
+    },
+    "3407": {
+      "samlet": 0.9968,
+      "grunnskole": 0.9968,
+      "pleie": 0.9968,
+      "barnehage": 0.9968,
+      "barnevern": 0.9968,
+      "sosial": 0.9968,
+      "kommunehelse": 0.9968,
+      "administrasjon": 0.9968
+    },
+    "3411": {
+      "samlet": 0.9831,
+      "grunnskole": 0.9831,
+      "pleie": 0.9831,
+      "barnehage": 0.9831,
+      "barnevern": 0.9831,
+      "sosial": 0.9831,
+      "kommunehelse": 0.9831,
+      "administrasjon": 0.9831
+    },
+    "3412": {
+      "samlet": 1.0415,
+      "grunnskole": 1.0415,
+      "pleie": 1.0415,
+      "barnehage": 1.0415,
+      "barnevern": 1.0415,
+      "sosial": 1.0415,
+      "kommunehelse": 1.0415,
+      "administrasjon": 1.0415
+    },
+    "3413": {
+      "samlet": 1.0289,
+      "grunnskole": 1.0289,
+      "pleie": 1.0289,
+      "barnehage": 1.0289,
+      "barnevern": 1.0289,
+      "sosial": 1.0289,
+      "kommunehelse": 1.0289,
+      "administrasjon": 1.0289
+    },
+    "3414": {
+      "samlet": 1.048,
+      "grunnskole": 1.048,
+      "pleie": 1.048,
+      "barnehage": 1.048,
+      "barnevern": 1.048,
+      "sosial": 1.048,
+      "kommunehelse": 1.048,
+      "administrasjon": 1.048
+    },
+    "3415": {
+      "samlet": 1.0057,
+      "grunnskole": 1.0057,
+      "pleie": 1.0057,
+      "barnehage": 1.0057,
+      "barnevern": 1.0057,
+      "sosial": 1.0057,
+      "kommunehelse": 1.0057,
+      "administrasjon": 1.0057
+    },
+    "3416": {
+      "samlet": 1.0827,
+      "grunnskole": 1.0827,
+      "pleie": 1.0827,
+      "barnehage": 1.0827,
+      "barnevern": 1.0827,
+      "sosial": 1.0827,
+      "kommunehelse": 1.0827,
+      "administrasjon": 1.0827
+    },
+    "3417": {
+      "samlet": 1.1025,
+      "grunnskole": 1.1025,
+      "pleie": 1.1025,
+      "barnehage": 1.1025,
+      "barnevern": 1.1025,
+      "sosial": 1.1025,
+      "kommunehelse": 1.1025,
+      "administrasjon": 1.1025
+    },
+    "3418": {
+      "samlet": 1.0734,
+      "grunnskole": 1.0734,
+      "pleie": 1.0734,
+      "barnehage": 1.0734,
+      "barnevern": 1.0734,
+      "sosial": 1.0734,
+      "kommunehelse": 1.0734,
+      "administrasjon": 1.0734
+    },
+    "3419": {
+      "samlet": 1.1334,
+      "grunnskole": 1.1334,
+      "pleie": 1.1334,
+      "barnehage": 1.1334,
+      "barnevern": 1.1334,
+      "sosial": 1.1334,
+      "kommunehelse": 1.1334,
+      "administrasjon": 1.1334
+    },
+    "3420": {
+      "samlet": 1.012,
+      "grunnskole": 1.012,
+      "pleie": 1.012,
+      "barnehage": 1.012,
+      "barnevern": 1.012,
+      "sosial": 1.012,
+      "kommunehelse": 1.012,
+      "administrasjon": 1.012
+    },
+    "3421": {
+      "samlet": 1.0849,
+      "grunnskole": 1.0849,
+      "pleie": 1.0849,
+      "barnehage": 1.0849,
+      "barnevern": 1.0849,
+      "sosial": 1.0849,
+      "kommunehelse": 1.0849,
+      "administrasjon": 1.0849
+    },
+    "3422": {
+      "samlet": 1.0878,
+      "grunnskole": 1.0878,
+      "pleie": 1.0878,
+      "barnehage": 1.0878,
+      "barnevern": 1.0878,
+      "sosial": 1.0878,
+      "kommunehelse": 1.0878,
+      "administrasjon": 1.0878
+    },
+    "3423": {
+      "samlet": 1.1955,
+      "grunnskole": 1.1955,
+      "pleie": 1.1955,
+      "barnehage": 1.1955,
+      "barnevern": 1.1955,
+      "sosial": 1.1955,
+      "kommunehelse": 1.1955,
+      "administrasjon": 1.1955
+    },
+    "3424": {
+      "samlet": 1.2697,
+      "grunnskole": 1.2697,
+      "pleie": 1.2697,
+      "barnehage": 1.2697,
+      "barnevern": 1.2697,
+      "sosial": 1.2697,
+      "kommunehelse": 1.2697,
+      "administrasjon": 1.2697
+    },
+    "3425": {
+      "samlet": 1.3711,
+      "grunnskole": 1.3711,
+      "pleie": 1.3711,
+      "barnehage": 1.3711,
+      "barnevern": 1.3711,
+      "sosial": 1.3711,
+      "kommunehelse": 1.3711,
+      "administrasjon": 1.3711
+    },
+    "3426": {
+      "samlet": 1.2716,
+      "grunnskole": 1.2716,
+      "pleie": 1.2716,
+      "barnehage": 1.2716,
+      "barnevern": 1.2716,
+      "sosial": 1.2716,
+      "kommunehelse": 1.2716,
+      "administrasjon": 1.2716
+    },
+    "3427": {
+      "samlet": 1.0934,
+      "grunnskole": 1.0934,
+      "pleie": 1.0934,
+      "barnehage": 1.0934,
+      "barnevern": 1.0934,
+      "sosial": 1.0934,
+      "kommunehelse": 1.0934,
+      "administrasjon": 1.0934
+    },
+    "3428": {
+      "samlet": 1.1939,
+      "grunnskole": 1.1939,
+      "pleie": 1.1939,
+      "barnehage": 1.1939,
+      "barnevern": 1.1939,
+      "sosial": 1.1939,
+      "kommunehelse": 1.1939,
+      "administrasjon": 1.1939
+    },
+    "3429": {
+      "samlet": 1.2303,
+      "grunnskole": 1.2303,
+      "pleie": 1.2303,
+      "barnehage": 1.2303,
+      "barnevern": 1.2303,
+      "sosial": 1.2303,
+      "kommunehelse": 1.2303,
+      "administrasjon": 1.2303
+    },
+    "3430": {
+      "samlet": 1.1857,
+      "grunnskole": 1.1857,
+      "pleie": 1.1857,
+      "barnehage": 1.1857,
+      "barnevern": 1.1857,
+      "sosial": 1.1857,
+      "kommunehelse": 1.1857,
+      "administrasjon": 1.1857
+    },
+    "3431": {
+      "samlet": 1.2021,
+      "grunnskole": 1.2021,
+      "pleie": 1.2021,
+      "barnehage": 1.2021,
+      "barnevern": 1.2021,
+      "sosial": 1.2021,
+      "kommunehelse": 1.2021,
+      "administrasjon": 1.2021
+    },
+    "3432": {
+      "samlet": 1.2017,
+      "grunnskole": 1.2017,
+      "pleie": 1.2017,
+      "barnehage": 1.2017,
+      "barnevern": 1.2017,
+      "sosial": 1.2017,
+      "kommunehelse": 1.2017,
+      "administrasjon": 1.2017
+    },
+    "3433": {
+      "samlet": 1.1626,
+      "grunnskole": 1.1626,
+      "pleie": 1.1626,
+      "barnehage": 1.1626,
+      "barnevern": 1.1626,
+      "sosial": 1.1626,
+      "kommunehelse": 1.1626,
+      "administrasjon": 1.1626
+    },
+    "3434": {
+      "samlet": 1.1626,
+      "grunnskole": 1.1626,
+      "pleie": 1.1626,
+      "barnehage": 1.1626,
+      "barnevern": 1.1626,
+      "sosial": 1.1626,
+      "kommunehelse": 1.1626,
+      "administrasjon": 1.1626
+    },
+    "3435": {
+      "samlet": 1.1332,
+      "grunnskole": 1.1332,
+      "pleie": 1.1332,
+      "barnehage": 1.1332,
+      "barnevern": 1.1332,
+      "sosial": 1.1332,
+      "kommunehelse": 1.1332,
+      "administrasjon": 1.1332
+    },
+    "3436": {
+      "samlet": 1.1158,
+      "grunnskole": 1.1158,
+      "pleie": 1.1158,
+      "barnehage": 1.1158,
+      "barnevern": 1.1158,
+      "sosial": 1.1158,
+      "kommunehelse": 1.1158,
+      "administrasjon": 1.1158
+    },
+    "3437": {
+      "samlet": 1.1451,
+      "grunnskole": 1.1451,
+      "pleie": 1.1451,
+      "barnehage": 1.1451,
+      "barnevern": 1.1451,
+      "sosial": 1.1451,
+      "kommunehelse": 1.1451,
+      "administrasjon": 1.1451
+    },
+    "3438": {
+      "samlet": 1.1385,
+      "grunnskole": 1.1385,
+      "pleie": 1.1385,
+      "barnehage": 1.1385,
+      "barnevern": 1.1385,
+      "sosial": 1.1385,
+      "kommunehelse": 1.1385,
+      "administrasjon": 1.1385
+    },
+    "3439": {
+      "samlet": 1.1202,
+      "grunnskole": 1.1202,
+      "pleie": 1.1202,
+      "barnehage": 1.1202,
+      "barnevern": 1.1202,
+      "sosial": 1.1202,
+      "kommunehelse": 1.1202,
+      "administrasjon": 1.1202
+    },
+    "3440": {
+      "samlet": 1.1008,
+      "grunnskole": 1.1008,
+      "pleie": 1.1008,
+      "barnehage": 1.1008,
+      "barnevern": 1.1008,
+      "sosial": 1.1008,
+      "kommunehelse": 1.1008,
+      "administrasjon": 1.1008
+    },
+    "3441": {
+      "samlet": 1.0355,
+      "grunnskole": 1.0355,
+      "pleie": 1.0355,
+      "barnehage": 1.0355,
+      "barnevern": 1.0355,
+      "sosial": 1.0355,
+      "kommunehelse": 1.0355,
+      "administrasjon": 1.0355
+    },
+    "3442": {
+      "samlet": 1.007,
+      "grunnskole": 1.007,
+      "pleie": 1.007,
+      "barnehage": 1.007,
+      "barnevern": 1.007,
+      "sosial": 1.007,
+      "kommunehelse": 1.007,
+      "administrasjon": 1.007
+    },
+    "3443": {
+      "samlet": 0.999,
+      "grunnskole": 0.999,
+      "pleie": 0.999,
+      "barnehage": 0.999,
+      "barnevern": 0.999,
+      "sosial": 0.999,
+      "kommunehelse": 0.999,
+      "administrasjon": 0.999
+    },
+    "3446": {
+      "samlet": 1.0112,
+      "grunnskole": 1.0112,
+      "pleie": 1.0112,
+      "barnehage": 1.0112,
+      "barnevern": 1.0112,
+      "sosial": 1.0112,
+      "kommunehelse": 1.0112,
+      "administrasjon": 1.0112
+    },
+    "3447": {
+      "samlet": 1.0571,
+      "grunnskole": 1.0571,
+      "pleie": 1.0571,
+      "barnehage": 1.0571,
+      "barnevern": 1.0571,
+      "sosial": 1.0571,
+      "kommunehelse": 1.0571,
+      "administrasjon": 1.0571
+    },
+    "3448": {
+      "samlet": 1.0832,
+      "grunnskole": 1.0832,
+      "pleie": 1.0832,
+      "barnehage": 1.0832,
+      "barnevern": 1.0832,
+      "sosial": 1.0832,
+      "kommunehelse": 1.0832,
+      "administrasjon": 1.0832
+    },
+    "3449": {
+      "samlet": 1.1926,
+      "grunnskole": 1.1926,
+      "pleie": 1.1926,
+      "barnehage": 1.1926,
+      "barnevern": 1.1926,
+      "sosial": 1.1926,
+      "kommunehelse": 1.1926,
+      "administrasjon": 1.1926
+    },
+    "3450": {
+      "samlet": 1.3484,
+      "grunnskole": 1.3484,
+      "pleie": 1.3484,
+      "barnehage": 1.3484,
+      "barnevern": 1.3484,
+      "sosial": 1.3484,
+      "kommunehelse": 1.3484,
+      "administrasjon": 1.3484
+    },
+    "3451": {
+      "samlet": 1.0806,
+      "grunnskole": 1.0806,
+      "pleie": 1.0806,
+      "barnehage": 1.0806,
+      "barnevern": 1.0806,
+      "sosial": 1.0806,
+      "kommunehelse": 1.0806,
+      "administrasjon": 1.0806
+    },
+    "3452": {
+      "samlet": 1.1382,
+      "grunnskole": 1.1382,
+      "pleie": 1.1382,
+      "barnehage": 1.1382,
+      "barnevern": 1.1382,
+      "sosial": 1.1382,
+      "kommunehelse": 1.1382,
+      "administrasjon": 1.1382
+    },
+    "3453": {
+      "samlet": 1.1164,
+      "grunnskole": 1.1164,
+      "pleie": 1.1164,
+      "barnehage": 1.1164,
+      "barnevern": 1.1164,
+      "sosial": 1.1164,
+      "kommunehelse": 1.1164,
+      "administrasjon": 1.1164
+    },
+    "3454": {
+      "samlet": 1.2516,
+      "grunnskole": 1.2516,
+      "pleie": 1.2516,
+      "barnehage": 1.2516,
+      "barnevern": 1.2516,
+      "sosial": 1.2516,
+      "kommunehelse": 1.2516,
+      "administrasjon": 1.2516
+    },
+    "3901": {
+      "samlet": 0.9944,
+      "grunnskole": 0.9944,
+      "pleie": 0.9944,
+      "barnehage": 0.9944,
+      "barnevern": 0.9944,
+      "sosial": 0.9944,
+      "kommunehelse": 0.9944,
+      "administrasjon": 0.9944
+    },
+    "3903": {
+      "samlet": 0.9768,
+      "grunnskole": 0.9768,
+      "pleie": 0.9768,
+      "barnehage": 0.9768,
+      "barnevern": 0.9768,
+      "sosial": 0.9768,
+      "kommunehelse": 0.9768,
+      "administrasjon": 0.9768
+    },
+    "3905": {
+      "samlet": 0.9818,
+      "grunnskole": 0.9818,
+      "pleie": 0.9818,
+      "barnehage": 0.9818,
+      "barnevern": 0.9818,
+      "sosial": 0.9818,
+      "kommunehelse": 0.9818,
+      "administrasjon": 0.9818
+    },
+    "3907": {
+      "samlet": 1.0002,
+      "grunnskole": 1.0002,
+      "pleie": 1.0002,
+      "barnehage": 1.0002,
+      "barnevern": 1.0002,
+      "sosial": 1.0002,
+      "kommunehelse": 1.0002,
+      "administrasjon": 1.0002
+    },
+    "3909": {
+      "samlet": 1.0002,
+      "grunnskole": 1.0002,
+      "pleie": 1.0002,
+      "barnehage": 1.0002,
+      "barnevern": 1.0002,
+      "sosial": 1.0002,
+      "kommunehelse": 1.0002,
+      "administrasjon": 1.0002
+    },
+    "3911": {
+      "samlet": 1.004,
+      "grunnskole": 1.004,
+      "pleie": 1.004,
+      "barnehage": 1.004,
+      "barnevern": 1.004,
+      "sosial": 1.004,
+      "kommunehelse": 1.004,
+      "administrasjon": 1.004
+    },
+    "4001": {
+      "samlet": 0.9918,
+      "grunnskole": 0.9918,
+      "pleie": 0.9918,
+      "barnehage": 0.9918,
+      "barnevern": 0.9918,
+      "sosial": 0.9918,
+      "kommunehelse": 0.9918,
+      "administrasjon": 0.9918
+    },
+    "4003": {
+      "samlet": 1.0092,
+      "grunnskole": 1.0092,
+      "pleie": 1.0092,
+      "barnehage": 1.0092,
+      "barnevern": 1.0092,
+      "sosial": 1.0092,
+      "kommunehelse": 1.0092,
+      "administrasjon": 1.0092
+    },
+    "4005": {
+      "samlet": 1.0507,
+      "grunnskole": 1.0507,
+      "pleie": 1.0507,
+      "barnehage": 1.0507,
+      "barnevern": 1.0507,
+      "sosial": 1.0507,
+      "kommunehelse": 1.0507,
+      "administrasjon": 1.0507
+    },
+    "4010": {
+      "samlet": 1.1338,
+      "grunnskole": 1.1338,
+      "pleie": 1.1338,
+      "barnehage": 1.1338,
+      "barnevern": 1.1338,
+      "sosial": 1.1338,
+      "kommunehelse": 1.1338,
+      "administrasjon": 1.1338
+    },
+    "4012": {
+      "samlet": 1.0064,
+      "grunnskole": 1.0064,
+      "pleie": 1.0064,
+      "barnehage": 1.0064,
+      "barnevern": 1.0064,
+      "sosial": 1.0064,
+      "kommunehelse": 1.0064,
+      "administrasjon": 1.0064
+    },
+    "4014": {
+      "samlet": 1.0403,
+      "grunnskole": 1.0403,
+      "pleie": 1.0403,
+      "barnehage": 1.0403,
+      "barnevern": 1.0403,
+      "sosial": 1.0403,
+      "kommunehelse": 1.0403,
+      "administrasjon": 1.0403
+    },
+    "4016": {
+      "samlet": 1.1495,
+      "grunnskole": 1.1495,
+      "pleie": 1.1495,
+      "barnehage": 1.1495,
+      "barnevern": 1.1495,
+      "sosial": 1.1495,
+      "kommunehelse": 1.1495,
+      "administrasjon": 1.1495
+    },
+    "4018": {
+      "samlet": 1.0626,
+      "grunnskole": 1.0626,
+      "pleie": 1.0626,
+      "barnehage": 1.0626,
+      "barnevern": 1.0626,
+      "sosial": 1.0626,
+      "kommunehelse": 1.0626,
+      "administrasjon": 1.0626
+    },
+    "4020": {
+      "samlet": 1.0384,
+      "grunnskole": 1.0384,
+      "pleie": 1.0384,
+      "barnehage": 1.0384,
+      "barnevern": 1.0384,
+      "sosial": 1.0384,
+      "kommunehelse": 1.0384,
+      "administrasjon": 1.0384
+    },
+    "4022": {
+      "samlet": 1.1611,
+      "grunnskole": 1.1611,
+      "pleie": 1.1611,
+      "barnehage": 1.1611,
+      "barnevern": 1.1611,
+      "sosial": 1.1611,
+      "kommunehelse": 1.1611,
+      "administrasjon": 1.1611
+    },
+    "4024": {
+      "samlet": 1.2792,
+      "grunnskole": 1.2792,
+      "pleie": 1.2792,
+      "barnehage": 1.2792,
+      "barnevern": 1.2792,
+      "sosial": 1.2792,
+      "kommunehelse": 1.2792,
+      "administrasjon": 1.2792
+    },
+    "4026": {
+      "samlet": 1.0627,
+      "grunnskole": 1.0627,
+      "pleie": 1.0627,
+      "barnehage": 1.0627,
+      "barnevern": 1.0627,
+      "sosial": 1.0627,
+      "kommunehelse": 1.0627,
+      "administrasjon": 1.0627
+    },
+    "4028": {
+      "samlet": 1.1762,
+      "grunnskole": 1.1762,
+      "pleie": 1.1762,
+      "barnehage": 1.1762,
+      "barnevern": 1.1762,
+      "sosial": 1.1762,
+      "kommunehelse": 1.1762,
+      "administrasjon": 1.1762
+    },
+    "4030": {
+      "samlet": 1.2915,
+      "grunnskole": 1.2915,
+      "pleie": 1.2915,
+      "barnehage": 1.2915,
+      "barnevern": 1.2915,
+      "sosial": 1.2915,
+      "kommunehelse": 1.2915,
+      "administrasjon": 1.2915
+    },
+    "4032": {
+      "samlet": 1.3038,
+      "grunnskole": 1.3038,
+      "pleie": 1.3038,
+      "barnehage": 1.3038,
+      "barnevern": 1.3038,
+      "sosial": 1.3038,
+      "kommunehelse": 1.3038,
+      "administrasjon": 1.3038
+    },
+    "4034": {
+      "samlet": 1.188,
+      "grunnskole": 1.188,
+      "pleie": 1.188,
+      "barnehage": 1.188,
+      "barnevern": 1.188,
+      "sosial": 1.188,
+      "kommunehelse": 1.188,
+      "administrasjon": 1.188
+    },
+    "4036": {
+      "samlet": 1.1548,
+      "grunnskole": 1.1548,
+      "pleie": 1.1548,
+      "barnehage": 1.1548,
+      "barnevern": 1.1548,
+      "sosial": 1.1548,
+      "kommunehelse": 1.1548,
+      "administrasjon": 1.1548
+    },
+    "4201": {
+      "samlet": 1.0734,
+      "grunnskole": 1.0734,
+      "pleie": 1.0734,
+      "barnehage": 1.0734,
+      "barnevern": 1.0734,
+      "sosial": 1.0734,
+      "kommunehelse": 1.0734,
+      "administrasjon": 1.0734
+    },
+    "4202": {
+      "samlet": 0.9884,
+      "grunnskole": 0.9884,
+      "pleie": 0.9884,
+      "barnehage": 0.9884,
+      "barnevern": 0.9884,
+      "sosial": 0.9884,
+      "kommunehelse": 0.9884,
+      "administrasjon": 0.9884
+    },
+    "4203": {
+      "samlet": 0.9907,
+      "grunnskole": 0.9907,
+      "pleie": 0.9907,
+      "barnehage": 0.9907,
+      "barnevern": 0.9907,
+      "sosial": 0.9907,
+      "kommunehelse": 0.9907,
+      "administrasjon": 0.9907
+    },
+    "4204": {
+      "samlet": 0.9746,
+      "grunnskole": 0.9746,
+      "pleie": 0.9746,
+      "barnehage": 0.9746,
+      "barnevern": 0.9746,
+      "sosial": 0.9746,
+      "kommunehelse": 0.9746,
+      "administrasjon": 0.9746
+    },
+    "4205": {
+      "samlet": 1.0165,
+      "grunnskole": 1.0165,
+      "pleie": 1.0165,
+      "barnehage": 1.0165,
+      "barnevern": 1.0165,
+      "sosial": 1.0165,
+      "kommunehelse": 1.0165,
+      "administrasjon": 1.0165
+    },
+    "4206": {
+      "samlet": 1.0522,
+      "grunnskole": 1.0522,
+      "pleie": 1.0522,
+      "barnehage": 1.0522,
+      "barnevern": 1.0522,
+      "sosial": 1.0522,
+      "kommunehelse": 1.0522,
+      "administrasjon": 1.0522
+    },
+    "4207": {
+      "samlet": 1.0824,
+      "grunnskole": 1.0824,
+      "pleie": 1.0824,
+      "barnehage": 1.0824,
+      "barnevern": 1.0824,
+      "sosial": 1.0824,
+      "kommunehelse": 1.0824,
+      "administrasjon": 1.0824
+    },
+    "4211": {
+      "samlet": 1.1477,
+      "grunnskole": 1.1477,
+      "pleie": 1.1477,
+      "barnehage": 1.1477,
+      "barnevern": 1.1477,
+      "sosial": 1.1477,
+      "kommunehelse": 1.1477,
+      "administrasjon": 1.1477
+    },
+    "4212": {
+      "samlet": 1.1775,
+      "grunnskole": 1.1775,
+      "pleie": 1.1775,
+      "barnehage": 1.1775,
+      "barnevern": 1.1775,
+      "sosial": 1.1775,
+      "kommunehelse": 1.1775,
+      "administrasjon": 1.1775
+    },
+    "4213": {
+      "samlet": 1.0699,
+      "grunnskole": 1.0699,
+      "pleie": 1.0699,
+      "barnehage": 1.0699,
+      "barnevern": 1.0699,
+      "sosial": 1.0699,
+      "kommunehelse": 1.0699,
+      "administrasjon": 1.0699
+    },
+    "4214": {
+      "samlet": 1.056,
+      "grunnskole": 1.056,
+      "pleie": 1.056,
+      "barnehage": 1.056,
+      "barnevern": 1.056,
+      "sosial": 1.056,
+      "kommunehelse": 1.056,
+      "administrasjon": 1.056
+    },
+    "4215": {
+      "samlet": 0.9892,
+      "grunnskole": 0.9892,
+      "pleie": 0.9892,
+      "barnehage": 0.9892,
+      "barnevern": 0.9892,
+      "sosial": 0.9892,
+      "kommunehelse": 0.9892,
+      "administrasjon": 0.9892
+    },
+    "4216": {
+      "samlet": 1.1013,
+      "grunnskole": 1.1013,
+      "pleie": 1.1013,
+      "barnehage": 1.1013,
+      "barnevern": 1.1013,
+      "sosial": 1.1013,
+      "kommunehelse": 1.1013,
+      "administrasjon": 1.1013
+    },
+    "4217": {
+      "samlet": 1.3135,
+      "grunnskole": 1.3135,
+      "pleie": 1.3135,
+      "barnehage": 1.3135,
+      "barnevern": 1.3135,
+      "sosial": 1.3135,
+      "kommunehelse": 1.3135,
+      "administrasjon": 1.3135
+    },
+    "4218": {
+      "samlet": 1.3649,
+      "grunnskole": 1.3649,
+      "pleie": 1.3649,
+      "barnehage": 1.3649,
+      "barnevern": 1.3649,
+      "sosial": 1.3649,
+      "kommunehelse": 1.3649,
+      "administrasjon": 1.3649
+    },
+    "4219": {
+      "samlet": 1.1451,
+      "grunnskole": 1.1451,
+      "pleie": 1.1451,
+      "barnehage": 1.1451,
+      "barnevern": 1.1451,
+      "sosial": 1.1451,
+      "kommunehelse": 1.1451,
+      "administrasjon": 1.1451
+    },
+    "4220": {
+      "samlet": 1.3242,
+      "grunnskole": 1.3242,
+      "pleie": 1.3242,
+      "barnehage": 1.3242,
+      "barnevern": 1.3242,
+      "sosial": 1.3242,
+      "kommunehelse": 1.3242,
+      "administrasjon": 1.3242
+    },
+    "4221": {
+      "samlet": 1.2697,
+      "grunnskole": 1.2697,
+      "pleie": 1.2697,
+      "barnehage": 1.2697,
+      "barnevern": 1.2697,
+      "sosial": 1.2697,
+      "kommunehelse": 1.2697,
+      "administrasjon": 1.2697
+    },
+    "4222": {
+      "samlet": 1.2741,
+      "grunnskole": 1.2741,
+      "pleie": 1.2741,
+      "barnehage": 1.2741,
+      "barnevern": 1.2741,
+      "sosial": 1.2741,
+      "kommunehelse": 1.2741,
+      "administrasjon": 1.2741
+    },
+    "4223": {
+      "samlet": 1.0132,
+      "grunnskole": 1.0132,
+      "pleie": 1.0132,
+      "barnehage": 1.0132,
+      "barnevern": 1.0132,
+      "sosial": 1.0132,
+      "kommunehelse": 1.0132,
+      "administrasjon": 1.0132
+    },
+    "4224": {
+      "samlet": 1.4161,
+      "grunnskole": 1.4161,
+      "pleie": 1.4161,
+      "barnehage": 1.4161,
+      "barnevern": 1.4161,
+      "sosial": 1.4161,
+      "kommunehelse": 1.4161,
+      "administrasjon": 1.4161
+    },
+    "4225": {
+      "samlet": 1.0913,
+      "grunnskole": 1.0913,
+      "pleie": 1.0913,
+      "barnehage": 1.0913,
+      "barnevern": 1.0913,
+      "sosial": 1.0913,
+      "kommunehelse": 1.0913,
+      "administrasjon": 1.0913
+    },
+    "4226": {
+      "samlet": 1.2613,
+      "grunnskole": 1.2613,
+      "pleie": 1.2613,
+      "barnehage": 1.2613,
+      "barnevern": 1.2613,
+      "sosial": 1.2613,
+      "kommunehelse": 1.2613,
+      "administrasjon": 1.2613
+    },
+    "4227": {
+      "samlet": 1.1121,
+      "grunnskole": 1.1121,
+      "pleie": 1.1121,
+      "barnehage": 1.1121,
+      "barnevern": 1.1121,
+      "sosial": 1.1121,
+      "kommunehelse": 1.1121,
+      "administrasjon": 1.1121
+    },
+    "4228": {
+      "samlet": 1.2069,
+      "grunnskole": 1.2069,
+      "pleie": 1.2069,
+      "barnehage": 1.2069,
+      "barnevern": 1.2069,
+      "sosial": 1.2069,
+      "kommunehelse": 1.2069,
+      "administrasjon": 1.2069
+    },
+    "4601": {
+      "samlet": 0.9506,
+      "grunnskole": 0.9506,
+      "pleie": 0.9506,
+      "barnehage": 0.9506,
+      "barnevern": 0.9506,
+      "sosial": 0.9506,
+      "kommunehelse": 0.9506,
+      "administrasjon": 0.9506
+    },
+    "4602": {
+      "samlet": 1.0396,
+      "grunnskole": 1.0396,
+      "pleie": 1.0396,
+      "barnehage": 1.0396,
+      "barnevern": 1.0396,
+      "sosial": 1.0396,
+      "kommunehelse": 1.0396,
+      "administrasjon": 1.0396
+    },
+    "4611": {
+      "samlet": 1.1353,
+      "grunnskole": 1.1353,
+      "pleie": 1.1353,
+      "barnehage": 1.1353,
+      "barnevern": 1.1353,
+      "sosial": 1.1353,
+      "kommunehelse": 1.1353,
+      "administrasjon": 1.1353
+    },
+    "4612": {
+      "samlet": 1.0682,
+      "grunnskole": 1.0682,
+      "pleie": 1.0682,
+      "barnehage": 1.0682,
+      "barnevern": 1.0682,
+      "sosial": 1.0682,
+      "kommunehelse": 1.0682,
+      "administrasjon": 1.0682
+    },
+    "4613": {
+      "samlet": 1.0221,
+      "grunnskole": 1.0221,
+      "pleie": 1.0221,
+      "barnehage": 1.0221,
+      "barnevern": 1.0221,
+      "sosial": 1.0221,
+      "kommunehelse": 1.0221,
+      "administrasjon": 1.0221
+    },
+    "4614": {
+      "samlet": 1.0039,
+      "grunnskole": 1.0039,
+      "pleie": 1.0039,
+      "barnehage": 1.0039,
+      "barnevern": 1.0039,
+      "sosial": 1.0039,
+      "kommunehelse": 1.0039,
+      "administrasjon": 1.0039
+    },
+    "4615": {
+      "samlet": 1.0981,
+      "grunnskole": 1.0981,
+      "pleie": 1.0981,
+      "barnehage": 1.0981,
+      "barnevern": 1.0981,
+      "sosial": 1.0981,
+      "kommunehelse": 1.0981,
+      "administrasjon": 1.0981
+    },
+    "4616": {
+      "samlet": 1.1871,
+      "grunnskole": 1.1871,
+      "pleie": 1.1871,
+      "barnehage": 1.1871,
+      "barnevern": 1.1871,
+      "sosial": 1.1871,
+      "kommunehelse": 1.1871,
+      "administrasjon": 1.1871
+    },
+    "4617": {
+      "samlet": 1.0355,
+      "grunnskole": 1.0355,
+      "pleie": 1.0355,
+      "barnehage": 1.0355,
+      "barnevern": 1.0355,
+      "sosial": 1.0355,
+      "kommunehelse": 1.0355,
+      "administrasjon": 1.0355
+    },
+    "4618": {
+      "samlet": 1.0907,
+      "grunnskole": 1.0907,
+      "pleie": 1.0907,
+      "barnehage": 1.0907,
+      "barnevern": 1.0907,
+      "sosial": 1.0907,
+      "kommunehelse": 1.0907,
+      "administrasjon": 1.0907
+    },
+    "4619": {
+      "samlet": 1.3715,
+      "grunnskole": 1.3715,
+      "pleie": 1.3715,
+      "barnehage": 1.3715,
+      "barnevern": 1.3715,
+      "sosial": 1.3715,
+      "kommunehelse": 1.3715,
+      "administrasjon": 1.3715
+    },
+    "4620": {
+      "samlet": 1.3929,
+      "grunnskole": 1.3929,
+      "pleie": 1.3929,
+      "barnehage": 1.3929,
+      "barnevern": 1.3929,
+      "sosial": 1.3929,
+      "kommunehelse": 1.3929,
+      "administrasjon": 1.3929
+    },
+    "4621": {
+      "samlet": 1.0742,
+      "grunnskole": 1.0742,
+      "pleie": 1.0742,
+      "barnehage": 1.0742,
+      "barnevern": 1.0742,
+      "sosial": 1.0742,
+      "kommunehelse": 1.0742,
+      "administrasjon": 1.0742
+    },
+    "4622": {
+      "samlet": 1.1075,
+      "grunnskole": 1.1075,
+      "pleie": 1.1075,
+      "barnehage": 1.1075,
+      "barnevern": 1.1075,
+      "sosial": 1.1075,
+      "kommunehelse": 1.1075,
+      "administrasjon": 1.1075
+    },
+    "4623": {
+      "samlet": 1.1332,
+      "grunnskole": 1.1332,
+      "pleie": 1.1332,
+      "barnehage": 1.1332,
+      "barnevern": 1.1332,
+      "sosial": 1.1332,
+      "kommunehelse": 1.1332,
+      "administrasjon": 1.1332
+    },
+    "4624": {
+      "samlet": 1.0046,
+      "grunnskole": 1.0046,
+      "pleie": 1.0046,
+      "barnehage": 1.0046,
+      "barnevern": 1.0046,
+      "sosial": 1.0046,
+      "kommunehelse": 1.0046,
+      "administrasjon": 1.0046
+    },
+    "4625": {
+      "samlet": 1.1033,
+      "grunnskole": 1.1033,
+      "pleie": 1.1033,
+      "barnehage": 1.1033,
+      "barnevern": 1.1033,
+      "sosial": 1.1033,
+      "kommunehelse": 1.1033,
+      "administrasjon": 1.1033
+    },
+    "4626": {
+      "samlet": 0.9879,
+      "grunnskole": 0.9879,
+      "pleie": 0.9879,
+      "barnehage": 0.9879,
+      "barnevern": 0.9879,
+      "sosial": 0.9879,
+      "kommunehelse": 0.9879,
+      "administrasjon": 0.9879
+    },
+    "4627": {
+      "samlet": 0.9806,
+      "grunnskole": 0.9806,
+      "pleie": 0.9806,
+      "barnehage": 0.9806,
+      "barnevern": 0.9806,
+      "sosial": 0.9806,
+      "kommunehelse": 0.9806,
+      "administrasjon": 0.9806
+    },
+    "4628": {
+      "samlet": 1.1328,
+      "grunnskole": 1.1328,
+      "pleie": 1.1328,
+      "barnehage": 1.1328,
+      "barnevern": 1.1328,
+      "sosial": 1.1328,
+      "kommunehelse": 1.1328,
+      "administrasjon": 1.1328
+    },
+    "4630": {
+      "samlet": 1.0529,
+      "grunnskole": 1.0529,
+      "pleie": 1.0529,
+      "barnehage": 1.0529,
+      "barnevern": 1.0529,
+      "sosial": 1.0529,
+      "kommunehelse": 1.0529,
+      "administrasjon": 1.0529
+    },
+    "4631": {
+      "samlet": 1.0064,
+      "grunnskole": 1.0064,
+      "pleie": 1.0064,
+      "barnehage": 1.0064,
+      "barnevern": 1.0064,
+      "sosial": 1.0064,
+      "kommunehelse": 1.0064,
+      "administrasjon": 1.0064
+    },
+    "4632": {
+      "samlet": 1.1151,
+      "grunnskole": 1.1151,
+      "pleie": 1.1151,
+      "barnehage": 1.1151,
+      "barnevern": 1.1151,
+      "sosial": 1.1151,
+      "kommunehelse": 1.1151,
+      "administrasjon": 1.1151
+    },
+    "4633": {
+      "samlet": 1.7028,
+      "grunnskole": 1.7028,
+      "pleie": 1.7028,
+      "barnehage": 1.7028,
+      "barnevern": 1.7028,
+      "sosial": 1.7028,
+      "kommunehelse": 1.7028,
+      "administrasjon": 1.7028
+    },
+    "4634": {
+      "samlet": 1.3462,
+      "grunnskole": 1.3462,
+      "pleie": 1.3462,
+      "barnehage": 1.3462,
+      "barnevern": 1.3462,
+      "sosial": 1.3462,
+      "kommunehelse": 1.3462,
+      "administrasjon": 1.3462
+    },
+    "4635": {
+      "samlet": 1.2394,
+      "grunnskole": 1.2394,
+      "pleie": 1.2394,
+      "barnehage": 1.2394,
+      "barnevern": 1.2394,
+      "sosial": 1.2394,
+      "kommunehelse": 1.2394,
+      "administrasjon": 1.2394
+    },
+    "4636": {
+      "samlet": 1.4883,
+      "grunnskole": 1.4883,
+      "pleie": 1.4883,
+      "barnehage": 1.4883,
+      "barnevern": 1.4883,
+      "sosial": 1.4883,
+      "kommunehelse": 1.4883,
+      "administrasjon": 1.4883
+    },
+    "4637": {
+      "samlet": 1.2954,
+      "grunnskole": 1.2954,
+      "pleie": 1.2954,
+      "barnehage": 1.2954,
+      "barnevern": 1.2954,
+      "sosial": 1.2954,
+      "kommunehelse": 1.2954,
+      "administrasjon": 1.2954
+    },
+    "4638": {
+      "samlet": 1.1668,
+      "grunnskole": 1.1668,
+      "pleie": 1.1668,
+      "barnehage": 1.1668,
+      "barnevern": 1.1668,
+      "sosial": 1.1668,
+      "kommunehelse": 1.1668,
+      "administrasjon": 1.1668
+    },
+    "4639": {
+      "samlet": 1.1953,
+      "grunnskole": 1.1953,
+      "pleie": 1.1953,
+      "barnehage": 1.1953,
+      "barnevern": 1.1953,
+      "sosial": 1.1953,
+      "kommunehelse": 1.1953,
+      "administrasjon": 1.1953
+    },
+    "4640": {
+      "samlet": 1.0326,
+      "grunnskole": 1.0326,
+      "pleie": 1.0326,
+      "barnehage": 1.0326,
+      "barnevern": 1.0326,
+      "sosial": 1.0326,
+      "kommunehelse": 1.0326,
+      "administrasjon": 1.0326
+    },
+    "4641": {
+      "samlet": 1.147,
+      "grunnskole": 1.147,
+      "pleie": 1.147,
+      "barnehage": 1.147,
+      "barnevern": 1.147,
+      "sosial": 1.147,
+      "kommunehelse": 1.147,
+      "administrasjon": 1.147
+    },
+    "4642": {
+      "samlet": 1.1863,
+      "grunnskole": 1.1863,
+      "pleie": 1.1863,
+      "barnehage": 1.1863,
+      "barnevern": 1.1863,
+      "sosial": 1.1863,
+      "kommunehelse": 1.1863,
+      "administrasjon": 1.1863
+    },
+    "4643": {
+      "samlet": 1.0921,
+      "grunnskole": 1.0921,
+      "pleie": 1.0921,
+      "barnehage": 1.0921,
+      "barnevern": 1.0921,
+      "sosial": 1.0921,
+      "kommunehelse": 1.0921,
+      "administrasjon": 1.0921
+    },
+    "4644": {
+      "samlet": 1.1094,
+      "grunnskole": 1.1094,
+      "pleie": 1.1094,
+      "barnehage": 1.1094,
+      "barnevern": 1.1094,
+      "sosial": 1.1094,
+      "kommunehelse": 1.1094,
+      "administrasjon": 1.1094
+    },
+    "4645": {
+      "samlet": 1.2295,
+      "grunnskole": 1.2295,
+      "pleie": 1.2295,
+      "barnehage": 1.2295,
+      "barnevern": 1.2295,
+      "sosial": 1.2295,
+      "kommunehelse": 1.2295,
+      "administrasjon": 1.2295
+    },
+    "4646": {
+      "samlet": 1.2553,
+      "grunnskole": 1.2553,
+      "pleie": 1.2553,
+      "barnehage": 1.2553,
+      "barnevern": 1.2553,
+      "sosial": 1.2553,
+      "kommunehelse": 1.2553,
+      "administrasjon": 1.2553
+    },
+    "4647": {
+      "samlet": 1.0088,
+      "grunnskole": 1.0088,
+      "pleie": 1.0088,
+      "barnehage": 1.0088,
+      "barnevern": 1.0088,
+      "sosial": 1.0088,
+      "kommunehelse": 1.0088,
+      "administrasjon": 1.0088
+    },
+    "4648": {
+      "samlet": 1.2228,
+      "grunnskole": 1.2228,
+      "pleie": 1.2228,
+      "barnehage": 1.2228,
+      "barnevern": 1.2228,
+      "sosial": 1.2228,
+      "kommunehelse": 1.2228,
+      "administrasjon": 1.2228
+    },
+    "4649": {
+      "samlet": 1.0793,
+      "grunnskole": 1.0793,
+      "pleie": 1.0793,
+      "barnehage": 1.0793,
+      "barnevern": 1.0793,
+      "sosial": 1.0793,
+      "kommunehelse": 1.0793,
+      "administrasjon": 1.0793
+    },
+    "4650": {
+      "samlet": 1.1535,
+      "grunnskole": 1.1535,
+      "pleie": 1.1535,
+      "barnehage": 1.1535,
+      "barnevern": 1.1535,
+      "sosial": 1.1535,
+      "kommunehelse": 1.1535,
+      "administrasjon": 1.1535
+    },
+    "4651": {
+      "samlet": 1.0624,
+      "grunnskole": 1.0624,
+      "pleie": 1.0624,
+      "barnehage": 1.0624,
+      "barnevern": 1.0624,
+      "sosial": 1.0624,
+      "kommunehelse": 1.0624,
+      "administrasjon": 1.0624
+    },
+    "5001": {
+      "samlet": 0.9093,
+      "grunnskole": 0.9093,
+      "pleie": 0.9093,
+      "barnehage": 0.9093,
+      "barnevern": 0.9093,
+      "sosial": 0.9093,
+      "kommunehelse": 0.9093,
+      "administrasjon": 0.9093
+    },
+    "5006": {
+      "samlet": 1.0441,
+      "grunnskole": 1.0441,
+      "pleie": 1.0441,
+      "barnehage": 1.0441,
+      "barnevern": 1.0441,
+      "sosial": 1.0441,
+      "kommunehelse": 1.0441,
+      "administrasjon": 1.0441
+    },
+    "5007": {
+      "samlet": 1.0472,
+      "grunnskole": 1.0472,
+      "pleie": 1.0472,
+      "barnehage": 1.0472,
+      "barnevern": 1.0472,
+      "sosial": 1.0472,
+      "kommunehelse": 1.0472,
+      "administrasjon": 1.0472
+    },
+    "5014": {
+      "samlet": 1.0311,
+      "grunnskole": 1.0311,
+      "pleie": 1.0311,
+      "barnehage": 1.0311,
+      "barnevern": 1.0311,
+      "sosial": 1.0311,
+      "kommunehelse": 1.0311,
+      "administrasjon": 1.0311
+    },
+    "5020": {
+      "samlet": 1.4346,
+      "grunnskole": 1.4346,
+      "pleie": 1.4346,
+      "barnehage": 1.4346,
+      "barnevern": 1.4346,
+      "sosial": 1.4346,
+      "kommunehelse": 1.4346,
+      "administrasjon": 1.4346
+    },
+    "5021": {
+      "samlet": 1.0767,
+      "grunnskole": 1.0767,
+      "pleie": 1.0767,
+      "barnehage": 1.0767,
+      "barnevern": 1.0767,
+      "sosial": 1.0767,
+      "kommunehelse": 1.0767,
+      "administrasjon": 1.0767
+    },
+    "5022": {
+      "samlet": 1.1986,
+      "grunnskole": 1.1986,
+      "pleie": 1.1986,
+      "barnehage": 1.1986,
+      "barnevern": 1.1986,
+      "sosial": 1.1986,
+      "kommunehelse": 1.1986,
+      "administrasjon": 1.1986
+    },
+    "5025": {
+      "samlet": 1.0723,
+      "grunnskole": 1.0723,
+      "pleie": 1.0723,
+      "barnehage": 1.0723,
+      "barnevern": 1.0723,
+      "sosial": 1.0723,
+      "kommunehelse": 1.0723,
+      "administrasjon": 1.0723
+    },
+    "5026": {
+      "samlet": 1.1669,
+      "grunnskole": 1.1669,
+      "pleie": 1.1669,
+      "barnehage": 1.1669,
+      "barnevern": 1.1669,
+      "sosial": 1.1669,
+      "kommunehelse": 1.1669,
+      "administrasjon": 1.1669
+    },
+    "5027": {
+      "samlet": 1.1472,
+      "grunnskole": 1.1472,
+      "pleie": 1.1472,
+      "barnehage": 1.1472,
+      "barnevern": 1.1472,
+      "sosial": 1.1472,
+      "kommunehelse": 1.1472,
+      "administrasjon": 1.1472
+    },
+    "5028": {
+      "samlet": 1.0184,
+      "grunnskole": 1.0184,
+      "pleie": 1.0184,
+      "barnehage": 1.0184,
+      "barnevern": 1.0184,
+      "sosial": 1.0184,
+      "kommunehelse": 1.0184,
+      "administrasjon": 1.0184
+    },
+    "5029": {
+      "samlet": 1.0228,
+      "grunnskole": 1.0228,
+      "pleie": 1.0228,
+      "barnehage": 1.0228,
+      "barnevern": 1.0228,
+      "sosial": 1.0228,
+      "kommunehelse": 1.0228,
+      "administrasjon": 1.0228
+    },
+    "5031": {
+      "samlet": 0.9904,
+      "grunnskole": 0.9904,
+      "pleie": 0.9904,
+      "barnehage": 0.9904,
+      "barnevern": 0.9904,
+      "sosial": 0.9904,
+      "kommunehelse": 0.9904,
+      "administrasjon": 0.9904
+    },
+    "5032": {
+      "samlet": 1.1048,
+      "grunnskole": 1.1048,
+      "pleie": 1.1048,
+      "barnehage": 1.1048,
+      "barnevern": 1.1048,
+      "sosial": 1.1048,
+      "kommunehelse": 1.1048,
+      "administrasjon": 1.1048
+    },
+    "5033": {
+      "samlet": 1.4605,
+      "grunnskole": 1.4605,
+      "pleie": 1.4605,
+      "barnehage": 1.4605,
+      "barnevern": 1.4605,
+      "sosial": 1.4605,
+      "kommunehelse": 1.4605,
+      "administrasjon": 1.4605
+    },
+    "5034": {
+      "samlet": 1.1855,
+      "grunnskole": 1.1855,
+      "pleie": 1.1855,
+      "barnehage": 1.1855,
+      "barnevern": 1.1855,
+      "sosial": 1.1855,
+      "kommunehelse": 1.1855,
+      "administrasjon": 1.1855
+    },
+    "5035": {
+      "samlet": 0.9969,
+      "grunnskole": 0.9969,
+      "pleie": 0.9969,
+      "barnehage": 0.9969,
+      "barnevern": 0.9969,
+      "sosial": 0.9969,
+      "kommunehelse": 0.9969,
+      "administrasjon": 0.9969
+    },
+    "5036": {
+      "samlet": 1.1445,
+      "grunnskole": 1.1445,
+      "pleie": 1.1445,
+      "barnehage": 1.1445,
+      "barnevern": 1.1445,
+      "sosial": 1.1445,
+      "kommunehelse": 1.1445,
+      "administrasjon": 1.1445
+    },
+    "5037": {
+      "samlet": 1.0137,
+      "grunnskole": 1.0137,
+      "pleie": 1.0137,
+      "barnehage": 1.0137,
+      "barnevern": 1.0137,
+      "sosial": 1.0137,
+      "kommunehelse": 1.0137,
+      "administrasjon": 1.0137
+    },
+    "5038": {
+      "samlet": 1.0082,
+      "grunnskole": 1.0082,
+      "pleie": 1.0082,
+      "barnehage": 1.0082,
+      "barnevern": 1.0082,
+      "sosial": 1.0082,
+      "kommunehelse": 1.0082,
+      "administrasjon": 1.0082
+    },
+    "5041": {
+      "samlet": 1.2352,
+      "grunnskole": 1.2352,
+      "pleie": 1.2352,
+      "barnehage": 1.2352,
+      "barnevern": 1.2352,
+      "sosial": 1.2352,
+      "kommunehelse": 1.2352,
+      "administrasjon": 1.2352
+    },
+    "5042": {
+      "samlet": 1.3912,
+      "grunnskole": 1.3912,
+      "pleie": 1.3912,
+      "barnehage": 1.3912,
+      "barnevern": 1.3912,
+      "sosial": 1.3912,
+      "kommunehelse": 1.3912,
+      "administrasjon": 1.3912
+    },
+    "5043": {
+      "samlet": 1.85,
+      "grunnskole": 1.85,
+      "pleie": 1.85,
+      "barnehage": 1.85,
+      "barnevern": 1.85,
+      "sosial": 1.85,
+      "kommunehelse": 1.85,
+      "administrasjon": 1.85
+    },
+    "5044": {
+      "samlet": 1.5933,
+      "grunnskole": 1.5933,
+      "pleie": 1.5933,
+      "barnehage": 1.5933,
+      "barnevern": 1.5933,
+      "sosial": 1.5933,
+      "kommunehelse": 1.5933,
+      "administrasjon": 1.5933
+    },
+    "5045": {
+      "samlet": 1.2363,
+      "grunnskole": 1.2363,
+      "pleie": 1.2363,
+      "barnehage": 1.2363,
+      "barnevern": 1.2363,
+      "sosial": 1.2363,
+      "kommunehelse": 1.2363,
+      "administrasjon": 1.2363
+    },
+    "5046": {
+      "samlet": 1.3468,
+      "grunnskole": 1.3468,
+      "pleie": 1.3468,
+      "barnehage": 1.3468,
+      "barnevern": 1.3468,
+      "sosial": 1.3468,
+      "kommunehelse": 1.3468,
+      "administrasjon": 1.3468
+    },
+    "5047": {
+      "samlet": 1.1498,
+      "grunnskole": 1.1498,
+      "pleie": 1.1498,
+      "barnehage": 1.1498,
+      "barnevern": 1.1498,
+      "sosial": 1.1498,
+      "kommunehelse": 1.1498,
+      "administrasjon": 1.1498
+    },
+    "5049": {
+      "samlet": 1.3382,
+      "grunnskole": 1.3382,
+      "pleie": 1.3382,
+      "barnehage": 1.3382,
+      "barnevern": 1.3382,
+      "sosial": 1.3382,
+      "kommunehelse": 1.3382,
+      "administrasjon": 1.3382
+    },
+    "5052": {
+      "samlet": 1.5971,
+      "grunnskole": 1.5971,
+      "pleie": 1.5971,
+      "barnehage": 1.5971,
+      "barnevern": 1.5971,
+      "sosial": 1.5971,
+      "kommunehelse": 1.5971,
+      "administrasjon": 1.5971
+    },
+    "5053": {
+      "samlet": 1.0525,
+      "grunnskole": 1.0525,
+      "pleie": 1.0525,
+      "barnehage": 1.0525,
+      "barnevern": 1.0525,
+      "sosial": 1.0525,
+      "kommunehelse": 1.0525,
+      "administrasjon": 1.0525
+    },
+    "5054": {
+      "samlet": 1.065,
+      "grunnskole": 1.065,
+      "pleie": 1.065,
+      "barnehage": 1.065,
+      "barnevern": 1.065,
+      "sosial": 1.065,
+      "kommunehelse": 1.065,
+      "administrasjon": 1.065
+    },
+    "5055": {
+      "samlet": 1.0927,
+      "grunnskole": 1.0927,
+      "pleie": 1.0927,
+      "barnehage": 1.0927,
+      "barnevern": 1.0927,
+      "sosial": 1.0927,
+      "kommunehelse": 1.0927,
+      "administrasjon": 1.0927
+    },
+    "5056": {
+      "samlet": 1.0886,
+      "grunnskole": 1.0886,
+      "pleie": 1.0886,
+      "barnehage": 1.0886,
+      "barnevern": 1.0886,
+      "sosial": 1.0886,
+      "kommunehelse": 1.0886,
+      "administrasjon": 1.0886
+    },
+    "5057": {
+      "samlet": 1.0559,
+      "grunnskole": 1.0559,
+      "pleie": 1.0559,
+      "barnehage": 1.0559,
+      "barnevern": 1.0559,
+      "sosial": 1.0559,
+      "kommunehelse": 1.0559,
+      "administrasjon": 1.0559
+    },
+    "5058": {
+      "samlet": 1.1812,
+      "grunnskole": 1.1812,
+      "pleie": 1.1812,
+      "barnehage": 1.1812,
+      "barnevern": 1.1812,
+      "sosial": 1.1812,
+      "kommunehelse": 1.1812,
+      "administrasjon": 1.1812
+    },
+    "5059": {
+      "samlet": 1.0238,
+      "grunnskole": 1.0238,
+      "pleie": 1.0238,
+      "barnehage": 1.0238,
+      "barnevern": 1.0238,
+      "sosial": 1.0238,
+      "kommunehelse": 1.0238,
+      "administrasjon": 1.0238
+    },
+    "5060": {
+      "samlet": 1.1092,
+      "grunnskole": 1.1092,
+      "pleie": 1.1092,
+      "barnehage": 1.1092,
+      "barnevern": 1.1092,
+      "sosial": 1.1092,
+      "kommunehelse": 1.1092,
+      "administrasjon": 1.1092
+    },
+    "5061": {
+      "samlet": 1.2039,
+      "grunnskole": 1.2039,
+      "pleie": 1.2039,
+      "barnehage": 1.2039,
+      "barnevern": 1.2039,
+      "sosial": 1.2039,
+      "kommunehelse": 1.2039,
+      "administrasjon": 1.2039
+    },
+    "5501": {
+      "samlet": 0.9071,
+      "grunnskole": 0.9071,
+      "pleie": 0.9071,
+      "barnehage": 0.9071,
+      "barnevern": 0.9071,
+      "sosial": 0.9071,
+      "kommunehelse": 0.9071,
+      "administrasjon": 0.9071
+    },
+    "5503": {
+      "samlet": 0.9896,
+      "grunnskole": 0.9896,
+      "pleie": 0.9896,
+      "barnehage": 0.9896,
+      "barnevern": 0.9896,
+      "sosial": 0.9896,
+      "kommunehelse": 0.9896,
+      "administrasjon": 0.9896
+    },
+    "5510": {
+      "samlet": 1.1841,
+      "grunnskole": 1.1841,
+      "pleie": 1.1841,
+      "barnehage": 1.1841,
+      "barnevern": 1.1841,
+      "sosial": 1.1841,
+      "kommunehelse": 1.1841,
+      "administrasjon": 1.1841
+    },
+    "5512": {
+      "samlet": 1.1187,
+      "grunnskole": 1.1187,
+      "pleie": 1.1187,
+      "barnehage": 1.1187,
+      "barnevern": 1.1187,
+      "sosial": 1.1187,
+      "kommunehelse": 1.1187,
+      "administrasjon": 1.1187
+    },
+    "5514": {
+      "samlet": 1.3272,
+      "grunnskole": 1.3272,
+      "pleie": 1.3272,
+      "barnehage": 1.3272,
+      "barnevern": 1.3272,
+      "sosial": 1.3272,
+      "kommunehelse": 1.3272,
+      "administrasjon": 1.3272
+    },
+    "5516": {
+      "samlet": 1.4099,
+      "grunnskole": 1.4099,
+      "pleie": 1.4099,
+      "barnehage": 1.4099,
+      "barnevern": 1.4099,
+      "sosial": 1.4099,
+      "kommunehelse": 1.4099,
+      "administrasjon": 1.4099
+    },
+    "5518": {
+      "samlet": 1.4254,
+      "grunnskole": 1.4254,
+      "pleie": 1.4254,
+      "barnehage": 1.4254,
+      "barnevern": 1.4254,
+      "sosial": 1.4254,
+      "kommunehelse": 1.4254,
+      "administrasjon": 1.4254
+    },
+    "5520": {
+      "samlet": 1.0545,
+      "grunnskole": 1.0545,
+      "pleie": 1.0545,
+      "barnehage": 1.0545,
+      "barnevern": 1.0545,
+      "sosial": 1.0545,
+      "kommunehelse": 1.0545,
+      "administrasjon": 1.0545
+    },
+    "5522": {
+      "samlet": 1.1716,
+      "grunnskole": 1.1716,
+      "pleie": 1.1716,
+      "barnehage": 1.1716,
+      "barnevern": 1.1716,
+      "sosial": 1.1716,
+      "kommunehelse": 1.1716,
+      "administrasjon": 1.1716
+    },
+    "5524": {
+      "samlet": 1.0589,
+      "grunnskole": 1.0589,
+      "pleie": 1.0589,
+      "barnehage": 1.0589,
+      "barnevern": 1.0589,
+      "sosial": 1.0589,
+      "kommunehelse": 1.0589,
+      "administrasjon": 1.0589
+    },
+    "5526": {
+      "samlet": 1.1065,
+      "grunnskole": 1.1065,
+      "pleie": 1.1065,
+      "barnehage": 1.1065,
+      "barnevern": 1.1065,
+      "sosial": 1.1065,
+      "kommunehelse": 1.1065,
+      "administrasjon": 1.1065
+    },
+    "5528": {
+      "samlet": 1.3914,
+      "grunnskole": 1.3914,
+      "pleie": 1.3914,
+      "barnehage": 1.3914,
+      "barnevern": 1.3914,
+      "sosial": 1.3914,
+      "kommunehelse": 1.3914,
+      "administrasjon": 1.3914
+    },
+    "5530": {
+      "samlet": 1.0811,
+      "grunnskole": 1.0811,
+      "pleie": 1.0811,
+      "barnehage": 1.0811,
+      "barnevern": 1.0811,
+      "sosial": 1.0811,
+      "kommunehelse": 1.0811,
+      "administrasjon": 1.0811
+    },
+    "5532": {
+      "samlet": 1.1259,
+      "grunnskole": 1.1259,
+      "pleie": 1.1259,
+      "barnehage": 1.1259,
+      "barnevern": 1.1259,
+      "sosial": 1.1259,
+      "kommunehelse": 1.1259,
+      "administrasjon": 1.1259
+    },
+    "5534": {
+      "samlet": 1.2864,
+      "grunnskole": 1.2864,
+      "pleie": 1.2864,
+      "barnehage": 1.2864,
+      "barnevern": 1.2864,
+      "sosial": 1.2864,
+      "kommunehelse": 1.2864,
+      "administrasjon": 1.2864
+    },
+    "5536": {
+      "samlet": 1.2058,
+      "grunnskole": 1.2058,
+      "pleie": 1.2058,
+      "barnehage": 1.2058,
+      "barnevern": 1.2058,
+      "sosial": 1.2058,
+      "kommunehelse": 1.2058,
+      "administrasjon": 1.2058
+    },
+    "5538": {
+      "samlet": 1.225,
+      "grunnskole": 1.225,
+      "pleie": 1.225,
+      "barnehage": 1.225,
+      "barnevern": 1.225,
+      "sosial": 1.225,
+      "kommunehelse": 1.225,
+      "administrasjon": 1.225
+    },
+    "5540": {
+      "samlet": 1.2432,
+      "grunnskole": 1.2432,
+      "pleie": 1.2432,
+      "barnehage": 1.2432,
+      "barnevern": 1.2432,
+      "sosial": 1.2432,
+      "kommunehelse": 1.2432,
+      "administrasjon": 1.2432
+    },
+    "5542": {
+      "samlet": 1.196,
+      "grunnskole": 1.196,
+      "pleie": 1.196,
+      "barnehage": 1.196,
+      "barnevern": 1.196,
+      "sosial": 1.196,
+      "kommunehelse": 1.196,
+      "administrasjon": 1.196
+    },
+    "5544": {
+      "samlet": 1.1037,
+      "grunnskole": 1.1037,
+      "pleie": 1.1037,
+      "barnehage": 1.1037,
+      "barnevern": 1.1037,
+      "sosial": 1.1037,
+      "kommunehelse": 1.1037,
+      "administrasjon": 1.1037
+    },
+    "5546": {
+      "samlet": 1.4473,
+      "grunnskole": 1.4473,
+      "pleie": 1.4473,
+      "barnehage": 1.4473,
+      "barnevern": 1.4473,
+      "sosial": 1.4473,
+      "kommunehelse": 1.4473,
+      "administrasjon": 1.4473
+    },
+    "5601": {
+      "samlet": 1.0156,
+      "grunnskole": 1.0156,
+      "pleie": 1.0156,
+      "barnehage": 1.0156,
+      "barnevern": 1.0156,
+      "sosial": 1.0156,
+      "kommunehelse": 1.0156,
+      "administrasjon": 1.0156
+    },
+    "5603": {
+      "samlet": 1.0325,
+      "grunnskole": 1.0325,
+      "pleie": 1.0325,
+      "barnehage": 1.0325,
+      "barnevern": 1.0325,
+      "sosial": 1.0325,
+      "kommunehelse": 1.0325,
+      "administrasjon": 1.0325
+    },
+    "5605": {
+      "samlet": 0.9998,
+      "grunnskole": 0.9998,
+      "pleie": 0.9998,
+      "barnehage": 0.9998,
+      "barnevern": 0.9998,
+      "sosial": 0.9998,
+      "kommunehelse": 0.9998,
+      "administrasjon": 0.9998
+    },
+    "5607": {
+      "samlet": 1.0498,
+      "grunnskole": 1.0498,
+      "pleie": 1.0498,
+      "barnehage": 1.0498,
+      "barnevern": 1.0498,
+      "sosial": 1.0498,
+      "kommunehelse": 1.0498,
+      "administrasjon": 1.0498
+    },
+    "5610": {
+      "samlet": 1.1106,
+      "grunnskole": 1.1106,
+      "pleie": 1.1106,
+      "barnehage": 1.1106,
+      "barnevern": 1.1106,
+      "sosial": 1.1106,
+      "kommunehelse": 1.1106,
+      "administrasjon": 1.1106
+    },
+    "5612": {
+      "samlet": 1.1448,
+      "grunnskole": 1.1448,
+      "pleie": 1.1448,
+      "barnehage": 1.1448,
+      "barnevern": 1.1448,
+      "sosial": 1.1448,
+      "kommunehelse": 1.1448,
+      "administrasjon": 1.1448
+    },
+    "5614": {
+      "samlet": 1.6172,
+      "grunnskole": 1.6172,
+      "pleie": 1.6172,
+      "barnehage": 1.6172,
+      "barnevern": 1.6172,
+      "sosial": 1.6172,
+      "kommunehelse": 1.6172,
+      "administrasjon": 1.6172
+    },
+    "5616": {
+      "samlet": 1.3861,
+      "grunnskole": 1.3861,
+      "pleie": 1.3861,
+      "barnehage": 1.3861,
+      "barnevern": 1.3861,
+      "sosial": 1.3861,
+      "kommunehelse": 1.3861,
+      "administrasjon": 1.3861
+    },
+    "5618": {
+      "samlet": 1.365,
+      "grunnskole": 1.365,
+      "pleie": 1.365,
+      "barnehage": 1.365,
+      "barnevern": 1.365,
+      "sosial": 1.365,
+      "kommunehelse": 1.365,
+      "administrasjon": 1.365
+    },
+    "5620": {
+      "samlet": 1.0597,
+      "grunnskole": 1.0597,
+      "pleie": 1.0597,
+      "barnehage": 1.0597,
+      "barnevern": 1.0597,
+      "sosial": 1.0597,
+      "kommunehelse": 1.0597,
+      "administrasjon": 1.0597
+    },
+    "5622": {
+      "samlet": 1.0726,
+      "grunnskole": 1.0726,
+      "pleie": 1.0726,
+      "barnehage": 1.0726,
+      "barnevern": 1.0726,
+      "sosial": 1.0726,
+      "kommunehelse": 1.0726,
+      "administrasjon": 1.0726
+    },
+    "5624": {
+      "samlet": 1.3464,
+      "grunnskole": 1.3464,
+      "pleie": 1.3464,
+      "barnehage": 1.3464,
+      "barnevern": 1.3464,
+      "sosial": 1.3464,
+      "kommunehelse": 1.3464,
+      "administrasjon": 1.3464
+    },
+    "5626": {
+      "samlet": 1.3668,
+      "grunnskole": 1.3668,
+      "pleie": 1.3668,
+      "barnehage": 1.3668,
+      "barnevern": 1.3668,
+      "sosial": 1.3668,
+      "kommunehelse": 1.3668,
+      "administrasjon": 1.3668
+    },
+    "5628": {
+      "samlet": 1.1924,
+      "grunnskole": 1.1924,
+      "pleie": 1.1924,
+      "barnehage": 1.1924,
+      "barnevern": 1.1924,
+      "sosial": 1.1924,
+      "kommunehelse": 1.1924,
+      "administrasjon": 1.1924
+    },
+    "5630": {
+      "samlet": 1.3686,
+      "grunnskole": 1.3686,
+      "pleie": 1.3686,
+      "barnehage": 1.3686,
+      "barnevern": 1.3686,
+      "sosial": 1.3686,
+      "kommunehelse": 1.3686,
+      "administrasjon": 1.3686
+    },
+    "5632": {
+      "samlet": 1.1183,
+      "grunnskole": 1.1183,
+      "pleie": 1.1183,
+      "barnehage": 1.1183,
+      "barnevern": 1.1183,
+      "sosial": 1.1183,
+      "kommunehelse": 1.1183,
+      "administrasjon": 1.1183
+    },
+    "5634": {
+      "samlet": 1.1598,
+      "grunnskole": 1.1598,
+      "pleie": 1.1598,
+      "barnehage": 1.1598,
+      "barnevern": 1.1598,
+      "sosial": 1.1598,
+      "kommunehelse": 1.1598,
+      "administrasjon": 1.1598
+    },
+    "5636": {
+      "samlet": 1.4118,
+      "grunnskole": 1.4118,
+      "pleie": 1.4118,
+      "barnehage": 1.4118,
+      "barnevern": 1.4118,
+      "sosial": 1.4118,
+      "kommunehelse": 1.4118,
+      "administrasjon": 1.4118
+    },
+    "0301": {
+      "samlet": 0.9304,
+      "grunnskole": 0.9304,
+      "pleie": 0.9304,
+      "barnehage": 0.9304,
+      "barnevern": 0.9304,
+      "sosial": 0.9304,
+      "kommunehelse": 0.9304,
+      "administrasjon": 0.9304
+    }
+  },
+  "sektorvekter": {
+    "_kommentar": "KMDs offisielle sektorvekter. Sum = 1.00.",
+    "grunnskole": 0.272,
+    "pleie": 0.353,
+    "barnehage": 0.157,
+    "barnevern": 0.03,
+    "sosial": 0.046,
+    "kommunehelse": 0.046,
+    "administrasjon": 0.096
+  }
+}
