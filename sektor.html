@@ -755,7 +755,9 @@ async function lastDkiFil(_år) {
   if (DKI_CACHE && DKI_CACHE.år === _år) return DKI_CACHE.data;
   const fil = ['2024', '2025'].includes(String(_år)) ? _år : '2025';
   try {
-    const r = await fetch(`/data/dki-${fil}.json`, { cache: 'force-cache' });
+    // 'no-cache' ber browser revalidere med edge — unngår at gamle DKI-POC-filer
+    // (1 kommune) sitter fast i klient-cachen etter ny deploy.
+    const r = await fetch(`/data/dki-${fil}.json`, { cache: 'no-cache' });
     if (!r.ok) return null;
     const data = await r.json();
     DKI_CACHE = { år: _år, data };

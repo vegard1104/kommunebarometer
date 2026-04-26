@@ -668,7 +668,7 @@ let CODE_HISTORY_REVERSE = {}; // oldCode → nyKode
 async function loadCodeHistory() {
   // Først: les statisk snapshot.
   try {
-    const r = await fetch('/data/code-history.json', { cache: 'force-cache' });
+    const r = await fetch('/data/code-history.json', { cache: 'no-cache' });
     if (r.ok) {
       const data = await r.json();
       CODE_HISTORY = data.endringer || {};
@@ -1261,7 +1261,9 @@ async function loadDKI(år) {
   // Bruk samme år for "siste tilgjengelige DKI" hvis ikke filen finnes
   const fil = ['2025', '2024'].includes(String(år)) ? år : '2025';
   try {
-    const r = await fetch(`/data/dki-${fil}.json`, { cache: 'force-cache' });
+    // 'no-cache' ber browser revalidere med edge (304-roundtrip ved hash-match).
+    // Tidligere 'force-cache' fryste klienter på en gammel POC-fil med 1 kommune.
+    const r = await fetch(`/data/dki-${fil}.json`, { cache: 'no-cache' });
     if (!r.ok) return null;
     return await r.json();
   } catch (_) {
@@ -1963,7 +1965,10 @@ function renderSectors() {
       'år': CURRENT_YEAR || '',
       mode: modus
     });
-    const lenke = `/kommunebarometer/sektor?${params.toString()}`;
+    // /sektor?... peker direkte til sektor.html (cleanUrls). Vi har ikke
+    // rewrite til /kommunebarometer/sektor lenger pga. konflikt med
+    // /kommunebarometer-rewriten (Vercel returnerte 404 før rewrite-treff).
+    const lenke = `/sektor?${params.toString()}`;
     const ariaLabel = `Vis dypdykk for ${sec.name}${info ? `, rangering ${info.rank} av ${info.total}` : ''}${foreldet ? ' (datakilde foreldet)' : ''}`;
     return `
       <a class="sector ${missing ? 'missing' : ''}${foreldet ? ' deprecated' : ''}" href="${lenke}" aria-label="${ariaLabel}">
