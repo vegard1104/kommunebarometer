@@ -14,6 +14,47 @@ Format per oppføring:
 
 ---
 
+## 2026-04-26 — SLUTTRAPPORT runde 6: portal-forside + rensing av default-state og kommunenavn
+
+**Hvem:** Claude Code (autonom)
+
+**Hva:** 3 strukturelle pakker pluss verifiseringskjøring, alle merget til `test/alle-pakker-samlet` etter sjekk-script-validering.
+
+| # | Branch | PR-URL (manuelt opprettes) | Effekt |
+|---|---|---|---|
+| A | `fix/ingen-default-kommune` | <https://github.com/vegard1104/kommunebarometer/pull/new/fix/ingen-default-kommune> | Ingen Lørenskog som default. Tom-state med "Velg en kommune for å starte" når URL mangler `?kommune=`. Sektor-tilbake-lenken bevarer kommune+år+mode i URL. Eksport-knapper deaktivert i tom-state. |
+| B | `fix/kommunenavn-bokmaal` | <https://github.com/vegard1104/kommunebarometer/pull/new/fix/kommunenavn-bokmaal> | Strip samisk/kvensk dual-form fra Klass-API. Override-tabell pr. 2026-04-26 dekker 29 kommuner (Oslo, Karasjok, Tjeldsund, Tana, Kautokeino, Nesseby m.fl.). Heuristikk-fallback for ukjente koder. |
+| C | `feature/portal-forside` | <https://github.com/vegard1104/kommunebarometer/pull/new/feature/portal-forside> | Ny portal-forside `/` ("Kommunedata" — arbeidsnavn) med 1 aktiv + 3 placeholder-verktøy. KOSTRA-dashboardet flyttet til `/kommunebarometer` (rewrite). Sektor-dypdykk på `/kommunebarometer/sektor`. Mobile-first. |
+| D | `chore/verifisering-runde-6` | (denne) | Auto-verifiseringsrapport `team/referansedata/verifisering-runde-6.md`. 11 manuelle test-skritt for Vegard på Vercel-preview. |
+
+### Auto-verifisert i Pakke D
+
+- ✓ Ingen hardkodet `Lørenskog`/`3222` utenfor kommentarer.
+- ✓ Tom-state-DOM på plass (`#velg-kommune-tomstate` + `#kommune-resultat`).
+- ✓ Sektor-breadcrumb `/kommunebarometer?kommune=…&år=…&mode=…`.
+- ✓ Live-test mot SSB Klass: alle 29 dual-form-kommuner renser til ren bokmål.
+- ✓ Vercel rewrites: `/kommunebarometer` + `/kommunebarometer/sektor`.
+- ✓ Sjekk-script kjørt etter hver merge — alle 6 brancher har funksjons-overlevelse (oppdatert til å støtte `kommunebarometer.html` etter Pakke C).
+- ✓ Inline JS i `index.html`, `kommunebarometer.html`, `sektor.html`, `data/kommunestruktur.js`, `vercel.json` parser uten feil.
+
+### Krever manuell verifisering på Vercel-preview
+
+Vegard kjører 11-punkts-sjekklista i `team/referansedata/verifisering-runde-6.md` mot test-preview. Mest kritisk:
+
+1. `/` → portal, ingen Lørenskog.
+2. `/kommunebarometer` (uten param) → tom-state.
+3. `/kommunebarometer?kommune=Karasjok` → header viser "Karasjok" (ikke "Kárášjohka - Karasjok").
+4. Klikk sektor på Bergen, klikk tilbake → kommer tilbake til Bergen, ikke Lørenskog.
+5. Mobil 375 px → ingen horisontal scroll.
+
+### Åpne HANDOFF-rader fra runde 6
+
+- Vegards endelige portal-navn (i dag arbeidsnavn "Kommunedata").
+- Tilskuddsfinner og Politisk kalender — placeholder-kort ligger på portalen, egne pakker når Vegard er klar.
+- Override-tabellen for samiske kommunenavn må vedlikeholdes når SSB Klass legger til/fjerner dual-form. Dokumentert med dato (2026-04-26) i kildekoden.
+
+---
+
 ## 2026-04-26 — Pakke 8.6: rett sosial-DKI 2024 + identifiser manglende kommuner
 **Hvem:** Claude Code (autonom)
 
@@ -77,6 +118,38 @@ Format per oppføring:
 2. **Excel-referansefil** `KOSTRA_2024-2025_Lorenskog_rangert.xlsx` ble ikke funnet i repo. Validering kjøres mot eksplisitte tall fra prompten. Hvis Vegard legger fila inn senere, kan validering utvides til celle-for-celle.
 3. **Vercel preview-test**: forventer at sektor-dypdykk (helse/grunnskole/pleie) viser KOSTRA-rapport-tabellen med ekte tall (lokal /api/ssb/* mangler).
 4. **Performance**: full KOSTRA-rapport-eksport tar ~30 sek pga 30+ SSB-kall. Kan caches eller pre-computes hvis trafikkmønster krever det.
+## 2026-04-26 — Filsøking: verifikasjon av test-protokoll mot `test/alle-pakker-samlet`
+**Hvem:** Claude Code (filsøkings-agent)
+**Hva:** Krysssjekk av test-protokollens 7 påståtte bugs mot faktisk filinnhold på branchen `origin/test/alle-pakker-samlet` (HEAD: `efd5abc`).
+
+### Funn — punkt for punkt
+
+| # | Påstand | Status | Bevis |
+|---|---|---|---|
+| 1 | DKI-laster rapporterer "1 kommuner lastet" | **DELVIS — kildefilen er fikset, men cache-strategien er fortsatt sårbar** | `data/dki-2025.json` på HEAD inneholder 352 kommuner (`kommuner`-feltet validert via `node`). Historisk: filen hadde 1 kommune fra `b7a3345` (Pakke 3a POC) til `dbab6ef` (KMD A-k-data). Vercel-preview bygget på `b7a3345…517600e` viser fortsatt 1 kommune. **Rotårsak til at brukere fortsatt ser "1"**: `cache: 'force-cache'` i `loadDKI()` ([index.html:1182](index.html#L1182)) og `lastDkiFil()` ([sektor.html:709](sektor.html#L709)) — browseren serverer cached gammel-fil selv etter at ny er deployet. |
+| 2 | Sosial-DKI 2024 absurde verdier (Bergen 5,5564) | **FIKSET** | `dki-2024.json`: Bergen sosial = 1.0631, Lørenskog sosial = 1.1669. Pakke 8.6 (`fca41a9`) overskrev verdier ved å bruke 2025 som proxy (`scripts/generer-dki-sektor-breakdown.mjs:282-291`). **Avledet observasjon:** 2024-fila er identisk med 2025 i `kommuner`-feltet (samme byte-for-byte unntatt metadata). HANDOFF "Pakke 3a — hent ekte 2024-DKI" er fortsatt åpen. |
+| 3 | Karasjok 5440 mangler i `dki-2025.json` | **IKKE EN BUG — feil i test-spec** | Karasjok finnes som `5610` ("Kárášjohka - Karasjok") i alle 3 DKI-filer. `data/code-history.json.endringer["5610"].oldCodes = [{"code":"5437","validTo":"2024-01-01"}]`. Karasjok hadde aldri knr 5440 — det var Måsøy i den gamle 54-strukturen. Hele 54xx-fylket forsvant ved 2024-splittelsen (Troms→55, Finnmark→56). **Implikasjon for test-protokollen:** test med 5610 eller 5437 (historisk), ikke 5440. |
+| 4 | `cache: 'force-cache'` på DKI-fetch i sektor.html | **BEKREFTET** | [sektor.html:709](sektor.html#L709): `fetch('/data/dki-${fil}.json', { cache: 'force-cache' })`. Samme i [index.html:1182](index.html#L1182). **Foreslått fix:** bytt til `cache: 'no-cache'` (eller default), eller legg ?v=hash på URL. Pakke 8 (B5) lo allerede inn `Cache-Control: public, max-age=3600, s-maxage=86400, stale-while-revalidate` på data-mappa via `vercel.json` — det gir cache-headers på edge, men `force-cache` overstyrer på klient-siden og er overflødig her. |
+| 5 | URL-bug `/api/ssb/v2/data/dataset/` i sektor.html | **FIKSET** | [sektor.html:761-762](sektor.html#L761): `API_BASE_SEKTOR = '/api/ssb/tables/'`. `hentSektorData()` (linje 765) kaller `${API_BASE_SEKTOR}${tableId}/metadata` og `/data` med `valueCodes[…]`-mønsteret. Sluttrapport runde 3 PR #1 (`fix/sektor-ssb-api-url`) merget. |
+| 6 | Sektor-dypdykk indikator-tabell + tidsserie tomme | **FIKSET strukturelt — fragil i edge-cases** | [sektor.html:425-436](sektor.html#L425) kaller `hentSektorData()` og rendrer både `renderIndikatorTabell` (linje 917) og `renderTidsserie` (946). Canvas `<canvas id="tidsserie-graf">` finnes (162). URL-pattern korrekt. **Restrisiko:** `parseJsonStatEnkel` (832) feiler hvis tabellen mangler region/tid/contents-dimensjoner — feilen rapporteres til UI-element `#indikator-laster`. |
+| 7 | Sosial-rangering inkonsistent med score | **DELVIS — rotårsak består** | `SECTOR_DIR_OVERRIDE.sosial` ([index.html:530-545](index.html#L530)) dekker sosialhjelpsmottakere, stønadslengde, barnefattigdom, uføre, aktivitetsplikt og driftsutgift. **Men:** `determineDirection` (1114) faller fortsatt tilbake til generisk regex-heuristikk eller default `'high'` for alle indikator-labels som ikke matcher overrides. `data/indikator-register.json` (Pakke 11) er bygget men IKKE koblet inn — søk etter `indikator-register` i index.html: 0 treff utenfor en kommentar. Full erstatning av regex-heuristikken med eksplisitt register er utestående refaktor. |
+| 8 | Foreldede tabeller barnevern (08845) og saksbehandling (13111) | **FIKSET** | `SECTORS[barnevern].tableId = '12279'`, `fallbackTableIds = ['12189', '08845']` (statusNotat: "08845 er avslutta"). `SECTORS[saksbehandling].tableId = '12676'`, `fallbackTableIds = ['13124', '13111']`. Verifisert mot SSB 2026-04-26 ([index.html:504,511](index.html#L504)). |
+
+### Konkret bug-fix-anbefaling
+
+**Høyeste prioritet** — `force-cache` i [index.html:1182](index.html#L1182) og [sektor.html:709](sektor.html#L709). Forklarer brukernes "1 kommuner lastet" på preview-besøk etter Pakke 8.5. Endre til `cache: 'no-cache'` (validering mot edge ETag) eller fjern cache-option helt og la `Cache-Control` fra `vercel.json` styre — edge-cachen er allerede satt opp i Pakke 8.
+
+**Sekundær** — Kompletter `dki-*.json` med kommuner som mangler i Tabell E-k-parsingen (5610 Karasjok finnes; sjekk om noen andre er rapportert manglende av brukere). Skriptet `scripts/generer-dki-sektor-breakdown.mjs` parser ODS-rader med regex `^(\d{4})\s+(.+)`. Sami-stavelser med spesialtegn parses riktig (verifisert: 5610 finnes med "Kárášjohka - Karasjok"). Rotårsak til at FNR-spec sa "5440" er trolig at denne knr ble brukt i en transient periode for Måsøy.
+
+**Ikke en regresjon** — ingen funksjons-definisjon falt ut i merge på test-branchen. Alle nøkkel-funksjoner (`loadDKI`, `dkiFor`, `computeSectorScores`, `hentSektorData`, `renderIndikatorTabell`, `renderTidsserie`, `determineDirection`) er definert i HEAD.
+
+**Konsekvens for teamet:**
+- Bug-fix-rolle: åpne PR `fix/dki-cache-mode` som endrer `force-cache` → `no-cache` på 2 stedene over. Verifiser at preview viser "DKI 2025 lastet: 352 kommuner" i incognito-konsoll.
+- Test-protokoll-eier: bytt "Karasjok 5440" → "Karasjok 5610" i punkt 2 av test-protokollen.
+- B1-eier: full integrasjon av `data/indikator-register.json` i `determineDirection` er ikke gjort — sosial-rangering kan fortsatt være feil for indikator-labels som ikke treffer override-regex.
+- DKI-eier: HANDOFF "Pakke 3a — ekte 2024-DKI" gjelder fortsatt; 2024-fila er en proxy av 2025.
+
+---
 
 ## 2026-04-26 — SLUTTRAPPORT runde 3: 7 pakker auto-merget til test
 **Hvem:** Claude Code (autonom)
