@@ -2275,10 +2275,23 @@ async function main() {
   loadSektorForklaringer();
 
   // A2: Last DKI-data parallelt — lite payload, ikke-blokkerende.
-  // Lastes for begge år vi viser; primær er 2025.
-  Promise.all([loadDKI('2024'), loadDKI('2025')]).then(([d24, d25]) => {
-    DKI_DATA = { '2024': d24, '2025': d25 };
-    if (d25) log(`DKI 2025 lastet: ${Object.keys(d25.kommuner || {}).length} kommuner`);
+  // Lastes for alle aktuelle år (2024-2026). Hvis fil mangler, blir feltet null.
+  Promise.all([loadDKI('2024'), loadDKI('2025'), loadDKI('2026')]).then(([d24, d25, d26]) => {
+    DKI_DATA = { '2024': d24, '2025': d25, '2026': d26 };
+    for (const [år, d] of Object.entries(DKI_DATA)) {
+      if (d) log(`DKI ${år} lastet: ${Object.keys(d.kommuner || {}).length} kommuner`);
+    }
+    // Re-render hvis behovsjustert er aktiv og scoring allerede er fullført
+    if (BEHOVSJUSTERT && ALL_SECTOR_DATA && Object.keys(ALL_SECTOR_DATA).length > 0) {
+      log('DKI lastet etter scoring — re-beregner');
+      for (const [secId, sd] of Object.entries(ALL_SECTOR_DATA)) {
+        if (!sd.error && Object.keys(sd.data || {}).length > 0) {
+          ALL_SECTOR_SCORES[secId] = computeSectorScores(sd);
+        }
+      }
+      OVERALL = computeOverall(ALL_SECTOR_SCORES);
+      renderAll();
+    }
   }).catch(e => log(`DKI-load feilet: ${e.message}`));
 
   // A2: Les ?mode= fra URL eller localStorage. Sett initial mode.
