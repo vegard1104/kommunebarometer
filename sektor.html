@@ -1,0 +1,702 @@
+<!DOCTYPE html>
+<html lang="nb">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sektor-dypdykk — Kommunebarometer 2026</title>
+<meta name="description" content="Detaljert sektor-dypdykk for KOSTRA-indikatorer per kommune. Inkluderer behovsjustering, tidsserier og eksterne kilder.">
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<style>
+  :root {
+    --bg: #0f1724; --panel: #182134; --panel-2: #1f2b44;
+    --accent: #4cc9f0; --accent-2: #f72585;
+    --good: #4ade80; --bad: #f87171; --warn: #fbbf24;
+    --text: #e6edf6; --muted: #b6c2d4; --border: #263248;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: var(--bg); color: var(--text); line-height: 1.5; }
+  header { background: linear-gradient(135deg, #1a2540 0%, #0f1724 100%); border-bottom: 1px solid var(--border); padding: 24px 32px; }
+  header .crumb { font-size: 13px; color: var(--muted); margin-bottom: 12px; }
+  header .crumb a { color: var(--accent); text-decoration: none; }
+  header .crumb a:hover, header .crumb a:focus { text-decoration: underline; }
+  header h1 { margin: 0 0 6px; font-size: 26px; }
+  header h1 .vekt { font-size: 14px; color: var(--muted); font-weight: 400; margin-left: 12px; }
+  header .konteks { font-size: 13px; color: var(--muted); margin: 0; display: flex; gap: 18px; flex-wrap: wrap; }
+  header .konteks strong { color: var(--text); }
+  main { padding: 24px 32px 60px; max-width: 1200px; margin: 0 auto; }
+  section { background: var(--panel); border: 1px solid var(--border); border-radius: 12px; padding: 22px 26px; margin-bottom: 18px; }
+  section h2 { margin: 0 0 14px; font-size: 18px; color: var(--accent); }
+  .summary-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 16px; }
+  .summary-card { background: var(--panel-2); border: 1px solid var(--border); border-radius: 8px; padding: 14px 16px; }
+  .summary-card .label { font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.5px; }
+  .summary-card .value { font-size: 28px; font-weight: 700; color: var(--accent); margin-top: 4px; }
+  .summary-card .sub { font-size: 12px; color: var(--muted); margin-top: 4px; }
+  .summary-card.justert { border-left: 3px solid var(--accent-2); }
+  .summary-card.justert .value { color: var(--accent-2); }
+  .dki-panel { background: var(--panel-2); border-left: 3px solid var(--accent); padding: 14px 18px; border-radius: 8px; margin-top: 12px; font-size: 14px; }
+  .dki-panel.dki-low { border-left-color: var(--good); }
+  .dki-panel.dki-high { border-left-color: var(--bad); }
+  .dki-panel strong { color: var(--accent); }
+  .dki-panel.dki-low strong { color: var(--good); }
+  .dki-panel.dki-high strong { color: var(--bad); }
+  table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  table th { text-align: left; padding: 10px 12px; border-bottom: 1px solid var(--border); color: var(--muted); font-weight: 500; font-size: 12px; text-transform: uppercase; letter-spacing: 0.3px; }
+  table td { padding: 10px 12px; border-bottom: 1px solid var(--border); }
+  table td.num, table th.num { text-align: right; font-variant-numeric: tabular-nums; }
+  table tr.kommune td { background: rgba(76,201,240,0.06); font-weight: 600; }
+  .retning { display: inline-block; min-width: 22px; text-align: center; font-weight: 700; }
+  .retning.high { color: var(--good); }
+  .retning.low { color: var(--warn); }
+  .ekstern-lenker { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 12px; }
+  .ekstern-lenker a {
+    display: block; padding: 14px 16px;
+    background: var(--panel-2); border: 1px solid var(--border); border-radius: 8px;
+    color: var(--text); text-decoration: none; font-size: 14px;
+    transition: border-color .15s;
+  }
+  .ekstern-lenker a:hover, .ekstern-lenker a:focus { border-color: var(--accent); outline: none; }
+  .ekstern-lenker a strong { color: var(--accent); display: block; margin-bottom: 4px; }
+  .ekstern-lenker a small { color: var(--muted); }
+  .placeholder-banner {
+    background: rgba(251,191,36,0.10); border: 1px solid var(--warn);
+    border-radius: 8px; padding: 12px 16px; margin-bottom: 18px;
+    font-size: 13px; line-height: 1.55;
+  }
+  .placeholder-banner strong { color: var(--warn); }
+  .info-banner {
+    background: rgba(76,201,240,0.08); border: 1px solid var(--accent);
+    border-radius: 8px; padding: 10px 14px; font-size: 13px; color: var(--muted); margin-bottom: 12px;
+  }
+  .info-banner strong { color: var(--accent); }
+  .chart-wrap { position: relative; height: 320px; margin-top: 12px; }
+  .chart-velg { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; margin-bottom: 8px; }
+  .chart-velg label { font-size: 13px; color: var(--muted); }
+  .chart-velg select {
+    background: var(--panel-2); color: var(--text); border: 1px solid var(--border);
+    border-radius: 6px; padding: 6px 10px; font-size: 13px;
+  }
+  .meta-stamp { font-size: 11px; color: var(--muted); margin-top: 12px; line-height: 1.5; }
+  .meta-stamp a { color: var(--accent); text-decoration: none; }
+  .ikke-funnet { padding: 32px; text-align: center; color: var(--muted); }
+  .ikke-funnet h2 { color: var(--bad); }
+  .laster { padding: 18px; text-align: center; color: var(--muted); font-style: italic; }
+</style>
+</head>
+<body>
+<header>
+  <div class="crumb"><a href="/">← Kommunebarometer</a> · <a href="/metodikk">Metodikk</a></div>
+  <h1 id="sektor-tittel">Sektor-dypdykk<span class="vekt" id="sektor-vekt"></span></h1>
+  <p class="konteks" id="sektor-konteks">
+    <span>Kommune: <strong id="kommune-navn">–</strong></span>
+    <span>År: <strong id="ar-tekst">–</strong></span>
+    <span>Modus: <strong id="modus-tekst">Rådata</strong></span>
+  </p>
+</header>
+
+<main id="hovedinnhold">
+  <div id="ikke-funnet" class="ikke-funnet" hidden>
+    <h2>Ukjent sektor</h2>
+    <p>Ingen sektor med ID <code id="ikke-funnet-id"></code>. Tilbake til <a href="/">Kommunebarometer</a>.</p>
+  </div>
+
+  <section id="sammendrag-seksjon" hidden>
+    <h2>Sammendrag</h2>
+    <div id="sammendrag-stub" class="info-banner" hidden>
+      <strong>Sammendrag mangler:</strong>
+      Sektor-score, rangering og 4-årssnitt beregnes på hovedsiden.
+      <a href="#" id="auto-redirect-lenke" style="color:var(--accent);font-weight:600;">Kjør beregning og kom tilbake →</a>
+      <small id="auto-redirect-status" style="display:block;margin-top:6px;color:var(--muted);"></small>
+    </div>
+    <div class="summary-grid">
+      <div class="summary-card"><div class="label" id="raa-label">Sektor-score</div><div class="value" id="score-raa">–</div><div class="sub" id="rangering-raa">–</div></div>
+      <div class="summary-card justert" id="card-justert" hidden><div class="label">Behovsjustert score</div><div class="value" id="score-justert">–</div><div class="sub" id="rangering-justert">–</div></div>
+      <div class="summary-card"><div class="label">4-årssnitt</div><div class="value" id="snitt-4y">–</div><div class="sub" id="snitt-4y-sub">Kontekst</div></div>
+      <div class="summary-card"><div class="label">Trend</div><div class="value" id="trend-pil">→</div><div class="sub" id="trend-tekst">–</div></div>
+    </div>
+    <div class="dki-panel" id="dki-panel" hidden>
+      <strong id="dki-headline">DKI for sektoren: –</strong>
+      <p id="dki-forklaring" style="margin: 6px 0 0; color: var(--text);"></p>
+    </div>
+  </section>
+
+  <section id="indikatorer-seksjon" hidden>
+    <h2>Indikatorer</h2>
+    <div class="info-banner" id="indikator-info">
+      <strong>Live-fetch:</strong> Indikatorer hentes direkte fra SSB <span id="ssb-tabell-info">–</span>.
+      Kolonnen «Behovsjustert» vises i mode=justert og deler kostnadsindikatorer på DKI-faktoren.
+    </div>
+    <div id="indikator-laster" class="laster">Henter indikatorer fra SSB …</div>
+    <div id="indikator-tabell-wrap" hidden>
+      <table id="indikator-tabell">
+        <thead>
+          <tr>
+            <th>Indikator</th>
+            <th class="num"><span id="kommune-kolonne">Kommunen</span></th>
+            <th class="num">Landet (3-års-snitt)</th>
+            <th>Retning</th>
+            <th class="num" id="behovsjustert-kolonne" hidden>Behovsjustert</th>
+          </tr>
+        </thead>
+        <tbody id="indikator-tabell-body"></tbody>
+      </table>
+    </div>
+  </section>
+
+  <section id="tidsserie-seksjon" hidden>
+    <h2>Tidsserie</h2>
+    <div class="info-banner">
+      <strong>Linjegraf:</strong> Velg indikator i nedtrekksmenyen for å se utvikling 2019–2025 for kommunen sammenlignet med landsgjennomsnittet.
+    </div>
+    <div class="chart-velg">
+      <label for="tidsserie-velg">Indikator:</label>
+      <select id="tidsserie-velg"></select>
+    </div>
+    <div class="chart-wrap"><canvas id="tidsserie-graf"></canvas></div>
+  </section>
+
+  <section id="ekstern-seksjon">
+    <h2>Eksterne kilder</h2>
+    <div class="ekstern-lenker" id="ekstern-lenker"></div>
+  </section>
+
+  <section id="kilde-seksjon">
+    <h2>Kildereferanse</h2>
+    <div class="meta-stamp" id="kilde-info">SSB-tabell <strong id="ssb-tabell-id">–</strong> · sist oppdatert <strong id="ssb-oppdatert">–</strong> · <a id="ssb-lenke" href="#" target="_blank" rel="noopener">Åpne i SSB Statistikkbanken →</a></div>
+    <p style="margin-top: 14px; font-size: 13px; color: var(--muted);">For tilbakekobling med behovsjustering, se <a href="/data/behovsjustering-readme.md" style="color: var(--accent);">data/behovsjustering-readme.md</a> eller <a href="/metodikk" style="color: var(--accent);">metodikk-siden</a>.</p>
+  </section>
+</main>
+
+<script>
+// ============================================================
+//  Sektor-dypdykk — parameterisert via ?id=<sektor>
+// ============================================================
+//
+// D1: én HTML-fil for alle 12 sektorer. URL-param ?id bestemmer sektor.
+// Hovedsiden lagrer ALL_SECTOR_SCORES + OVERALL + MUNI_NAMES i localStorage,
+// så her kan vi vise sammendrag (score, rang, trend) uten ny SSB-fetch.
+// Indikator-tabell og tidsserie henter live fra SSB for sektorens tableId.
+
+const SEKTORER = {
+  grunnskole:    { navn: 'Grunnskole', vekt: 20.0, tableId: '12255', dkiFelt: 'grunnskole', eksterne: [
+    { tittel: 'Udir Statistikkbanken', url: 'https://statistikkportalen.udir.no/', beskrivelse: 'Nasjonale prøver, eksamen, Elevundersøkelsen, grunnskolepoeng. Rapport C3 — full integrasjon kommer i fase 2.' },
+    { tittel: 'GSI — Grunnskolens informasjonssystem', url: 'https://gsi.udir.no/', beskrivelse: 'Strukturdata om norske grunnskoler.' }
+  ]},
+  pleie:         { navn: 'Pleie og omsorg', vekt: 20.0, tableId: '12209', dkiFelt: 'pleie', eksterne: [
+    { tittel: 'IPLOS-registeret', url: 'https://www.helsedirektoratet.no/registre/iplos-registeret', beskrivelse: 'Individbaserte data om pleie- og omsorgstjenester. Krever søknad om forskertilgang.' },
+    { tittel: 'Folkehelseprofilen', url: 'https://www.helsedirektoratet.no/folkehelseprofiler', beskrivelse: 'PDF per kommune. Forventet levealder, sykdomsbyrde, demografi. Rapport C2.' }
+  ]},
+  barnevern:     { navn: 'Barnevern', vekt: 10.0, tableId: '12279', dkiFelt: 'barnevern', eksterne: [
+    { tittel: 'Bufdir — barnevernstall', url: 'https://www.bufdir.no/statistikk-og-analyse/barnevern/', beskrivelse: 'Barne-, ungdoms- og familiedirektoratets statistikk om barnevern.' }
+  ]},
+  barnehage:     { navn: 'Barnehage', vekt: 10.0, tableId: '12379', dkiFelt: 'barnehage', eksterne: [
+    { tittel: 'BASIL — Barnehage statistikk', url: 'https://www.udir.no/tall-og-forskning/statistikk/statistikk-barnehage/', beskrivelse: 'Udirs barnehagestatistikk: dekning, ansatte, areal.' }
+  ]},
+  helse:         { navn: 'Helse', vekt: 7.5, tableId: '12209', dkiFelt: 'kommunehelse', eksterne: [
+    { tittel: 'Folkehelseprofilen (Hdir)', url: 'https://www.helsedirektoratet.no/folkehelseprofiler', beskrivelse: 'Folkehelse-nøkkeltall per kommune. Rapport C2.' },
+    { tittel: 'Kommunehelsa.no', url: 'https://www.fhi.no/hn/helse-og-sykdom/kommunehelsa-statistikkbank/', beskrivelse: 'FHI Statistikkbank for helse og folkehelse på kommunenivå.' }
+  ]},
+  sosial:        { navn: 'Sosialtjeneste', vekt: 7.5, tableId: '14019', dkiFelt: 'sosial', eksterne: [
+    { tittel: 'NAV statistikk', url: 'https://www.nav.no/no/nav-og-samfunn/statistikk', beskrivelse: 'Sosialhjelp, kvalifiseringsprogram, uføretrygd.' }
+  ]},
+  okonomi:       { navn: 'Økonomi', vekt: 10.0, tableId: '12134', dkiFelt: 'administrasjon', eksterne: [
+    { tittel: 'KMD — kommuneproposisjonen', url: 'https://www.regjeringen.no/no/tema/kommuner-og-regioner/kommuneokonomi/', beskrivelse: 'Inntektssystemet og grønne hefter. Kilde for behovsjustering.' },
+    { tittel: 'ROBEK-registeret', url: 'https://www.regjeringen.no/no/tema/kommuner-og-regioner/kommunedata/robek-2/', beskrivelse: 'Kommuner i økonomisk kontroll.' }
+  ]},
+  eiendom:       { navn: 'Kostnadsnivå / eiendom', vekt: 5.0, tableId: '12051', dkiFelt: null, eksterne: [
+    { tittel: 'Kartverket', url: 'https://kartverket.no/', beskrivelse: 'Eiendomsdata, kommunegrenser.' }
+  ]},
+  kultur:        { navn: 'Kultur', vekt: 2.5, tableId: '13135', dkiFelt: null, eksterne: [
+    { tittel: 'Kulturrådet — statistikk', url: 'https://www.kulturradet.no/', beskrivelse: 'Bibliotekstatistikk, kulturskole, kulturarrangementer.' }
+  ]},
+  saksbehandling:{ navn: 'Saksbehandling (plan og bygg)', vekt: 2.5, tableId: '12676', dkiFelt: null, eksterne: [
+    { tittel: 'Direktoratet for byggkvalitet', url: 'https://dibk.no/', beskrivelse: 'Byggesaksstatistikk og veiledning.' }
+  ]},
+  var:           { navn: 'Vann, avløp, renovasjon', vekt: 2.5, tableId: '12263', dkiFelt: null, eksterne: [
+    { tittel: 'Norsk Vann', url: 'https://norskvann.no/', beskrivelse: 'Bransjeforening for VAR-sektoren.' }
+  ]},
+  klima:         { navn: 'Miljø og klima', vekt: 2.5, tableId: '12190', dkiFelt: null, eksterne: [
+    { tittel: 'Miljødirektoratet — klimagassregnskap', url: 'https://www.miljodirektoratet.no/tjenester/klimagassutslipp-kommuner/', beskrivelse: 'Klimagassutslipp per kommune.' }
+  ]}
+};
+
+// Felles regex for kostnadsindikatorer (samme logikk som index.html).
+function erKostnadsindikator(label) {
+  const l = String(label || '').toLowerCase();
+  if (/i\s*%|i\s*prosent|prosent\s+av|\s%\s*av\s+(?:tot|brutto|netto)/.test(l)) return false;
+  if (/\b(?:frie\s+inntekter|netto\s+driftsresultat|driftsinntekter|skatteinntekt)\b/.test(l)) return false;
+  if (!/(?:per|pr\.?)\s+(?:innbygger|bruker|barn|elev|årsverk|opphold|plass)/.test(l)) return false;
+  if (!/kostnad|utgift|driftsutgift|kr\b|kroner|gjeld/.test(l)) return false;
+  return true;
+}
+
+const HIGHER_IS_BETTER = /dekning|andel med|andel barn|tilskudd|netto driftsresultat|disposisjonsfond|grunnbemanning|lærertetthet|årsverk per|fagutdanning|barnehagelærer|leke- og oppholdsareal/i;
+const LOWER_IS_BETTER = /kostnad|utgift|netto driftsutgift|brutto driftsutgift|gjeld|gjeldsgrad|underskudd|ventetid|sykefravær|frafall|stryk|dropout|tap|lekkasje|klager|avviks|stryk|mottak|uten barnehagelærer|uten fagutdanning/i;
+function retning(label) {
+  if (HIGHER_IS_BETTER.test(label)) return 'high';
+  if (LOWER_IS_BETTER.test(label)) return 'low';
+  return 'high';
+}
+
+const u = new URL(window.location.href);
+const sektorId = u.searchParams.get('id') || 'grunnskole';
+const kommuneNavn = u.searchParams.get('kommune') || 'Lørenskog';
+const år = u.searchParams.get('år') || u.searchParams.get('ar') || '2025';
+const modus = u.searchParams.get('mode') || (localStorage.getItem('kb_mode') === 'justert' ? 'justert' : 'raa');
+const sektor = SEKTORER[sektorId];
+// Modul-state må initialiseres FØR initSide() kalles, ellers havner referanser
+// fra async-funksjoner i Temporal Dead Zone.
+let DKI_CACHE = null;
+let DKI_FOR_TABELL = null;
+
+// Hjelpere som leser delt state fra hovedsiden via localStorage.
+function lesLagretMuniNames() {
+  try { return JSON.parse(localStorage.getItem('kb_muni_names') || '{}'); } catch (_) { return {}; }
+}
+function lesLagretSektorScores() {
+  try { return JSON.parse(localStorage.getItem('kb_sector_scores') || '{}'); } catch (_) { return {}; }
+}
+function lesLagretOverall() {
+  try { return JSON.parse(localStorage.getItem('kb_overall') || '{}'); } catch (_) { return {}; }
+}
+function finnKommunenrFraNavn(navn) {
+  const map = lesLagretMuniNames();
+  for (const [kode, n] of Object.entries(map)) {
+    const rent = String(n).replace(/\s*\(.*?\)\s*$/, '').trim();
+    if (rent.toLowerCase() === String(navn).toLowerCase()) return kode;
+  }
+  // Fallback: hvis brukeren ga 4-sifret kode direkte
+  if (/^\d{4}$/.test(navn)) return navn;
+  // Statisk fallback for kjente POC-kommuner
+  const statisk = { 'Lørenskog': '3222' };
+  return statisk[navn] || null;
+}
+
+if (!sektor) {
+  document.getElementById('ikke-funnet').hidden = false;
+  document.getElementById('ikke-funnet-id').textContent = sektorId;
+} else {
+  initSide().catch(e => {
+    console.error('initSide feilet:', e);
+    const banner = document.createElement('div');
+    banner.className = 'placeholder-banner';
+    banner.style.cssText = 'background:rgba(248,113,113,0.15);border-color:#f87171;';
+    banner.innerHTML = `<strong>Feil ved initialisering:</strong> ${e.message}. Åpne hovedsiden først eller prøv på nytt.`;
+    document.querySelector('main').prepend(banner);
+  });
+}
+
+async function initSide() {
+  // 1. Header
+  document.title = `${sektor.navn} — ${kommuneNavn} — Kommunebarometer`;
+  document.getElementById('sektor-tittel').firstChild.nodeValue = `Sektor-dypdykk: ${sektor.navn}`;
+  document.getElementById('sektor-vekt').textContent = `Vekt ${sektor.vekt}%`;
+  document.getElementById('kommune-navn').textContent = kommuneNavn;
+  document.getElementById('ar-tekst').textContent = år;
+  document.getElementById('modus-tekst').textContent = modus === 'justert' ? 'Behovsjustert' : 'Rådata';
+  document.getElementById('ssb-tabell-info').textContent = `tabell ${sektor.tableId}`;
+  document.getElementById('kommune-kolonne').textContent = kommuneNavn;
+  if (modus === 'justert') {
+    document.getElementById('behovsjustert-kolonne').hidden = false;
+  }
+
+  // 2. Sammendrag fra localStorage (lagret av hovedsiden)
+  renderSammendrag();
+
+  // 3. DKI-panel
+  await renderDki();
+
+  // 4. Eksterne lenker
+  renderEksterne();
+  document.getElementById('ssb-tabell-id').textContent = sektor.tableId;
+  document.getElementById('ssb-oppdatert').textContent = '15. mars / 15. juni årlig';
+  document.getElementById('ssb-lenke').href = `https://www.ssb.no/statbank/table/${sektor.tableId}`;
+
+  // 5. Live-fetch indikator-tabell og tidsserie
+  document.getElementById('indikatorer-seksjon').hidden = false;
+  document.getElementById('tidsserie-seksjon').hidden = false;
+  try {
+    const data = await hentSektorData();
+    if (data) {
+      renderIndikatorTabell(data);
+      renderTidsserie(data);
+    }
+  } catch (e) {
+    document.getElementById('indikator-laster').textContent = `Kunne ikke hente fra SSB: ${e.message}`;
+  }
+}
+
+// Pakke 2: Hvis localStorage er tomt (bruker kom rett til /sektor.html), tilbyr
+// vi å åpne hovedsiden i samme fane med ?return-param. Hovedsiden redirecter
+// hit etter scoring er ferdig. Auto-trigger etter 2 sekunder hvis bruker ikke
+// klikker bevisst.
+function visSammendragStub() {
+  const stub = document.getElementById('sammendrag-stub');
+  stub.hidden = false;
+  const lenke = document.getElementById('auto-redirect-lenke');
+  const status = document.getElementById('auto-redirect-status');
+  const retur = encodeURIComponent(window.location.href);
+  const målUrl = `/?kommune=${encodeURIComponent(kommuneNavn)}&return=${retur}`;
+  lenke.href = målUrl;
+  let nedteller = 3;
+  status.textContent = `Hopper automatisk om ${nedteller} sek …`;
+  const timer = setInterval(() => {
+    nedteller--;
+    if (nedteller > 0) {
+      status.textContent = `Hopper automatisk om ${nedteller} sek …`;
+    } else {
+      clearInterval(timer);
+      window.location.href = målUrl;
+    }
+  }, 1000);
+  // Avbryt hvis bruker klikker noe på siden
+  document.addEventListener('click', (e) => {
+    if (e.target !== lenke) {
+      clearInterval(timer);
+      status.textContent = 'Auto-redirect avbrutt. Klikk lenken over når du vil ha sammendrag.';
+    }
+  }, { once: true });
+}
+
+function renderSammendrag() {
+  document.getElementById('sammendrag-seksjon').hidden = false;
+  const scores = lesLagretSektorScores();
+  const sektorScores = scores[sektorId];
+  const kommunenr = finnKommunenrFraNavn(kommuneNavn);
+  if (!sektorScores || !kommunenr) {
+    visSammendragStub();
+    return;
+  }
+  const info = sektorScores[år]?.[kommunenr];
+  if (info) {
+    document.getElementById('score-raa').textContent = info.score;
+    document.getElementById('rangering-raa').textContent = `Plass ${info.rank} av ${info.total}`;
+    if (modus === 'justert') {
+      document.getElementById('raa-label').textContent = 'Sektor-score';
+      document.getElementById('card-justert').hidden = false;
+      document.getElementById('score-justert').textContent = info.score;
+      document.getElementById('rangering-justert').textContent = `Plass ${info.rank} av ${info.total} (justert)`;
+    }
+  } else {
+    document.getElementById('score-raa').textContent = '–';
+    document.getElementById('rangering-raa').textContent = `Ingen data for ${år}`;
+  }
+  // Trend og 4-årssnitt fra historikk
+  const serie = [];
+  for (const yr of Object.keys(sektorScores).sort()) {
+    const s = sektorScores[yr]?.[kommunenr]?.score;
+    if (s != null) serie.push({ år: yr, score: +s });
+  }
+  if (serie.length >= 2) {
+    const last4 = serie.slice(-4);
+    const snitt = +(last4.reduce((a, b) => a + b.score, 0) / last4.length).toFixed(1);
+    document.getElementById('snitt-4y').textContent = snitt;
+    document.getElementById('snitt-4y-sub').textContent = `${last4[0].år}–${last4[last4.length - 1].år}`;
+    const last = serie[serie.length - 1].score;
+    const prior = serie.slice(-4, -1);
+    if (prior.length > 0) {
+      const baseline = prior.reduce((a, b) => a + b.score, 0) / prior.length;
+      const delta = +(last - baseline).toFixed(1);
+      let pil = '→', tekst = 'Stabil';
+      if (delta > 3) { pil = Math.abs(delta) >= 8 ? '↗↗' : '↗'; tekst = Math.abs(delta) >= 8 ? 'Sterk forbedring' : 'Forbedring'; }
+      else if (delta < -3) { pil = Math.abs(delta) >= 8 ? '↘↘' : '↘'; tekst = Math.abs(delta) >= 8 ? 'Sterk svekkelse' : 'Svekkelse'; }
+      document.getElementById('trend-pil').textContent = pil;
+      document.getElementById('trend-tekst').textContent = `${tekst} (${delta > 0 ? '+' : ''}${delta})`;
+    }
+  }
+}
+
+async function lastDkiFil(_år) {
+  if (DKI_CACHE && DKI_CACHE.år === _år) return DKI_CACHE.data;
+  const fil = ['2024', '2025'].includes(String(_år)) ? _år : '2025';
+  try {
+    const r = await fetch(`/data/dki-${fil}.json`, { cache: 'force-cache' });
+    if (!r.ok) return null;
+    const data = await r.json();
+    DKI_CACHE = { år: _år, data };
+    return data;
+  } catch (_) { return null; }
+}
+
+async function renderDki() {
+  const panel = document.getElementById('dki-panel');
+  if (!sektor.dkiFelt) {
+    panel.hidden = false;
+    document.getElementById('dki-headline').textContent = 'Ikke behovsjustert';
+    document.getElementById('dki-forklaring').textContent = `${sektor.navn} har ingen DKI-faktor i KMDs inntektssystem. Indikatorer vises som rådata.`;
+    return;
+  }
+  const data = await lastDkiFil(år);
+  if (!data) {
+    panel.hidden = false;
+    document.getElementById('dki-headline').textContent = 'DKI-data utilgjengelig';
+    document.getElementById('dki-forklaring').textContent = 'Klarer ikke å laste DKI-fila for valgt år.';
+    return;
+  }
+  const kommunenr = finnKommunenrFraNavn(kommuneNavn);
+  const k = kommunenr ? data?.kommuner?.[kommunenr] : null;
+  // v2-kompakt format: tall = uniform samlet DKI; objekt = per-sektor
+  const dki = (typeof k === 'number') ? k : (k?.[sektor.dkiFelt] ?? k?.samlet ?? null);
+  if (dki && dki !== 1.0) {
+    panel.hidden = false;
+    const pct = Math.round(Math.abs(1 - dki) * 100);
+    const klasse = dki < 0.95 ? 'dki-low' : (dki > 1.05 ? 'dki-high' : '');
+    panel.className = 'dki-panel ' + klasse;
+    document.getElementById('dki-headline').textContent = `DKI for ${sektor.navn.toLowerCase()}: ${dki.toFixed(2)}`;
+    document.getElementById('dki-forklaring').innerHTML = dki < 1
+      ? `${kommuneNavn} forventes å bruke <strong>${pct}%</strong> mindre på ${sektor.navn.toLowerCase()} enn landsgjennomsnittet (yngre/billigere befolkning).`
+      : `${kommuneNavn} forventes å bruke <strong>${pct}%</strong> mer på ${sektor.navn.toLowerCase()} enn landsgjennomsnittet (eldre/dyrere befolkning).`;
+  } else if (dki === 1.0) {
+    panel.hidden = false;
+    panel.className = 'dki-panel';
+    document.getElementById('dki-headline').textContent = `DKI for ${sektor.navn.toLowerCase()}: 1,00`;
+    document.getElementById('dki-forklaring').textContent = `${kommuneNavn} har samme forventet utgiftsbehov som landsgjennomsnittet.`;
+  } else {
+    panel.hidden = false;
+    document.getElementById('dki-headline').textContent = `DKI ikke tilgjengelig for ${kommuneNavn}`;
+    document.getElementById('dki-forklaring').textContent = 'Behovsjustering krever DKI-data fra KMDs grønne hefter. Foreløpig dekker POC kun Lørenskog (3222). HANDOFF åpnet for utvidelse.';
+  }
+}
+
+// SSB API-konfigurasjon — samme proxy + URL-mønster som index.html.
+const API_BASE_SEKTOR = (location.protocol === 'file:' || location.hostname === '')
+  ? 'https://data.ssb.no/api/pxwebapi/v2/tables/'
+  : '/api/ssb/tables/';
+
+// Forenklet SSB-fetch: henter kommunens egne tall + landet, for siste 7 år.
+async function hentSektorData() {
+  const kommunenr = finnKommunenrFraNavn(kommuneNavn);
+  if (!kommunenr) return { error: `Kjenner ikke kommunenr for "${kommuneNavn}"` };
+
+  // 1) Hent metadata for å finne dimensjons-navn (de varierer per tabell)
+  const metaUrl = `${API_BASE_SEKTOR}${sektor.tableId}/metadata?lang=no&outputFormat=json-px`;
+  console.log('GET metadata', metaUrl);
+  const meta = await fetch(metaUrl).then(r => {
+    if (!r.ok) throw new Error(`Meta ${sektor.tableId}: HTTP ${r.status}`);
+    return r.json();
+  });
+
+  // Dimensjons-navnene varierer (f.eks. KOKkommuneregion0000, Region, ContentsCode).
+  const ids = meta.id || [];
+  const dims = meta.dimension || {};
+  const regDim = ids.find(d => /region|kommune|fylke/i.test(d));
+  const tidDim = ids.find(d => /^Tid$|tid/i.test(d));
+  const conDim = ids.find(d => /contents/i.test(d));
+  if (!regDim || !tidDim || !conDim) {
+    throw new Error(`Manglende dimensjoner i ${sektor.tableId}: ${ids.join(',')}`);
+  }
+
+  // Region-kodelista i metadataen viser hvilke kommunenumre som er gyldige.
+  const regList = dims[regDim]?.category?.index || {};
+  const muligeKoder = Object.keys(regList);
+  const harKommunenr = muligeKoder.includes(kommunenr);
+  const harK0000 = muligeKoder.includes('K0000');
+  const region = [];
+  if (harKommunenr) region.push(kommunenr);
+  if (harK0000) region.push('K0000');
+  if (region.length === 0) {
+    return { error: `Region-kode ${kommunenr} ikke i tabell ${sektor.tableId}` };
+  }
+
+  // Hent siste 7 år
+  const tidList = dims[tidDim]?.category?.index || {};
+  const sisteÅr = Object.keys(tidList).sort().slice(-7);
+
+  // 2) Bygg data-URL etter samme mønster som index.html (valueCodes[<DimNavn>])
+  const usp = new URLSearchParams();
+  usp.set('lang', 'no');
+  usp.set('format', 'json-stat2');
+  for (const r of region) usp.append(`valueCodes[${regDim}]`, r);
+  for (const t of sisteÅr) usp.append(`valueCodes[${tidDim}]`, t);
+  // ContentsCode: la API-en returnere alle indikatorer ved å sende '*'
+  usp.append(`valueCodes[${conDim}]`, '*');
+
+  const dataUrl = `${API_BASE_SEKTOR}${sektor.tableId}/data?${usp.toString()}`;
+  console.log('GET data', dataUrl);
+  const ds = await fetch(dataUrl).then(r => {
+    if (!r.ok) throw new Error(`Data ${sektor.tableId}: HTTP ${r.status}`);
+    return r.json();
+  });
+
+  const parsed = parseJsonStatEnkel(ds);
+  return {
+    kommunenr,
+    indikatorer: parsed.indikatorer,
+    årListe: parsed.årListe,
+    verdier: parsed.verdier
+  };
+}
+
+// Forenklet jsonstat2-parser. Returnerer:
+//   indikatorer: [{ kode, label }]
+//   årListe: [string]
+//   verdier: { [region][indikator][år]: number }
+function parseJsonStatEnkel(ds) {
+  const ids = ds.id || [];
+  const sizes = ds.size || [];
+  const dims = ds.dimension || {};
+  const values = ds.value || [];
+
+  const regDim = ids.find(d => /region|kommune|fylke/i.test(d));
+  const tidDim = ids.find(d => /^Tid$|tid/i.test(d));
+  const conDim = ids.find(d => /contents|Contents|CONTENTS/i.test(d));
+  if (!regDim || !tidDim || !conDim) throw new Error(`Manglende dim: ${ids.join(',')}`);
+
+  const regKeys = Object.keys(dims[regDim].category.index).sort((a, b) => dims[regDim].category.index[a] - dims[regDim].category.index[b]);
+  const tidKeys = Object.keys(dims[tidDim].category.index).sort();
+  const conKeys = Object.keys(dims[conDim].category.index).sort((a, b) => dims[conDim].category.index[a] - dims[conDim].category.index[b]);
+  const conLabel = dims[conDim].category.label || {};
+
+  // Strider for row-major
+  const strides = [];
+  let s = 1;
+  for (let i = ids.length - 1; i >= 0; i--) {
+    strides[i] = s;
+    s *= sizes[i];
+  }
+
+  // Andre dimensjoner: bruk default (første)
+  const defaultLookup = {};
+  for (const d of ids) {
+    if (d !== regDim && d !== tidDim && d !== conDim) {
+      const first = Object.entries(dims[d].category.index).sort((a, b) => a[1] - b[1])[0][0];
+      defaultLookup[d] = first;
+    }
+  }
+
+  // Verdier kan være array eller sparsomt objekt
+  const valArr = Array.isArray(values) ? values : (() => {
+    const arr = new Array(sizes.reduce((a, b) => a * b, 1)).fill(null);
+    for (const [k, v] of Object.entries(values)) arr[+k] = v;
+    return arr;
+  })();
+
+  function idx(lookup) {
+    let o = 0;
+    for (let i = 0; i < ids.length; i++) {
+      const d = ids[i];
+      o += dims[d].category.index[lookup[d]] * strides[i];
+    }
+    return o;
+  }
+
+  const verdier = {};
+  for (const r of regKeys) {
+    verdier[r] = {};
+    for (const c of conKeys) {
+      verdier[r][c] = {};
+      for (const t of tidKeys) {
+        const lookup = { ...defaultLookup, [regDim]: r, [tidDim]: t, [conDim]: c };
+        const v = valArr[idx(lookup)];
+        if (v !== null && v !== undefined && !isNaN(v)) {
+          verdier[r][c][t] = +v;
+        }
+      }
+    }
+  }
+
+  const indikatorer = conKeys.map(c => ({ kode: c, label: conLabel[c] || c }));
+  return { indikatorer, årListe: tidKeys, verdier };
+}
+
+function snittSiste3År(yrs, verdiPerÅr) {
+  const sortert = Object.keys(verdiPerÅr).sort();
+  const siste3 = sortert.slice(-3).map(y => verdiPerÅr[y]).filter(v => v != null && !isNaN(v));
+  if (siste3.length === 0) return null;
+  return +(siste3.reduce((a, b) => a + b, 0) / siste3.length).toFixed(2);
+}
+
+async function dkiFaktor() {
+  if (!sektor.dkiFelt) return null;
+  const data = await lastDkiFil(år);
+  const kommunenr = finnKommunenrFraNavn(kommuneNavn);
+  if (!data || !kommunenr) return null;
+  const k = data?.kommuner?.[kommunenr];
+  if (typeof k === 'number') return k;
+  return k?.[sektor.dkiFelt] ?? k?.samlet ?? null;
+}
+
+async function renderIndikatorTabell(data) {
+  document.getElementById('indikator-laster').hidden = true;
+  document.getElementById('indikator-tabell-wrap').hidden = false;
+
+  const dki = await dkiFaktor();
+  const tbody = document.getElementById('indikator-tabell-body');
+  tbody.innerHTML = '';
+  const visBehov = modus === 'justert';
+
+  for (const ind of data.indikatorer) {
+    const kommuneVerdi = data.verdier[data.kommunenr]?.[ind.kode]?.[år];
+    const landetVerdi = snittSiste3År(data.årListe, data.verdier['K0000']?.[ind.kode] || {});
+    const dir = retning(ind.label);
+    const erKostn = erKostnadsindikator(ind.label);
+    const justertVerdi = (visBehov && erKostn && dki && dki !== 1.0 && kommuneVerdi != null)
+      ? +(kommuneVerdi / dki).toFixed(2) : null;
+    const tr = document.createElement('tr');
+    tr.className = 'kommune';
+    tr.innerHTML = `
+      <td>${ind.label}</td>
+      <td class="num">${kommuneVerdi != null ? kommuneVerdi : '–'}</td>
+      <td class="num">${landetVerdi != null ? landetVerdi : '–'}</td>
+      <td><span class="retning ${dir}">${dir === 'high' ? '↗' : dir === 'low' ? '↘' : '→'}</span></td>
+      ${visBehov ? `<td class="num">${justertVerdi != null ? justertVerdi : (erKostn ? '–' : 'n/a')}</td>` : ''}
+    `;
+    tbody.appendChild(tr);
+  }
+}
+
+function renderTidsserie(data) {
+  // Fyll dropdown
+  const sel = document.getElementById('tidsserie-velg');
+  sel.innerHTML = data.indikatorer.map(i => `<option value="${i.kode}">${i.label}</option>`).join('');
+
+  let chart = null;
+  function tegn(kode) {
+    const ind = data.indikatorer.find(i => i.kode === kode);
+    const kommuneSerie = data.årListe.map(t => data.verdier[data.kommunenr]?.[kode]?.[t] ?? null);
+    const landSerie = data.årListe.map(t => data.verdier['K0000']?.[kode]?.[t] ?? null);
+    if (chart) chart.destroy();
+    const ctx = document.getElementById('tidsserie-graf').getContext('2d');
+    chart = new Chart(ctx, {
+      type: 'line',
+      data: {
+        labels: data.årListe,
+        datasets: [
+          { label: kommuneNavn, data: kommuneSerie, borderColor: '#4cc9f0', backgroundColor: 'rgba(76,201,240,0.15)', tension: 0.2 },
+          { label: 'Landet', data: landSerie, borderColor: '#f72585', backgroundColor: 'rgba(247,37,133,0.15)', tension: 0.2, borderDash: [4, 3] }
+        ]
+      },
+      options: {
+        responsive: true, maintainAspectRatio: false,
+        plugins: {
+          legend: { labels: { color: '#e6edf6' } },
+          title: { display: true, text: ind?.label || kode, color: '#94a3b8', font: { size: 13 } }
+        },
+        scales: {
+          x: { ticks: { color: '#94a3b8' }, grid: { color: '#263248' } },
+          y: { ticks: { color: '#94a3b8' }, grid: { color: '#263248' }, beginAtZero: false }
+        }
+      }
+    });
+  }
+
+  if (data.indikatorer.length > 0) tegn(data.indikatorer[0].kode);
+  sel.addEventListener('change', e => tegn(e.target.value));
+}
+
+function renderEksterne() {
+  const eksternEl = document.getElementById('ekstern-lenker');
+  for (const e of sektor.eksterne || []) {
+    const a = document.createElement('a');
+    a.href = e.url; a.target = '_blank'; a.rel = 'noopener';
+    a.innerHTML = `<strong>${e.tittel} →</strong><small>${e.beskrivelse}</small>`;
+    eksternEl.appendChild(a);
+  }
+  const ssbLenke = document.createElement('a');
+  ssbLenke.href = `https://www.ssb.no/statbank/table/${sektor.tableId}`;
+  ssbLenke.target = '_blank'; ssbLenke.rel = 'noopener';
+  ssbLenke.innerHTML = `<strong>SSB Statistikkbanken — tabell ${sektor.tableId} →</strong><small>Hovedkilden for sektor-dataen. Klikk for å filtrere på kommune og år manuelt.</small>`;
+  eksternEl.appendChild(ssbLenke);
+}
+</script>
+</body>
+</html>

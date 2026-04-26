@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="nb">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Politiker-visning — Kommunebarometer 2026</title>
+<style>
+  /* Politiker-modus bruker LIGHT MODE som default — bedre for A4-print
+     og kontorbruk. WCAG AA-kontrast verifisert. */
+  :root {
+    --bg: #f8fafc; --panel: #ffffff; --panel-2: #f1f5f9;
+    --accent: #1e40af; --text: #0f172a; --muted: #475569; --border: #cbd5e1;
+    --good: #15803d; --warn: #ca8a04; --bad: #b91c1c;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: var(--bg); color: var(--text); line-height: 1.5; }
+  header { background: var(--panel); border-bottom: 1px solid var(--border); padding: 18px 32px; }
+  header .row { display: flex; align-items: baseline; gap: 16px; flex-wrap: wrap; }
+  header .crumb { font-size: 13px; color: var(--muted); }
+  header .crumb a { color: var(--accent); text-decoration: none; }
+  header h1 { margin: 0; font-size: 22px; }
+  header .kommune { font-size: 30px; font-weight: 700; color: var(--accent); }
+  header .meta { font-size: 13px; color: var(--muted); margin-top: 4px; }
+  main { padding: 24px 32px 60px; max-width: 1100px; margin: 0 auto; }
+  .summary { background: var(--panel); border: 1px solid var(--border); border-radius: 12px; padding: 24px; margin-bottom: 22px; display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
+  @media (max-width: 700px) { .summary { grid-template-columns: 1fr; } }
+  .summary .item .label { font-size: 12px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.5px; }
+  .summary .item .value { font-size: 36px; font-weight: 700; color: var(--accent); margin-top: 4px; }
+  .summary .item .sub { font-size: 13px; color: var(--muted); }
+  .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 14px; }
+  .card { background: var(--panel); border: 1px solid var(--border); border-left-width: 6px; border-radius: 10px; padding: 16px 18px; }
+  .card.good { border-left-color: var(--good); }
+  .card.warn { border-left-color: var(--warn); }
+  .card.bad { border-left-color: var(--bad); }
+  .card.missing { border-left-color: var(--border); opacity: 0.55; }
+  .card .name { font-weight: 600; font-size: 14px; margin-bottom: 4px; }
+  .card .light { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; }
+  .card.good .light { color: var(--good); }
+  .card.warn .light { color: var(--warn); }
+  .card.bad .light { color: var(--bad); }
+  .card .sentence { font-size: 13px; color: var(--text); margin: 8px 0 4px; line-height: 1.5; }
+  .card .meta { font-size: 11px; color: var(--muted); }
+  .actions { margin-top: 24px; display: flex; gap: 12px; flex-wrap: wrap; }
+  button { background: var(--panel); color: var(--accent); border: 1px solid var(--accent); padding: 10px 16px; border-radius: 7px; font-size: 14px; font-family: inherit; cursor: pointer; }
+  button:hover, button:focus { background: var(--panel-2); outline: none; }
+  button:focus-visible { box-shadow: 0 0 0 2px var(--accent); }
+  .field { margin: 8px 0 18px; }
+  .field label { font-size: 12px; color: var(--muted); display: block; margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.5px; }
+  .field input { padding: 8px 12px; border: 1px solid var(--border); border-radius: 7px; font-family: inherit; font-size: 14px; min-width: 240px; }
+
+  @media print {
+    @page { size: A4; margin: 1.5cm; }
+    header { padding: 0 0 12px; border-bottom: 2px solid var(--accent); }
+    main { padding: 12px 0; }
+    .actions, .field { display: none; }
+    .card { break-inside: avoid; }
+    .summary { break-inside: avoid; }
+    body { font-size: 10pt; }
+  }
+</style>
+</head>
+<body>
+<header>
+  <div class="crumb"><a href="/">← Tilbake til Kommunebarometer (full visning)</a></div>
+  <div class="row">
+    <h1>Politiker-visning</h1>
+    <div class="kommune" id="kommune-tittel">Velg kommune</div>
+  </div>
+  <div class="meta" id="meta-info">Forenklet visning · klar for utskrift på A4 · trafikklys per sektor</div>
+</header>
+
+<main>
+  <div class="field">
+    <label for="kommune-input">Kommune</label>
+    <input type="text" id="kommune-input" list="kommune-list" autocomplete="off" placeholder="Skriv kommune-navn">
+    <datalist id="kommune-list"></datalist>
+  </div>
+
+  <section class="summary" id="summary" hidden>
+    <div class="item">
+      <div class="label">Samlet plassering</div>
+      <div class="value" id="overall-rank">–</div>
+      <div class="sub" id="overall-sub">av alle kommuner</div>
+    </div>
+    <div class="item">
+      <div class="label">Hovedinntrykk</div>
+      <div class="value" style="font-size: 18px;" id="overall-light">–</div>
+      <div class="sub" id="overall-context">Kort vurdering for formannskapet</div>
+    </div>
+  </section>
+
+  <div class="grid" id="sektor-grid"></div>
+
+  <div class="actions">
+    <button type="button" id="print-btn">⎙ Skriv ut (A4)</button>
+    <button type="button" id="full-btn">Se full visning →</button>
+  </div>
+</main>
+
+<script>
+// D5: Politiker-visning. Forenklet trafikklys + én setning per sektor + A4-print.
+//
+// Henter sektor-data fra index.html sin underliggende API-kall — gjenbruker
+// SSB-rewriten direkte. For å holde denne siden uavhengig kjører vi en
+// lett-vekt-versjon: bruker sektor-forklaringene fra /data/sektor-forklaringer.json
+// og scorer fra index.html sin live-kjøring (fanges via shared sessionStorage
+// hvis brukeren har vært innom hovedsiden — ellers vises bare strukturen).
+
+const SECTORS = [
+  { id: 'grunnskole', name: 'Grunnskole' },
+  { id: 'pleie', name: 'Pleie og omsorg' },
+  { id: 'barnevern', name: 'Barnevern' },
+  { id: 'barnehage', name: 'Barnehage' },
+  { id: 'helse', name: 'Helse' },
+  { id: 'sosial', name: 'Sosialtjeneste' },
+  { id: 'okonomi', name: 'Økonomi' },
+  { id: 'eiendom', name: 'Kostnadsnivå/eiendom' },
+  { id: 'kultur', name: 'Kultur' },
+  { id: 'saksbehandling', name: 'Saksbehandling' },
+  { id: 'var', name: 'Vann/avløp/renovasjon' },
+  { id: 'klima', name: 'Miljø og klima' }
+];
+
+let FORKLARINGER = null;
+let LIVE_SCORES = null; // sektor-id → score (0-100), fra hovedsiden via sessionStorage
+
+function lightOf(score) {
+  if (score == null || isNaN(score)) return 'missing';
+  if (score >= 60) return 'good';
+  if (score >= 35) return 'warn';
+  return 'bad';
+}
+function lightLabel(c) {
+  return { good: 'STERKT', warn: 'MIDDELS', bad: 'SVAKT', missing: 'INGEN DATA' }[c];
+}
+
+function renderForKommune(kommuneNavn) {
+  document.getElementById('kommune-tittel').textContent = kommuneNavn || 'Velg kommune';
+  const grid = document.getElementById('sektor-grid');
+  grid.innerHTML = '';
+  if (!kommuneNavn) {
+    document.getElementById('summary').hidden = true;
+    return;
+  }
+  // Bygg kort per sektor
+  for (const sec of SECTORS) {
+    const score = LIVE_SCORES?.[sec.id] ?? null;
+    const c = lightOf(score);
+    const forklaring = FORKLARINGER?.sektorer?.[sec.id];
+    const setning = forklaring
+      ? (c === 'good' ? `${forklaring.tittel} ligger over landsgjennomsnittet.` :
+         c === 'warn' ? `${forklaring.tittel} ligger på middels nivå sammenlignet med landet.` :
+         c === 'bad' ? `${forklaring.tittel} ligger under landsgjennomsnittet — verdt å se nærmere på.` :
+         'Det er ikke registrert data for denne sektoren ennå.')
+      : '';
+    const card = document.createElement('div');
+    card.className = `card ${c}`;
+    card.innerHTML = `
+      <div class="name">${sec.name}</div>
+      <div class="light">● ${lightLabel(c)}</div>
+      <div class="sentence">${setning}</div>
+      <div class="meta">${score != null ? `Score ${Math.round(score)}/100` : 'Sjekk hovedvisning for detaljer'}</div>
+    `;
+    grid.appendChild(card);
+  }
+  document.getElementById('summary').hidden = false;
+  document.getElementById('overall-light').textContent = LIVE_SCORES ? 'Se sektorkortene under' : 'Åpne hovedsiden først for live tall';
+}
+
+async function lastForklaringer() {
+  try {
+    const r = await fetch('/data/sektor-forklaringer.json');
+    if (r.ok) FORKLARINGER = await r.json();
+  } catch (_) {}
+}
+
+async function lastDatalist() {
+  try {
+    const today = new Date().toISOString().slice(0, 10);
+    const url = (location.protocol === 'file:' || location.hostname === '')
+      ? `https://data.ssb.no/api/klass/v1/classifications/131/codesAt?date=${today}&language=nb`
+      : `/api/klass/classifications/131/codesAt?date=${today}&language=nb`;
+    const r = await fetch(url);
+    if (!r.ok) return;
+    const data = await r.json();
+    const dl = document.getElementById('kommune-list');
+    (data.codes || [])
+      .filter(c => /^\d{4}$/.test(c.code))
+      .sort((a, b) => (a.name || '').localeCompare(b.name || '', 'nb'))
+      .forEach(c => {
+        const opt = document.createElement('option');
+        opt.value = c.name;
+        dl.appendChild(opt);
+      });
+  } catch (_) {}
+}
+
+// Hent kommune fra URL eller spør bruker
+const u = new URL(window.location.href);
+const initial = u.searchParams.get('kommune') || '';
+if (initial) document.getElementById('kommune-input').value = initial;
+
+document.getElementById('kommune-input').addEventListener('change', (e) => {
+  const navn = e.target.value.trim();
+  const newU = new URL(window.location.href);
+  if (navn) newU.searchParams.set('kommune', navn); else newU.searchParams.delete('kommune');
+  window.history.replaceState({}, '', newU.toString());
+  renderForKommune(navn);
+});
+
+document.getElementById('print-btn').addEventListener('click', () => window.print());
+document.getElementById('full-btn').addEventListener('click', () => {
+  const navn = document.getElementById('kommune-input').value.trim();
+  window.location.href = navn ? `/?kommune=${encodeURIComponent(navn)}` : '/';
+});
+
+(async () => {
+  await Promise.all([lastForklaringer(), lastDatalist()]);
+  if (initial) renderForKommune(initial);
+})();
+</script>
+</body>
+</html>

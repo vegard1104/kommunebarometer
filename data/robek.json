@@ -1,0 +1,180 @@
+{
+  "kilde": "Kommunal- og distriktsdepartementet (regjeringen.no)",
+  "kildeUrl": "https://www.regjeringen.no/no/tema/kommuner-og-regioner/kommunedata/robek-2/kommuner-som-er-oppfort-i-registeret/id415422/",
+  "hentet": "2026-04-25",
+  "publisert": "2026-04-20",
+  "beskrivelse": "Register om betinget godkjenning og kontroll. Kommuner i registeret må ha godkjenning fra statsforvalter for låneopptak og langsiktige leieavtaler. Hjemmel: kommuneloven § 28-1.",
+  "hjemler": {
+    "a": "Driftsbudsjettet er vedtatt med et merforbruk.",
+    "b": "Driftsdelen i økonomiplanen er vedtatt med et merforbruk.",
+    "c": "Merforbruk skal dekkes inn over flere enn to år etter at det oppsto.",
+    "d": "Balanseregnskapet viser et oppsamlet merforbruk større enn tre prosent av driftsinntektene.",
+    "e": "Økonomiplanen eller årsbudsjettet er ikke vedtatt innen fristen.",
+    "f": "Årsregnskapet er ikke vedtatt innen fristen.",
+    "g": "Departementet har fattet et vedtak etter inndelingslova § 16 a."
+  },
+  "kommuner": [
+    {
+      "fylke": null,
+      "kommunenummer": "3322",
+      "kommune": "Nesbyen",
+      "hjemmel": "c og d"
+    },
+    {
+      "fylke": null,
+      "kommunenummer": "3334",
+      "kommune": "Flesberg",
+      "hjemmel": "a, b, c og d"
+    },
+    {
+      "fylke": null,
+      "kommunenummer": "3416",
+      "kommune": "Eidskog",
+      "hjemmel": "d"
+    },
+    {
+      "fylke": null,
+      "kommunenummer": "3417",
+      "kommune": "Grue",
+      "hjemmel": "c og d"
+    },
+    {
+      "fylke": null,
+      "kommunenummer": "3418",
+      "kommune": "Åsnes",
+      "hjemmel": "c og d"
+    },
+    {
+      "fylke": null,
+      "kommunenummer": "3443",
+      "kommune": "Vestre Toten",
+      "hjemmel": "c og d"
+    },
+    {
+      "fylke": null,
+      "kommunenummer": "4014",
+      "kommune": "Kragerø",
+      "hjemmel": "c og d"
+    },
+    {
+      "fylke": null,
+      "kommunenummer": "4020",
+      "kommune": "Midt-Telemark",
+      "hjemmel": "c og d"
+    },
+    {
+      "fylke": null,
+      "kommunenummer": "4214",
+      "kommune": "Froland",
+      "hjemmel": "a og c"
+    },
+    {
+      "fylke": null,
+      "kommunenummer": "1514",
+      "kommune": "Sande",
+      "hjemmel": "c og d"
+    },
+    {
+      "fylke": null,
+      "kommunenummer": "1515",
+      "kommune": "Herøy",
+      "hjemmel": "d"
+    },
+    {
+      "fylke": null,
+      "kommunenummer": "1517",
+      "kommune": "Hareid",
+      "hjemmel": "a, b, c og d"
+    },
+    {
+      "fylke": null,
+      "kommunenummer": "1560",
+      "kommune": "Tingvoll",
+      "hjemmel": "c og d"
+    },
+    {
+      "fylke": null,
+      "kommunenummer": "1566",
+      "kommune": "Surnadal",
+      "hjemmel": "c"
+    },
+    {
+      "fylke": null,
+      "kommunenummer": "5025",
+      "kommune": "Røros",
+      "hjemmel": "c og d"
+    },
+    {
+      "fylke": null,
+      "kommunenummer": "5043",
+      "kommune": "Røyrvik",
+      "hjemmel": "b, c og d"
+    },
+    {
+      "fylke": null,
+      "kommunenummer": "1822",
+      "kommune": "Leirfjord",
+      "hjemmel": "c og d"
+    },
+    {
+      "fylke": null,
+      "kommunenummer": "1837",
+      "kommune": "Meløy",
+      "hjemmel": "c og d"
+    },
+    {
+      "fylke": null,
+      "kommunenummer": "1851",
+      "kommune": "Lødingen",
+      "hjemmel": "c og d"
+    },
+    {
+      "fylke": null,
+      "kommunenummer": "1865",
+      "kommune": "Vågan",
+      "hjemmel": "c og d"
+    },
+    {
+      "fylke": null,
+      "kommunenummer": "1871",
+      "kommune": "Andøy",
+      "hjemmel": "c og d"
+    },
+    {
+      "fylke": null,
+      "kommunenummer": "1874",
+      "kommune": "Moskenes",
+      "hjemmel": "a, b, c og d"
+    },
+    {
+      "fylke": null,
+      "kommunenummer": "5540",
+      "kommune": "Kåfjord",
+      "hjemmel": "c og d"
+    },
+    {
+      "fylke": null,
+      "kommunenummer": "5605",
+      "kommune": "Sør-Varanger",
+      "hjemmel": "c og d"
+    },
+    {
+      "fylke": null,
+      "kommunenummer": "5607",
+      "kommune": "Vadsø",
+      "hjemmel": "a, b, c og d"
+    },
+    {
+      "fylke": null,
+      "kommunenummer": "5612",
+      "kommune": "Kautokeino",
+      "hjemmel": "f"
+    },
+    {
+      "fylke": null,
+      "kommunenummer": "5626",
+      "kommune": "Gamvik",
+      "hjemmel": "c og d"
+    }
+  ]
+}

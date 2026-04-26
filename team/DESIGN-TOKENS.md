@@ -40,4 +40,4 @@ Tokens hentet fra eksisterende `index.html` (v1). Designer kan foreslå justerin
 
 - Light mode? (Ikke prioritert i v1.)
 - Tilgjengelighetskontrast — dobbeltsjekk `--muted` mot `--panel` (kan være under WCAG AA).
-- CP-foreningen visuell identitet — skal den reflekteres tydeligere? Spørsmål til Vegard.
+- Profesjonell, nøytral visuell identitet for kommunalt-ansatt-bruk — vurder om dark-mode er riktig "default" for økonomisjef-/rådmann-bruk i kontortid, eller om light-mode bør prioriteres for v2 (politiker-modus i §D5 vil sannsynligvis være light-mode for A4-print).

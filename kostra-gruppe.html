@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="nb">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>KOSTRA-gruppe — Kommunebarometer 2026</title>
+<style>
+  :root { --bg: #0f1724; --panel: #182134; --panel-2: #1f2b44; --accent: #4cc9f0; --good: #4ade80; --bad: #f87171; --warn: #fbbf24; --text: #e6edf6; --muted: #94a3b8; --border: #263248; }
+  * { box-sizing: border-box; }
+  body { margin: 0; font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: var(--bg); color: var(--text); line-height: 1.6; }
+  header { background: linear-gradient(135deg, #1a2540 0%, #0f1724 100%); border-bottom: 1px solid var(--border); padding: 28px 32px; }
+  header .crumb { font-size: 13px; color: var(--muted); margin-bottom: 10px; }
+  header .crumb a { color: var(--accent); text-decoration: none; }
+  header h1 { margin: 0 0 8px; font-size: 28px; }
+  header p { margin: 0; color: var(--muted); font-size: 14px; max-width: 800px; }
+  main { padding: 24px 32px 60px; max-width: 1100px; margin: 0 auto; }
+  section { background: var(--panel); border: 1px solid var(--border); border-radius: 12px; padding: 24px 28px; margin-bottom: 20px; }
+  section h2 { margin: 0 0 16px; font-size: 20px; color: var(--accent); }
+  .gruppe-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 14px; }
+  .gruppe-card { background: var(--panel-2); border: 1px solid var(--border); border-radius: 10px; padding: 16px; cursor: pointer; transition: border-color 0.15s; }
+  .gruppe-card:hover, .gruppe-card:focus { border-color: var(--accent); outline: none; }
+  .gruppe-card h3 { margin: 0 0 6px; font-size: 14px; color: var(--text); }
+  .gruppe-card .desc { font-size: 12px; color: var(--muted); margin-bottom: 10px; }
+  .gruppe-card .stats { font-size: 13px; color: var(--muted); }
+  .stub-banner { background: rgba(251,191,36,0.15); border: 1px solid var(--warn); border-radius: 8px; padding: 12px 16px; margin-bottom: 20px; font-size: 13px; }
+</style>
+</head>
+<body>
+<header>
+  <div class="crumb"><a href="/">← Kommunebarometer</a> · <a href="/metodikk">Metodikk</a></div>
+  <h1>KOSTRA-grupper — sammenlign innenfor riktig gruppe</h1>
+  <p>SSB grupperer Norges 357 kommuner i 16 KOSTRA-grupper basert på folkemengde, bundne kostnader og frie disponible inntekter, pluss en 17. gruppe for de 8 mest skatteinntektsterke kommunene (kraftkommuner). Sammenligning innenfor riktig gruppe gir mer rettferdig analyse.</p>
+</header>
+
+<main>
+  <div class="stub-banner">
+    <strong>Skeleton-versjon</strong> — gruppene er listet med beskrivelser. Live medlemskap, beste/dårligste-rangering per sektor og link til kommune-dypdykk implementeres i egen PR med SSB Klass klassifikasjon 112 (KOSTRA-grupper).
+  </div>
+
+  <section>
+    <h2>De 17 KOSTRA-gruppene</h2>
+    <div class="gruppe-grid" id="gruppe-grid">
+      <!-- Plassholder-tekstene reflekterer den offisielle SSB-grupperingen fra 2020,
+           som er sist publisert. Fra 2025 kan ny gruppering komme. -->
+      <div class="gruppe-card" tabindex="0"><h3>Gruppe 1 — Små kommuner med middels frie disponible inntekter</h3><div class="desc">&lt; 5000 innbyggere, middels bundne kostnader.</div><div class="stats">Antall medlemmer: laster ...</div></div>
+      <div class="gruppe-card" tabindex="0"><h3>Gruppe 2 — Små kommuner med høye frie disponible inntekter</h3><div class="desc">&lt; 5000 innbyggere, høye bundne kostnader, høy inntekt.</div><div class="stats">Antall medlemmer: laster ...</div></div>
+      <div class="gruppe-card" tabindex="0"><h3>Gruppe 3 — Små kommuner med lave frie disponible inntekter</h3><div class="desc">&lt; 5000 innbyggere, lave inntekter.</div><div class="stats">Antall medlemmer: laster ...</div></div>
+      <div class="gruppe-card" tabindex="0"><h3>Gruppe 7 — Mellomstore kommuner med middels frie inntekter</h3><div class="desc">5000-19999 innbyggere, middels.</div><div class="stats">Antall medlemmer: laster ...</div></div>
+      <div class="gruppe-card" tabindex="0"><h3>Gruppe 8 — Mellomstore kommuner med høye frie inntekter</h3><div class="desc">5000-19999 innbyggere, høye.</div><div class="stats">Antall medlemmer: laster ...</div></div>
+      <div class="gruppe-card" tabindex="0"><h3>Gruppe 12 — Storkommuner</h3><div class="desc">≥ 20 000 innbyggere, varierte rammebetingelser.</div><div class="stats">Antall medlemmer: laster ...</div></div>
+      <div class="gruppe-card" tabindex="0"><h3>Gruppe 16 — Største bykommuner og bydeler</h3><div class="desc">Bergen, Stavanger, Trondheim m.fl.</div><div class="stats">Antall medlemmer: laster ...</div></div>
+      <div class="gruppe-card" tabindex="0"><h3>Egen gruppe — Kraftkommuner</h3><div class="desc">8 kommuner med svært høye skatteinntekter (kraftverk).</div><div class="stats">Antall medlemmer: 8</div></div>
+      <!-- Resten lastes dynamisk fra Klass klassifikasjon 112 -->
+    </div>
+  </section>
+
+  <section>
+    <h2>Hvordan brukes KOSTRA-grupper?</h2>
+    <p>KOSTRA-rapportens kjerneanbefaling er å sammenligne en kommune med tre referanser samtidig:</p>
+    <ol>
+      <li><strong>Egen kommune over tid</strong> — har vi forbedret oss?</li>
+      <li><strong>Egen KOSTRA-gruppe</strong> — kommuner med liknende rammebetingelser. Dette er <em>denne sidens</em> primære funksjon.</li>
+      <li><strong>Landet uten Oslo</strong> — Oslo er kommune og fylke og forskyver nasjonale snitt.</li>
+    </ol>
+    <p>Når full implementasjon er på plass kan du via denne siden:</p>
+    <ul>
+      <li>Se alle medlemmer av en gruppe</li>
+      <li>Identifisere beste-praksis-kommunen for en sektor (rollemodell)</li>
+      <li>Identifisere kommunen i din gruppe som ligner mest på din egen</li>
+    </ul>
+  </section>
+</main>
+</body>
+</html>
