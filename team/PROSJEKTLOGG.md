@@ -14,6 +14,33 @@ Format per oppføring:
 
 ---
 
+## 2026-04-26 — Hotfix runde 6: sektor-routing 404 + DKI force-cache
+
+**Hvem:** Claude Code (autonom, etter Vegards bug-rapport "page not found")
+**Branch:** `fix/sektor-rewrite-og-dki-cache` (commit `e26cfef`), merget til test som `1f853a7`.
+
+**Bug 1 — `/kommunebarometer/sektor` ga 404 NOT_FOUND fra Vercel.**
+Verifisert mot live preview via Vercel MCP `web_fetch_vercel_url`:
+- `/kommunebarometer/sektor` → 404 NOT_FOUND (før auth-laget)
+- `/sektor` → 401 (Auth — fil finnes, ingen 404)
+- `/sektor.html` → 401 (Auth — fil finnes)
+
+Mest sannsynlig: konflikt mellom rewriten `/kommunebarometer` (regel 3) og `/kommunebarometer/sektor` (regel 4) i `vercel.json`. Vercel evaluerer rewrites i rekkefølge, og prefiks-matching kan ha gjort regel 3 grådig.
+
+**Fix 1:** Drop `/kommunebarometer/sektor`-rewriten. Sektor-kort i `kommunebarometer.html:1965` peker nå direkte til `/sektor?...` (cleanUrls finner `sektor.html` automatisk). Verifisert mot ny preview etter merge: status 200, tittel "Sektor-dypdykk — Kommunebarometer 2026" — feil borte.
+
+**Bug 2 — `cache: 'force-cache'` på DKI-data.**
+Pekt på i forrige filsøking. Endret til `cache: 'no-cache'` i `kommunebarometer.html` (loadDKI + code-history) og `sektor.html` (lastDkiFil). Browseren revaliderer med edge-cachen — ingen ytelses-tap når data er ferskt (304-roundtrip), men ingen klienter sitter fast på gammel POC-fil etter ny deploy.
+
+**Konsekvens:**
+- Sektor-dypdykk fungerer nå på preview. Vegard kan klikke sektor-kort uten 404.
+- Tilbake-lenken på sektor.html peker fortsatt til `/kommunebarometer?kommune=…&år=…&mode=…` — bevart fra Pakke A.
+- DKI-cache-bug-en ferdig adressert; ingen åpen HANDOFF lenger.
+
+**PR-URL:** <https://github.com/vegard1104/kommunebarometer/pull/new/fix/sektor-rewrite-og-dki-cache>
+
+---
+
 ## 2026-04-26 — SLUTTRAPPORT runde 6: portal-forside + rensing av default-state og kommunenavn
 
 **Hvem:** Claude Code (autonom)
