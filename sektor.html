@@ -314,9 +314,26 @@ function retning(label) {
 // Strip samisk dual-form fra kommunenavn (eks. "Kárášjohka - Karasjok" → "Karasjok").
 // Defensivt — hovedsiden renser allerede MUNI_NAMES, men URL-er kan være
 // laget før Pakke B eller delt manuelt med dual-form.
+// Liten reverse-lookup-tabell for samiske dual-form-navn der bokmål-siden
+// IKKE har spesialtegn. Heuristikken under fanger ikke disse.
+const _DUAL_NAVN_BOKMAAL = {
+  'oslo - oslove': 'Oslo',
+  'aarborte - hattfjelldal': 'Hattfjelldal',
+  'dielddanuorri - tjeldsund': 'Tjeldsund',
+  'guovdageaidnu - kautokeino': 'Kautokeino',
+  'deatnu - tana': 'Tana',
+  'unjárga - nesseby': 'Nesseby',
+  'hábmer - hamarøy': 'Hamarøy',
+  'snåase - snåsa': 'Snåsa',
+  'raarvihke - røyrvik': 'Røyrvik',
+  'loabák - lavangen': 'Lavangen'
+};
+
 function bokmaalKommunenavn(navn) {
   if (!navn) return navn;
   const s = String(navn);
+  const nedre = s.toLowerCase().trim();
+  if (_DUAL_NAVN_BOKMAAL[nedre]) return _DUAL_NAVN_BOKMAAL[nedre];
   const deler = s.split(/\s+[-—/]\s+/).map(d => d.trim()).filter(Boolean);
   if (deler.length < 2) return s.trim();
   const samiskRegex = /[áčđŋšŧžǎÁČĐŊŠŦŽǍ]/;
