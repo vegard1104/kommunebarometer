@@ -119,6 +119,12 @@
       <strong id="dki-headline">DKI for sektoren: –</strong>
       <p id="dki-forklaring" style="margin: 6px 0 0; color: var(--text);"></p>
     </div>
+    <!-- Pakke 16: Auto-tolkning for valgt kommune -->
+    <div id="auto-tolkning" class="dki-panel" hidden style="margin-top:10px;border-left-color:var(--accent-2);">
+      <strong style="color:var(--accent-2);">Tolkning for kommunen</strong>
+      <p id="tolkning-samlet" style="margin: 6px 0 8px; color: var(--text);"></p>
+      <ul id="tolkning-observasjoner" style="margin:0 0 0 18px; padding:0; color: var(--muted); font-size: 13px;"></ul>
+    </div>
   </section>
 
   <section id="indikatorer-seksjon" hidden>
@@ -407,6 +413,9 @@ async function initSide() {
   // 3. DKI-panel
   await renderDki();
 
+  // Pakke 16: Auto-tolkning for valgt kommune
+  await renderAutoTolkning().catch(e => console.warn('Auto-tolkning feilet:', e.message));
+
   // 4. Eksterne lenker
   renderEksterne();
   document.getElementById('ssb-tabell-id').textContent = sektor.tableId;
@@ -432,6 +441,26 @@ async function initSide() {
     const lasteEl = document.getElementById('kostra-rapport-laster');
     if (lasteEl) lasteEl.textContent = `Kunne ikke hente KOSTRA-rapport: ${e.message}`;
   });
+}
+
+// Pakke 16: Render auto-tolkning for valgt kommune i sammendrag-seksjonen.
+async function renderAutoTolkning() {
+  if (typeof KostraRapport === 'undefined' || !KostraRapport.autoTolkning) return;
+  const kommunenr = finnKommunenrFraNavn(kommuneNavn);
+  if (!kommunenr) return;
+  const t = await KostraRapport.autoTolkning(kommunenr, kommuneNavn, år);
+  if (!t) return;
+  const panel = document.getElementById('auto-tolkning');
+  document.getElementById('tolkning-samlet').textContent = t.samletTekst;
+  const ul = document.getElementById('tolkning-observasjoner');
+  ul.innerHTML = '';
+  for (const obs of t.observasjoner) {
+    const li = document.createElement('li');
+    li.textContent = obs;
+    li.style.marginBottom = '4px';
+    ul.appendChild(li);
+  }
+  panel.hidden = false;
 }
 
 // Pakke 13: Last KOSTRA-sektorer + tabell 12362 + per-bruker, og bygg KOSTRA-stil tabeller.

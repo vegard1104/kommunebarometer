@@ -372,6 +372,74 @@
     return ut;
   }
 
+  // ---- Pakke 16: Auto-tolkning per kommune ----
+
+  // Genererer dynamisk tolkningstekst for valgt kommune basert på samlet DKI
+  // og sektor-spesifikke DKI'er. Ikke hardkodet for Lørenskog.
+  // Returnerer { samletTekst, sektorTekst, observasjoner: [tre interessante] }
+  async function autoTolkning(kommunenr, kommuneNavn, år) {
+    const fil = ['2024', '2025', '2026'].includes(String(år)) ? år : '2025';
+    const r = await fetch(`/data/dki-${fil}.json`, { cache: 'force-cache' });
+    if (!r.ok) return null;
+    const data = await r.json();
+    const k = data?.kommuner?.[kommunenr];
+    if (k == null) return { samletTekst: `${kommuneNavn} mangler i KMDs Grønt hefte ${år}.`, observasjoner: [] };
+
+    // Samlet DKI
+    const samlet = (typeof k === 'number') ? k : k?.samlet;
+    if (samlet == null) return null;
+
+    // Beregn rang for samlet DKI (1 = lavest behov)
+    const allSamlet = Object.values(data.kommuner).map(v => typeof v === 'number' ? v : v?.samlet).filter(v => v != null);
+    const sortertSamlet = [...allSamlet].sort((a, b) => a - b);
+    const samletRang = sortertSamlet.indexOf(samlet) + 1;
+    const totalAntall = allSamlet.length;
+
+    const avvikPct = Math.round((samlet - 1.0) * 100 * 10) / 10;
+    const samletTekst = avvikPct === 0
+      ? `${kommuneNavn} har samme samlede utgiftsbehov som landsgjennomsnittet (rang #${samletRang}/${totalAntall}).`
+      : avvikPct > 0
+        ? `${kommuneNavn} har ${avvikPct}% høyere samlet utgiftsbehov enn landsgjennomsnittet (rang #${samletRang}/${totalAntall}).`
+        : `${kommuneNavn} har ${Math.abs(avvikPct)}% lavere samlet utgiftsbehov enn landsgjennomsnittet (rang #${samletRang}/${totalAntall}).`;
+
+    // Sektor-spesifikt: kun hvis kommunen har sektor-detaljer (Lørenskog)
+    const observasjoner = [];
+    if (typeof k === 'object') {
+      const sektorer = ['grunnskole', 'pleie', 'barnehage', 'barnevern', 'sosial', 'kommunehelse', 'administrasjon'];
+      const dkiPerSektor = {};
+      for (const s of sektorer) {
+        if (typeof k[s] === 'number') dkiPerSektor[s] = k[s];
+      }
+      // Finn sektoren med lavest behov og høyest behov
+      const sortertSektorer = Object.entries(dkiPerSektor).sort((a, b) => a[1] - b[1]);
+      if (sortertSektorer.length > 0) {
+        const lavest = sortertSektorer[0];
+        const høyest = sortertSektorer[sortertSektorer.length - 1];
+        observasjoner.push(`Lavest utgiftsbehov: ${lavest[0]} (DKI ${lavest[1].toFixed(2)})`);
+        observasjoner.push(`Høyest utgiftsbehov: ${høyest[0]} (DKI ${høyest[1].toFixed(2)})`);
+        // Gap mellom lavest og høyest
+        const gap = Math.round((høyest[1] - lavest[1]) * 100);
+        observasjoner.push(`Spenn mellom sektorer: ${gap}% (forskjellen mellom høyest og lavest behov)`);
+      }
+    } else {
+      // Bare samlet DKI tilgjengelig — sammenlign mot landsgjennomsnittet
+      if (avvikPct > 5) {
+        observasjoner.push(`Kommunen har klart høyere kostnadsdrivere enn snittet — sjekk barnehage/grunnskole/pleie-sektorene for hvor utfordringen ligger.`);
+      } else if (avvikPct < -5) {
+        observasjoner.push(`Kommunen har lavere utgiftsbehov enn snittet — typisk yngre/voksende befolkning.`);
+      } else {
+        observasjoner.push(`Kommunen ligger nær landsgjennomsnittet på samlet utgiftsbehov.`);
+      }
+    }
+
+    // Plassering på samlet rang-skala
+    const persentil = Math.round((samletRang / totalAntall) * 100);
+    if (persentil <= 10) observasjoner.push(`Topp 10% av kommunene med lavest utgiftsbehov.`);
+    else if (persentil >= 90) observasjoner.push(`Topp 10% av kommunene med høyest utgiftsbehov (typisk små distrikt-kommuner).`);
+
+    return { samletTekst, observasjoner: observasjoner.slice(0, 3), samletDKI: samlet, samletRang, totalAntall };
+  }
+
   // Eksponer på window.KostraRapport
   root.KostraRapport = {
     hentTabell12362,
@@ -384,6 +452,7 @@
     behovskorrigertVerdi,
     behovskorrigertRangering,
     hentSektorindekser,
+    autoTolkning,
     API_BASE,
     TABELL_HOVEDDATA,
     INDIKATOR_BELOP_INNBYGGER,
