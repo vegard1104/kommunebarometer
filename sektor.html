@@ -260,9 +260,14 @@ function lesLagretOverall() {
 }
 function finnKommunenrFraNavn(navn) {
   const map = lesLagretMuniNames();
+  const ren = String(navn).toLowerCase().trim();
   for (const [kode, n] of Object.entries(map)) {
-    const rent = String(n).replace(/\s*\(.*?\)\s*$/, '').trim();
-    if (rent.toLowerCase() === String(navn).toLowerCase()) return kode;
+    const utenParens = String(n).replace(/\s*\(.*?\)\s*$/, '').trim();
+    // Klass-API returnerer ofte dobbeltnavn med samisk variant: "Oslo - Oslove",
+    // "Kárášjohka - Karasjok". Splitt på " - " og match mot hver halvdel,
+    // i tillegg til hele strengen.
+    const deler = [utenParens, ...utenParens.split(/\s*-\s*/)].map(s => s.toLowerCase().trim());
+    if (deler.some(d => d === ren)) return kode;
   }
   // Fallback: hvis brukeren ga 4-sifret kode direkte
   if (/^\d{4}$/.test(navn)) return navn;
@@ -285,7 +290,36 @@ if (!sektor) {
   });
 }
 
+// Pakke 8: Hvis MUNI_NAMES er tom (bruker har ikke vært på forsiden), hent
+// kommune-mapping direkte fra SSBs Klass-API. Dette gjør sektor.html
+// uavhengig av forside-state for kommune-navn-oppslag.
+async function byggKommuneMapHvisManglende() {
+  const eks = lesLagretMuniNames();
+  if (Object.keys(eks).length > 100) return; // har allerede via forsiden
+  // Klass-API har CORS-headere (Access-Control-Allow-Origin: *), så vi
+  // går direkte mot SSB uten å avhenge av Vercel-proxy.
+  const dato = new Date().toISOString().slice(0, 10);
+  const url = `https://data.ssb.no/api/klass/v1/classifications/131/codesAt?date=${dato}&language=nb`;
+  try {
+    const r = await fetch(url);
+    if (!r.ok) return;
+    const data = await r.json();
+    const map = {};
+    for (const c of (data.codes || [])) {
+      if (/^\d{4}$/.test(c.code)) map[c.code] = c.name || c.shortName || c.code;
+    }
+    if (Object.keys(map).length > 100) {
+      localStorage.setItem('kb_muni_names', JSON.stringify(map));
+      console.log(`Klass: ${Object.keys(map).length} kommuner cachet for sektor-side`);
+    }
+  } catch (e) {
+    console.warn('Klass-hent feilet:', e.message);
+  }
+}
+
 async function initSide() {
+  // Sørg for at vi har kommune-mapping før vi prøver oppslag.
+  await byggKommuneMapHvisManglende();
   // 1. Header
   document.title = `${sektor.navn} — ${kommuneNavn} — Kommunebarometer`;
   document.getElementById('sektor-tittel').firstChild.nodeValue = `Sektor-dypdykk: ${sektor.navn}`;
@@ -451,9 +485,11 @@ async function renderDki() {
     document.getElementById('dki-headline').textContent = `DKI for ${sektor.navn.toLowerCase()}: 1,00`;
     document.getElementById('dki-forklaring').textContent = `${kommuneNavn} har samme forventet utgiftsbehov som landsgjennomsnittet.`;
   } else {
+    // Kommunen finnes ikke i DKI-fila i det hele tatt (kommuner Svalbard, Longyearbyen,
+    // eller fylker som ikke er del av utgiftsutjamninga).
     panel.hidden = false;
-    document.getElementById('dki-headline').textContent = `DKI ikke tilgjengelig for ${kommuneNavn}`;
-    document.getElementById('dki-forklaring').textContent = 'Behovsjustering krever DKI-data fra KMDs grønne hefter. Foreløpig dekker POC kun Lørenskog (3222). HANDOFF åpnet for utvidelse.';
+    document.getElementById('dki-headline').textContent = 'Sektoren er ikke en del av utgiftsutjevningen';
+    document.getElementById('dki-forklaring').textContent = `${kommuneNavn} mangler DKI i KMDs Grønt hefte ${år}. Viser kun rådata. (Svalbard, Longyearbyen og enkelte spesialkommuner er utenfor inntektssystemet.)`;
   }
 }
 
