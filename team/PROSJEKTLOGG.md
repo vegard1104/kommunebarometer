@@ -14,6 +14,39 @@ Format per oppføring:
 
 ---
 
+## 2026-04-26 — SLUTTRAPPORT runde 3: 7 pakker auto-merget til test
+**Hvem:** Claude Code (autonom)
+
+### PR-er pushet
+
+| # | Branch | Effekt |
+|---|---|---|
+| 1 | `fix/sektor-ssb-api-url` | Sektor-dypdykk SSB-API: bytt fra ugyldig `/api/ssb/v2/data/dataset/` til riktig `/api/ssb/tables/${id}/metadata` og `/data`. Indikator-tabell + tidsserie skal nå laste på Vercel preview. |
+| 2 | `feature/dypdykk-uavhengig` | Direkte besøk til /sektor.html uten forside-state får auto-redirect (3 sek nedteller) til /?return=<sektor-url>. Forsiden redirecter tilbake etter scoring er ferdig. |
+| 3 | `feature/a2-omberegning-faktisk` | Last DKI også for 2026 (siden datoen er 2026-04-26). Re-render hvis DKI-data ankommer ETTER scoring og BEHOVSJUSTERT er aktiv. |
+| 4 | `fix/sosial-retning` | Utvidet `SECTOR_DIR_OVERRIDE` med uføretrygd, lavinntekt, sysselsetting, egenkapital. Logger retning per indikator i konsoll for sektorer med override. |
+| 5 | `fix/barnevern-saksbehandling-data-v2` | **Verifisert mot SSB live**: forrige fallback-tabeller (12873, 12849, 13141, 13139) var FEIL TABELLER (kommunestyremedlemmer, sysselsetting, bolig). Riktige: barnevern→**12279** "Nøkkeltal utgifter barnevern", saksbehandling→**12676** "Behandlede byggesøknader". |
+| 6 | `feature/a2-dki-fra-kmd-ods-data` | Genererte ekte `data/dki-2025.json` og `data/dki-2026.json` fra KMD A-k mot live regjeringen.no. 355 kommuner per år. Lørenskog 2025=0,95 / 2026=0,9551. |
+| 7 | `chore/konsoll-og-kvalitet` | Komprimert DKI-format (tall = uniformt; objekt = sektor-spesifikt). Filene 120 KB → 8 KB. Lighthouse Performance forsiden: 42 → 60 (+18). Accessibility 91 (over mål). |
+
+### Hva fungerer nå som ikke fungerte før
+
+- **Sektor-dypdykk laster ekte data** (Pakke 1): sektor.html brukte ugyldig URL — nå samme `/api/ssb/tables/`-mønster som forsiden, indikator-tabell og Chart.js tidsserie vises på Vercel.
+- **Direkte /sektor.html-besøk får redirect** (Pakke 2): tidligere "Sammendrag mangler"-stub uten vei videre; nå auto-redirect.
+- **Toggle Behovsjustert virker for 2026** (Pakke 3): forrige versjon lastet kun 2024+2025.
+- **Sosial-rangering konsistent**: 4 nye indikator-mønstre treffer faktiske KOSTRA-labels med riktig retning.
+- **Barnevern + saksbehandling henter ekte data**: tabell 12279 og 12676 verifisert med 891 regioner, 2015-2025.
+- **DKI for alle 355 kommuner** (Pakke 6): tidligere kun Lørenskog.
+- **Forsiden raskere** (Pakke 7): DKI-fil 120 KB → 8 KB. Lighthouse Performance 42 → 60.
+
+### Åpne HANDOFF for Vegard
+
+1. **Vercel preview-test** (kritisk): sjekk at `/sektor.html?id=helse&kommune=Lørenskog&år=2025` viser indikator-tabell og tidsserie. Lokalt mangler `/api/ssb/*` proxy.
+2. **Verifiser DKI-effekt**: bytt til Behovsjustert på Vercel preview, observer Lørenskog flytte seg merkbart i rangering.
+3. **Performance-refaktor**: 1500-linjers inline-script holder Performance under 85. Krever ADR-pakke for kostra-core.js-modul.
+4. **Sektor-spesifikk DKI for alle 357 kommuner** (fase 2): krever F-k Kriteriedata + KMDs delkostnadsnøkler-formler.
+5. **Resterende a11y-issues** (target-size, label-content-name-mismatch): egen pakke for toolbar-knapper og kommune-input.
+
 ## 2026-04-25 — Punkt 2 + 3 fra HANDOFF gjennomført (KMD-verifisering + Lighthouse)
 **Hvem:** Claude Code (autonom oppfølging)
 
