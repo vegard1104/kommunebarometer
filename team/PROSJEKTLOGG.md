@@ -14,6 +14,17 @@ Format per oppføring:
 
 ---
 
+## 2026-04-26 — Pakke 8.5: full DKI sektor-breakdown for alle 352 kommuner
+**Hvem:** Claude Code (autonom)
+
+**Hva var feil:** Pakke 8 introduserte DKI-data for alle 355 kommuner, men kun Lørenskog hadde sektor-spesifikke DKI'er (objekt med 7 felt). Andre kommuner var lagret som samlet DKI-tall, så koden returnerte samme verdi for alle 7 sektorer per kommune. Resultat: behovsjustering var meningsløs for ikke-Lørenskog.
+
+**Hva er fikset:** `scripts/generer-dki-sektor-breakdown.mjs` parser KMDs delkostnadsnøkler fra Grønt hefte 2026 PDF (side 21, hentet med `pdftotext -raw`), kombinerer dem med Tabell E-k kriterieindekser via Σ(vekt × kriterieindeks), og produserer 7 sektor-DKI per kommune. Lørenskog 2025: ALLE 7 sektor-DKI'er innenfor 0,001 av Vegards forventede tall (grunnskole 0,9561, pleie 0,8149, barnehage 1,1813, kommunehelse 0,8991, barnevern 1,0153, sosial 1,1669, administrasjon 0,8962).
+
+**Konsekvens:** Bergen 4601 har nå pleie 0,9561, grunnskole 0,896, barnehage 1,016, sosial 1,0631 — sektor-spesifikke verdier som faktisk varierer. Karasjok 5610 viser adm 1,6834 (høy pga lite distrikt), helse 1,2967 (eldre befolkning). DKI-badge på sektor-kort viser nå riktig sektor-spesifikk verdi for ALLE kommuner. Ingen "Bergen mangler i KMDs Grønt hefte"-melding lenger.
+
+**Validering:** 352 kommuner i 2025+2026 med E-k samlet-kolonne avviker <0,05 fra beregnet samlet (validert). 2024 E-k har annen kolonne-posisjon for samlet — sektor-DKI'er korrekte men samlet-validering åpen HANDOFF.
+
 ## 2026-04-26 — SLUTTRAPPORT runde 4: 9 pakker (Pakke 8-16) — KOSTRA-rapport-stil dypdykk
 **Hvem:** Claude Code (autonom)
 
