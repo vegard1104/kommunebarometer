@@ -311,9 +311,22 @@ function retning(label) {
   return 'high';
 }
 
+// Strip samisk dual-form fra kommunenavn (eks. "Kárášjohka - Karasjok" → "Karasjok").
+// Defensivt — hovedsiden renser allerede MUNI_NAMES, men URL-er kan være
+// laget før Pakke B eller delt manuelt med dual-form.
+function bokmaalKommunenavn(navn) {
+  if (!navn) return navn;
+  const s = String(navn);
+  const deler = s.split(/\s+[-—/]\s+/).map(d => d.trim()).filter(Boolean);
+  if (deler.length < 2) return s.trim();
+  const samiskRegex = /[áčđŋšŧžǎÁČĐŊŠŦŽǍ]/;
+  const bokmaal = deler.find(d => !samiskRegex.test(d));
+  return (bokmaal || deler[0]).trim();
+}
+
 const u = new URL(window.location.href);
 const sektorId = u.searchParams.get('id') || 'grunnskole';
-const kommuneNavn = u.searchParams.get('kommune') || '';
+const kommuneNavn = bokmaalKommunenavn(u.searchParams.get('kommune') || '');
 const år = u.searchParams.get('år') || u.searchParams.get('ar') || '2025';
 const modus = u.searchParams.get('mode') || (localStorage.getItem('kb_mode') === 'justert' ? 'justert' : 'raa');
 
@@ -349,14 +362,10 @@ function lesLagretOverall() {
 }
 function finnKommunenrFraNavn(navn) {
   const map = lesLagretMuniNames();
-  const ren = String(navn).toLowerCase().trim();
+  const ren = bokmaalKommunenavn(String(navn)).toLowerCase().trim();
   for (const [kode, n] of Object.entries(map)) {
-    const utenParens = String(n).replace(/\s*\(.*?\)\s*$/, '').trim();
-    // Klass-API returnerer ofte dobbeltnavn med samisk variant: "Oslo - Oslove",
-    // "Kárášjohka - Karasjok". Splitt på " - " og match mot hver halvdel,
-    // i tillegg til hele strengen.
-    const deler = [utenParens, ...utenParens.split(/\s*-\s*/)].map(s => s.toLowerCase().trim());
-    if (deler.some(d => d === ren)) return kode;
+    const utenParens = bokmaalKommunenavn(String(n).replace(/\s*\(.*?\)\s*$/, '').trim());
+    if (utenParens.toLowerCase() === ren) return kode;
   }
   // Fallback: hvis brukeren ga 4-sifret kode direkte
   if (/^\d{4}$/.test(navn)) return navn;

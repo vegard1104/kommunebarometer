@@ -634,7 +634,7 @@ const MERGERS = {
   '1579': { name: 'Hustadvika', year: 2020, components: [ { code: '1551', name: 'Eide' }, { code: '1548', name: 'Fræna' } ]},
   '5055': { name: 'Heim', year: 2020, components: [ { code: '1612', name: 'Hemne' }, { code: '1571', name: 'Halsa' } ]},
   '5059': { name: 'Orkland', year: 2020, components: [ { code: '1638', name: 'Orkdal' }, { code: '1636', name: 'Meldal' }, { code: '1622', name: 'Agdenes' } ]},
-  '5512': { name: 'Dielddanuorri - Tjeldsund', year: 2020, components: [ { code: '1852', name: 'Tjeldsund' }, { code: '1913', name: 'Skånland' } ]},
+  '5512': { name: 'Tjeldsund', year: 2020, components: [ { code: '1852', name: 'Tjeldsund' }, { code: '1913', name: 'Skånland' } ]},
   '5530': { name: 'Senja', year: 2020, components: [ { code: '1929', name: 'Berg' }, { code: '1931', name: 'Lenvik' }, { code: '1928', name: 'Torsken' }, { code: '1927', name: 'Tranøy' } ]}
 };
 const MERGERS_REVERSE = (() => {
@@ -822,6 +822,42 @@ function _writeKlassCache(key, payload) {
   }
 }
 
+// Hardkodet override-tabell for kommuner som SSB Klass-API returnerer med
+// samisk/kvensk dual-form (eks. "Kárášjohka - Karasjok"). Listen er hentet
+// direkte fra Klass-131 pr. 2026-04-26 og må vedlikeholdes når SSB
+// oppretter/endrer flerspråklige kommunenavn.
+const KOMMUNE_NAVN_BOKMAAL = {
+  '0301': 'Oslo', '1826': 'Hattfjelldal', '1833': 'Rana', '1841': 'Fauske',
+  '1845': 'Sørfold', '1853': 'Evenes', '1870': 'Sortland', '1875': 'Hamarøy',
+  '5001': 'Trondheim', '5006': 'Steinkjer', '5007': 'Namsos', '5025': 'Røros',
+  '5037': 'Levanger', '5041': 'Snåsa', '5043': 'Røyrvik', '5503': 'Harstad',
+  '5512': 'Tjeldsund', '5516': 'Gratangen', '5518': 'Lavangen', '5536': 'Lyngen',
+  '5538': 'Storfjord', '5540': 'Kåfjord', '5544': 'Nordreisa', '5603': 'Hammerfest',
+  '5610': 'Karasjok', '5612': 'Kautokeino', '5622': 'Porsanger', '5628': 'Tana'
+};
+
+// Tar et kommunenavn som kan inneholde samisk side-form og returnerer bare
+// bokmål-siden. Eksempler:
+//   "Kárášjohka - Karasjok"        → "Karasjok"
+//   "Oslo - Oslove"                 → "Oslo"
+//   "Dielddanuorri - Tjeldsund"     → "Tjeldsund"
+//   "Aurskog-Høland"                → "Aurskog-Høland" (uendret)
+// Med kommunenr som 2. arg slår vi opp i overstyringstabellen først;
+// uten kommunenr fall vi tilbake til samisk-tegn-heuristikk.
+function bokmaalKommunenavn(navn, kommunenr) {
+  if (kommunenr && KOMMUNE_NAVN_BOKMAAL[kommunenr]) return KOMMUNE_NAVN_BOKMAAL[kommunenr];
+  if (!navn) return navn;
+  const s = String(navn);
+  // Splitt KUN hvis bindestrek/skråstrek er omgitt av mellomrom — det er
+  // dual-form-mønsteret. "Aurskog-Høland" og "Sør-Trøndelag" forblir intakte.
+  const deler = s.split(/\s+[-—/]\s+/).map(d => d.trim()).filter(Boolean);
+  if (deler.length < 2) return s.trim();
+  // Heuristikk: bokmål-siden mangler samiske spesialtegn (á č đ ŋ š ŧ ž).
+  const samiskRegex = /[áčđŋšŧžǎÁČĐŊŠŦŽǍ]/;
+  const bokmaal = deler.find(d => !samiskRegex.test(d));
+  return (bokmaal || deler[0]).trim();
+}
+
 // Henter alle kommune-koder gyldige på en gitt dato.
 // Default = i dag. Returnerer { code, name, validFrom, validTo } per kommune.
 async function fetchKlassKommuner(date) {
@@ -838,12 +874,14 @@ async function fetchKlassKommuner(date) {
   if (!r.ok) throw new Error(`Klass kommuner: HTTP ${r.status}`);
   const data = await r.json();
   // Filtrer til 4-sifrede kommune-koder (dropper fylker som har 2-sifret kode).
+  // Klass-API returnerer dual-form for kommuner med samisk navn (eks.
+  // "Kárášjohka - Karasjok"). bokmaalKommunenavn(navn, kode) trekker ut bokmål-siden.
   const kommuner = (data.codes || [])
     .filter(c => /^\d{4}$/.test(c.code))
     .map(c => ({
       code: c.code,
-      name: c.name || '',
-      shortName: c.shortName || '',
+      name: bokmaalKommunenavn(c.name || '', c.code),
+      shortName: bokmaalKommunenavn(c.shortName || '', c.code),
       validFrom: c.validFrom || null,
       validTo: c.validToInRequestedRange || c.validTo || null
     }));
@@ -2424,7 +2462,10 @@ async function main() {
     for (const [k, v] of Object.entries(sd.data || {})) {
       if (/^\d{4}$/.test(k) && v._label) {
         // Rent basisnavn (uten evt. parentes).
-        const base = v._label.replace(/\s*\(.*?\)\s*$/, '').trim();
+        // SSB-labels for samiske kommuner kommer som dual-form (eks.
+        // "Kárášjohka - Karasjok") — bokmaalKommunenavn(navn, kode) henter bokmål-siden
+        // via override-tabellen, med tegn-heuristikk som fallback.
+        const base = bokmaalKommunenavn(v._label.replace(/\s*\(.*?\)\s*$/, '').trim(), k);
         // Komponent-kommuner får tydelig suffiks "(til NyKommune)" så brukeren ser
         // at dette er en historisk kommune som er slått sammen.
         if (MERGERS_REVERSE[k]) {
