@@ -86,7 +86,7 @@
 </head>
 <body>
 <header>
-  <div class="crumb"><a href="/" id="hjem-lenke">← Kommunebarometer</a> · <a href="/metodikk">Metodikk</a></div>
+  <div class="crumb"><a href="/kommunebarometer" id="hjem-lenke">← Kommunebarometer</a> · <a href="/metodikk">Metodikk</a></div>
   <h1 id="sektor-tittel">Sektor-dypdykk<span class="vekt" id="sektor-vekt"></span></h1>
   <p class="konteks" id="sektor-konteks">
     <span>Kommune: <strong id="kommune-navn">–</strong></span>
@@ -98,7 +98,7 @@
 <main id="hovedinnhold">
   <div id="ikke-funnet" class="ikke-funnet" hidden>
     <h2>Ukjent sektor</h2>
-    <p>Ingen sektor med ID <code id="ikke-funnet-id"></code>. Tilbake til <a href="/">Kommunebarometer</a>.</p>
+    <p>Ingen sektor med ID <code id="ikke-funnet-id"></code>. Tilbake til <a href="/kommunebarometer">Kommunebarometer</a>.</p>
   </div>
 
   <section id="sammendrag-seksjon" hidden>
@@ -338,7 +338,7 @@ function byggHjemUrl() {
   if (år) params.set('år', år);
   if (modus && modus !== 'raa') params.set('mode', modus);
   const qs = params.toString();
-  return qs ? `/?${qs}` : '/';
+  return qs ? `/kommunebarometer?${qs}` : '/kommunebarometer';
 }
 {
   const hjemA = document.getElementById('hjem-lenke');
@@ -377,7 +377,7 @@ if (!kommuneNavn) {
   // til hovedsiden så hun kan velge kommune først.
   const banner = document.createElement('div');
   banner.className = 'placeholder-banner';
-  banner.innerHTML = `<strong>Ingen kommune valgt.</strong> <a href="/" id="hjem-fra-tom">Gå til Kommunebarometer</a> og velg en kommune først.`;
+  banner.innerHTML = `<strong>Ingen kommune valgt.</strong> <a href="/kommunebarometer" id="hjem-fra-tom">Gå til Kommunebarometer</a> og velg en kommune først.`;
   document.querySelector('main').prepend(banner);
   document.getElementById('sammendrag-seksjon').hidden = true;
   document.getElementById('indikatorer-seksjon').hidden = true;
@@ -664,7 +664,7 @@ function visSammendragStub() {
   const lenke = document.getElementById('auto-redirect-lenke');
   const status = document.getElementById('auto-redirect-status');
   const retur = encodeURIComponent(window.location.href);
-  const målUrl = `/?kommune=${encodeURIComponent(kommuneNavn)}&return=${retur}`;
+  const målUrl = `/kommunebarometer?kommune=${encodeURIComponent(kommuneNavn)}&return=${retur}`;
   lenke.href = målUrl;
   let nedteller = 3;
   status.textContent = `Hopper automatisk om ${nedteller} sek …`;
