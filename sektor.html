@@ -6,6 +6,8 @@
 <title>Sektor-dypdykk — Kommunebarometer 2026</title>
 <meta name="description" content="Detaljert sektor-dypdykk for KOSTRA-indikatorer per kommune. Inkluderer behovsjustering, tidsserier og eksterne kilder.">
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<script src="/js/kostra-rapport.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
 <style>
   :root {
     --bg: #0f1724; --panel: #182134; --panel-2: #1f2b44;
@@ -152,6 +154,72 @@
       <select id="tidsserie-velg"></select>
     </div>
     <div class="chart-wrap"><canvas id="tidsserie-graf"></canvas></div>
+  </section>
+
+  <!-- Pakke 13: KOSTRA-rapport-stil per-funksjon-tabell -->
+  <section id="kostra-rapport-seksjon" hidden>
+    <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;margin-bottom:14px;">
+      <h2 style="margin:0;">KOSTRA-rapport: per funksjon</h2>
+      <button id="export-sektor-xlsx" type="button" style="background:var(--panel-2);color:var(--text);border:1px solid var(--accent);border-radius:6px;padding:8px 14px;font-size:13px;cursor:pointer;" title="Last ned denne sektoren som Excel">📊 Eksporter sektor</button>
+    </div>
+    <div id="kostra-rapport-laster" class="laster">Henter SSB tabell 12362 …</div>
+    <div id="kostra-rapport-innhold" hidden>
+      <h3 style="margin:18px 0 8px;font-size:15px;color:var(--accent);">Netto driftsutgifter per innbygger (AGD2)</h3>
+      <table id="kostra-netto-tabell" style="margin-bottom:18px;">
+        <caption class="sr-only">Netto driftsutgifter per innbygger per funksjon</caption>
+        <thead>
+          <tr>
+            <th scope="col">F</th>
+            <th scope="col">Navn</th>
+            <th scope="col" class="num">Kommunen</th>
+            <th scope="col" class="num">Snitt</th>
+            <th scope="col" class="num">Median</th>
+            <th scope="col" class="num">Rå rang</th>
+            <th scope="col" class="num">Korr. verdi</th>
+            <th scope="col" class="num">Korr. rang</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+      <h3 style="margin:18px 0 8px;font-size:15px;color:var(--accent-2);">Korrigerte brutto driftsutgifter per innbygger (AGD4)</h3>
+      <table id="kostra-korr-brutto-tabell" style="margin-bottom:18px;">
+        <caption class="sr-only">Korrigerte brutto driftsutgifter per innbygger per funksjon</caption>
+        <thead>
+          <tr>
+            <th scope="col">F</th>
+            <th scope="col">Navn</th>
+            <th scope="col" class="num">Kommunen</th>
+            <th scope="col" class="num">Snitt</th>
+            <th scope="col" class="num">Median</th>
+            <th scope="col" class="num">Rå rang</th>
+            <th scope="col" class="num">Korr. verdi</th>
+            <th scope="col" class="num">Korr. rang</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+      <div id="kostra-per-bruker-wrap" hidden>
+        <h3 style="margin:18px 0 8px;font-size:15px;color:#FCE4D6;">Per bruker / per målgruppe</h3>
+        <table id="kostra-per-bruker-tabell">
+          <caption class="sr-only">Per-bruker og per-målgruppe-indikatorer</caption>
+          <thead>
+            <tr>
+              <th scope="col">Indikator</th>
+              <th scope="col">Type</th>
+              <th scope="col" class="num">Kommunen</th>
+              <th scope="col" class="num">Snitt</th>
+              <th scope="col" class="num">Median</th>
+              <th scope="col" class="num">Rang</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
+      <p style="font-size:11px;color:var(--muted);margin-top:14px;">
+        <strong>Kilde:</strong> SSB tabell 12362 (henting <span id="kostra-hentet-dato"></span>).
+        Sektorindeks fra KMD Grønt hefte. Rang #1 = lavest verdi (kostnads-konvensjon).
+      </p>
+    </div>
   </section>
 
   <section id="ekstern-seksjon">
@@ -357,6 +425,172 @@ async function initSide() {
   } catch (e) {
     document.getElementById('indikator-laster').textContent = `Kunne ikke hente fra SSB: ${e.message}`;
   }
+
+  // Pakke 13: Last KOSTRA-rapport-seksjon (per-funksjon-tall fra tabell 12362)
+  await renderKostraRapport().catch(e => {
+    console.error('KOSTRA-rapport feilet:', e);
+    const lasteEl = document.getElementById('kostra-rapport-laster');
+    if (lasteEl) lasteEl.textContent = `Kunne ikke hente KOSTRA-rapport: ${e.message}`;
+  });
+}
+
+// Pakke 13: Last KOSTRA-sektorer + tabell 12362 + per-bruker, og bygg KOSTRA-stil tabeller.
+async function renderKostraRapport() {
+  // Kun for sektorer som har KOSTRA-funksjons-mapping
+  const kostra = await fetch('/data/kostra-sektorer.json').then(r => r.ok ? r.json() : null);
+  if (!kostra) return;
+  // Match sektor-id mot KOSTRA-sektorer (mapping fra eldre id til ny)
+  const sektorIdMapping = {
+    'grunnskole': 'grunnskole', 'barnehage': 'barnehage', 'pleie': 'pleie-omsorg',
+    'helse': 'kommunehelse', 'sosial': 'sosialtjenesten', 'barnevern': 'barnevern',
+    'okonomi': 'administrasjon', 'eiendom': 'plan-byggesak-miljo',
+    'kultur': 'kultur-idrett-fritid', 'saksbehandling': 'plan-byggesak-miljo',
+    'var': 'var', 'klima': 'plan-byggesak-miljo'
+  };
+  const kostraSektorId = sektorIdMapping[sektorId] || sektorId;
+  const kostraSektor = kostra.sektorer.find(s => s.id === kostraSektorId);
+  if (!kostraSektor) return;
+
+  document.getElementById('kostra-rapport-seksjon').hidden = false;
+
+  const kommunenr = finnKommunenrFraNavn(kommuneNavn);
+  if (!kommunenr) {
+    document.getElementById('kostra-rapport-laster').textContent = 'Mangler kommunenr — kan ikke lage KOSTRA-rapport';
+    return;
+  }
+
+  const dkiFelt = kostraSektor.behovskorrigering;
+  const sektorindekser = dkiFelt
+    ? await KostraRapport.hentSektorindekser(år, dkiFelt)
+    : {};
+
+  // Hent netto (AGD2) og korrigert brutto (AGD4) for sektorens funksjoner
+  const [netto, korrBrutto] = await Promise.all([
+    KostraRapport.hentTabell12362(år, KostraRapport.ART_NETTO, kostraSektor.funksjoner),
+    KostraRapport.hentTabell12362(år, KostraRapport.ART_KORR_BRUTTO, kostraSektor.funksjoner)
+  ]);
+
+  fyllPerFunksjonTabell('kostra-netto-tabell', netto, kostraSektor, kostra.funksjonsnavn, kommunenr, sektorindekser);
+  fyllPerFunksjonTabell('kostra-korr-brutto-tabell', korrBrutto, kostraSektor, kostra.funksjonsnavn, kommunenr, sektorindekser);
+
+  // Per-bruker (kun for barnehage, grunnskole, pleie-omsorg)
+  if (KostraRapport.PER_BRUKER_KONFIG[kostraSektorId]) {
+    try {
+      const perBruker = await KostraRapport.hentPerBrukerData(kostraSektorId, år);
+      if (perBruker) fyllPerBrukerTabell(perBruker, kommunenr);
+    } catch (e) {
+      console.warn('Per-bruker feilet:', e.message);
+    }
+  }
+
+  document.getElementById('kostra-rapport-laster').hidden = true;
+  document.getElementById('kostra-rapport-innhold').hidden = false;
+  document.getElementById('kostra-hentet-dato').textContent = new Date().toLocaleDateString('nb-NO');
+
+  // Excel-eksport-knapp for denne sektoren
+  document.getElementById('export-sektor-xlsx').addEventListener('click', () => {
+    eksporterSektorTilExcel(kostraSektor, netto, korrBrutto, kommunenr, sektorindekser, kostra.funksjonsnavn);
+  });
+}
+
+function fyllPerFunksjonTabell(tabellId, dataset, kostraSektor, funksjonsnavn, kommunenr, sektorindekser) {
+  const tbody = document.querySelector(`#${tabellId} tbody`);
+  tbody.innerHTML = '';
+  let sumKommune = 0, sumSnitt = 0;
+  for (const f of kostraSektor.funksjoner) {
+    const verdiPerKommune = {};
+    for (const [knr, funksjoner] of Object.entries(dataset.kommuner)) {
+      if (funksjoner[f] != null) verdiPerKommune[knr] = funksjoner[f];
+    }
+    const rang = KostraRapport.beregnRangering(verdiPerKommune);
+    const minRang = KostraRapport.rangFraListe(rang.rangertListe, kommunenr);
+    const minVerdi = minRang?.verdi;
+    let korrVerdi = null, korrRang = null;
+    if (Object.keys(sektorindekser).length > 0 && minVerdi != null) {
+      const dki = sektorindekser[kommunenr];
+      korrVerdi = KostraRapport.behovskorrigertVerdi(minVerdi, dki);
+      const korrRangering = KostraRapport.behovskorrigertRangering(verdiPerKommune, sektorindekser);
+      korrRang = KostraRapport.rangFraListe(korrRangering.rangertListe, kommunenr);
+    }
+    sumKommune += minVerdi || 0;
+    sumSnitt += rang.snitt || 0;
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td>${f}</td>
+      <td>${funksjonsnavn[f] || ''}</td>
+      <td class="num">${minVerdi != null ? Math.round(minVerdi).toLocaleString('nb-NO') : '–'}</td>
+      <td class="num">${rang.snitt != null ? Math.round(rang.snitt).toLocaleString('nb-NO') : '–'}</td>
+      <td class="num">${rang.median != null ? Math.round(rang.median).toLocaleString('nb-NO') : '–'}</td>
+      <td class="num">${minRang ? `#${minRang.rang}/${minRang.totalAntall}` : '–'}</td>
+      <td class="num">${korrVerdi != null ? Math.round(korrVerdi).toLocaleString('nb-NO') : '–'}</td>
+      <td class="num">${korrRang ? `#${korrRang.rang}/${korrRang.totalAntall}` : '–'}</td>
+    `;
+    tbody.appendChild(tr);
+  }
+  // SUM-rad
+  const sumTr = document.createElement('tr');
+  sumTr.style.cssText = 'background:rgba(255,230,153,0.15);font-weight:700;';
+  sumTr.innerHTML = `
+    <td colspan="2"><strong>SUM</strong></td>
+    <td class="num"><strong>${Math.round(sumKommune).toLocaleString('nb-NO')}</strong></td>
+    <td class="num"><strong>${Math.round(sumSnitt).toLocaleString('nb-NO')}</strong></td>
+    <td class="num">–</td>
+    <td class="num">–</td>
+    <td class="num">–</td>
+    <td class="num">–</td>
+  `;
+  tbody.appendChild(sumTr);
+}
+
+function fyllPerBrukerTabell(perBruker, kommunenr) {
+  const wrap = document.getElementById('kostra-per-bruker-wrap');
+  const tbody = wrap.querySelector('tbody');
+  tbody.innerHTML = '';
+  for (const ind of perBruker.indikatorer) {
+    const rang = KostraRapport.beregnRangering(ind.verdier);
+    const minRang = KostraRapport.rangFraListe(rang.rangertListe, kommunenr);
+    const minVerdi = minRang?.verdi;
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td>${ind.navn}</td>
+      <td><span style="font-size:11px;background:var(--panel-2);padding:2px 6px;border-radius:3px;">${ind.type}</span></td>
+      <td class="num">${minVerdi != null ? minVerdi.toLocaleString('nb-NO') : '–'}</td>
+      <td class="num">${rang.snitt != null ? rang.snitt.toLocaleString('nb-NO') : '–'}</td>
+      <td class="num">${rang.median != null ? rang.median.toLocaleString('nb-NO') : '–'}</td>
+      <td class="num">${minRang ? `#${minRang.rang}/${minRang.totalAntall}` : '–'}</td>
+    `;
+    tbody.appendChild(tr);
+  }
+  wrap.hidden = false;
+}
+
+function eksporterSektorTilExcel(kostraSektor, netto, korrBrutto, kommunenr, sektorindekser, funksjonsnavn) {
+  if (typeof XLSX === 'undefined') { alert('XLSX ikke lastet'); return; }
+  const wb = XLSX.utils.book_new();
+  function lagArkData(dataset, tittel) {
+    const rader = [[tittel + ' — ' + kommuneNavn + ' (' + år + ')'], [],
+      ['F', 'Navn', 'Kommunen', 'Snitt', 'Median', 'Rå rang', 'Korr. verdi', 'Korr. rang']];
+    for (const f of kostraSektor.funksjoner) {
+      const verdiPerKommune = {};
+      for (const [knr, fns] of Object.entries(dataset.kommuner)) {
+        if (fns[f] != null) verdiPerKommune[knr] = fns[f];
+      }
+      const r = KostraRapport.beregnRangering(verdiPerKommune);
+      const mr = KostraRapport.rangFraListe(r.rangertListe, kommunenr);
+      const mv = mr?.verdi;
+      let kv = null, kr = null;
+      if (Object.keys(sektorindekser).length > 0 && mv != null) {
+        kv = KostraRapport.behovskorrigertVerdi(mv, sektorindekser[kommunenr]);
+        const krg = KostraRapport.behovskorrigertRangering(verdiPerKommune, sektorindekser);
+        kr = KostraRapport.rangFraListe(krg.rangertListe, kommunenr);
+      }
+      rader.push([f, funksjonsnavn[f] || '', mv, r.snitt, r.median, mr ? mr.rang : '', kv, kr ? kr.rang : '']);
+    }
+    return XLSX.utils.aoa_to_sheet(rader);
+  }
+  XLSX.utils.book_append_sheet(wb, lagArkData(netto, 'Netto driftsutgifter (AGD2)'), 'Netto');
+  XLSX.utils.book_append_sheet(wb, lagArkData(korrBrutto, 'Korrigerte brutto (AGD4)'), 'Korr.brutto');
+  XLSX.writeFile(wb, `KOSTRA-${kostraSektor.id}-${kommuneNavn}-${år}.xlsx`);
 }
 
 // Pakke 2: Hvis localStorage er tomt (bruker kom rett til /sektor.html), tilbyr
