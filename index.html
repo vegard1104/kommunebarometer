@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Kommunebarometer 2026 – Lørenskog</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<script src="/js/kostra-rapport.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
 <!-- B2: Skeleton for dynamisk kommuneinndeling. window.Kommunestruktur er tilgjengelig
      for fremtidig erstatning av hardkodet MERGERS. Ikke i bruk ennå. -->
@@ -385,6 +386,7 @@
     <button id="refresh-btn">↻ Oppdater</button>
     <button id="csv-btn" class="primary">⬇ CSV</button>
     <button id="xlsx-btn" class="primary">⬇ Excel</button>
+    <button id="kostra-rapport-btn" class="primary" title="Last ned full KOSTRA-rapport (alle 15 sektorer × 75 funksjoner)">📊 KOSTRA-rapport</button>
     <button id="image-btn" type="button" title="Kopier sektor-radar som bilde til utklippstavlen">⎙ Bilde</button>
     <button id="share-btn" type="button" title="Kopier lenke til denne kommune-visningen">🔗 Del lenke</button>
     <!-- A2: Behovsjustert toggle. Lagres i URL (?mode=justert) og localStorage. -->
@@ -2411,6 +2413,121 @@ async function main() {
 document.getElementById('refresh-btn').onclick = () => { $log.textContent = ''; main(); };
 document.getElementById('csv-btn').onclick = downloadCsv;
 document.getElementById('xlsx-btn').onclick = downloadXlsx;
+
+// Pakke 14: Full KOSTRA-rapport-eksport (alle 15 sektorer × 75 funksjoner)
+document.getElementById('kostra-rapport-btn').onclick = async () => {
+  const btn = document.getElementById('kostra-rapport-btn');
+  const orig = btn.textContent;
+  btn.textContent = '⏳ Henter SSB-data …';
+  btn.disabled = true;
+  try {
+    await lastNedFullKostraRapport();
+    btn.textContent = '✓ Lastet ned';
+    setTimeout(() => { btn.textContent = orig; btn.disabled = false; }, 2000);
+  } catch (e) {
+    log(`KOSTRA-rapport feilet: ${e.message}`);
+    btn.textContent = '✗ Feil — se konsoll';
+    setTimeout(() => { btn.textContent = orig; btn.disabled = false; }, 3000);
+  }
+};
+
+async function lastNedFullKostraRapport() {
+  if (typeof XLSX === 'undefined' || typeof KostraRapport === 'undefined') {
+    throw new Error('XLSX eller KostraRapport ikke lastet');
+  }
+  const kostra = await fetch('/data/kostra-sektorer.json').then(r => r.json());
+  const kommunenr = CURRENT_MUNI_CODE;
+  const kommuneNavn = MUNI_NAMES[kommunenr] || kommunenr;
+  const valgtÅr = CURRENT_YEAR;
+
+  log(`Genererer KOSTRA-rapport for ${kommuneNavn} (${valgtÅr})…`);
+
+  const wb = XLSX.utils.book_new();
+
+  // Ark 1: Oversikt
+  const oversikt = [
+    [`KOSTRA-rapport ${valgtÅr} — ${kommuneNavn} (${kommunenr})`],
+    [],
+    ['Generert', new Date().toLocaleString('nb-NO')],
+    ['Kilde data', 'SSB tabell 12362 (per-funksjon-utgifter)'],
+    ['Kilde DKI', `KMD Grønt hefte ${valgtÅr}`],
+    [],
+    ['Sektor', 'Antall funksjoner', 'Behovskorrigering']
+  ];
+  for (const s of kostra.sektorer) {
+    oversikt.push([s.navn, s.funksjoner.length, s.behovskorrigering || 'nei']);
+  }
+  XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(oversikt), 'Oversikt');
+
+  // Ark 2: Sektorindekser (DKI)
+  const dkiAlle = await fetch(`/data/dki-${valgtÅr}.json`).then(r => r.ok ? r.json() : null);
+  if (dkiAlle && dkiAlle.kommuner[kommunenr]) {
+    const k = dkiAlle.kommuner[kommunenr];
+    const dkiRader = [['Sektor', 'DKI-faktor', 'Tolkning']];
+    if (typeof k === 'number') {
+      dkiRader.push(['Samlet utgiftsbehovsindeks', k, k < 1 ? `${Math.round((1-k)*100)}% lavere enn landsgj.snitt` : `${Math.round((k-1)*100)}% høyere enn landsgj.snitt`]);
+    } else {
+      for (const [felt, verdi] of Object.entries(k)) {
+        if (typeof verdi !== 'number') continue;
+        const tolk = verdi < 1 ? `${Math.round((1-verdi)*100)}% lavere` : `${Math.round((verdi-1)*100)}% høyere`;
+        dkiRader.push([felt, verdi, tolk]);
+      }
+    }
+    XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(dkiRader), 'Sektorindekser');
+  }
+
+  // Ark 3-17: Ett ark per KOSTRA-sektor med per-funksjon-tabell
+  for (const sek of kostra.sektorer) {
+    const dkiFelt = sek.behovskorrigering;
+    const sektorindekser = dkiFelt ? await KostraRapport.hentSektorindekser(valgtÅr, dkiFelt) : {};
+    log(`  ${sek.navn}: henter funksjoner…`);
+    let netto = null, korr = null;
+    try {
+      [netto, korr] = await Promise.all([
+        KostraRapport.hentTabell12362(valgtÅr, KostraRapport.ART_NETTO, sek.funksjoner),
+        KostraRapport.hentTabell12362(valgtÅr, KostraRapport.ART_KORR_BRUTTO, sek.funksjoner)
+      ]);
+    } catch (e) {
+      log(`    ⚠ ${sek.id}: ${e.message}`);
+      continue;
+    }
+    const rader = [
+      [`${sek.navn} — ${kommuneNavn} (${valgtÅr})`],
+      [],
+      ['NETTO DRIFTSUTGIFTER PER INNBYGGER (AGD2)'],
+      ['F', 'Navn', 'Kommunen', 'Snitt', 'Median', 'Rå rang', 'Korr. verdi', 'Korr. rang']
+    ];
+    function radPerFunksjon(dataset) {
+      const out = [];
+      for (const f of sek.funksjoner) {
+        const vk = {};
+        for (const [knr, fns] of Object.entries(dataset.kommuner)) {
+          if (fns[f] != null) vk[knr] = fns[f];
+        }
+        const r = KostraRapport.beregnRangering(vk);
+        const mr = KostraRapport.rangFraListe(r.rangertListe, kommunenr);
+        const mv = mr?.verdi;
+        let kv = null, kr = null;
+        if (Object.keys(sektorindekser).length > 0 && mv != null) {
+          kv = KostraRapport.behovskorrigertVerdi(mv, sektorindekser[kommunenr]);
+          const krg = KostraRapport.behovskorrigertRangering(vk, sektorindekser);
+          kr = KostraRapport.rangFraListe(krg.rangertListe, kommunenr);
+        }
+        out.push([f, kostra.funksjonsnavn[f] || '', mv, r.snitt, r.median, mr?.rang, kv, kr?.rang]);
+      }
+      return out;
+    }
+    rader.push(...radPerFunksjon(netto));
+    rader.push([], ['KORRIGERTE BRUTTO DRIFTSUTGIFTER (AGD4)'],
+      ['F', 'Navn', 'Kommunen', 'Snitt', 'Median', 'Rå rang', 'Korr. verdi', 'Korr. rang']);
+    rader.push(...radPerFunksjon(korr));
+    const arknavn = sek.navn.slice(0, 30).replace(/[\\\/?*\[\]]/g, ' ');
+    XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(rader), arknavn);
+  }
+
+  XLSX.writeFile(wb, `KOSTRA_${valgtÅr}_${kommuneNavn}_rangert.xlsx`);
+  log('KOSTRA-rapport ferdig.');
+}
 // A5: bind eksport- og deling-knapper
 document.getElementById('share-btn').onclick = shareLink;
 document.getElementById('image-btn').onclick = copyChartImage;
