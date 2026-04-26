@@ -86,7 +86,7 @@
 </head>
 <body>
 <header>
-  <div class="crumb"><a href="/">← Kommunebarometer</a> · <a href="/metodikk">Metodikk</a></div>
+  <div class="crumb"><a href="/" id="hjem-lenke">← Kommunebarometer</a> · <a href="/metodikk">Metodikk</a></div>
   <h1 id="sektor-tittel">Sektor-dypdykk<span class="vekt" id="sektor-vekt"></span></h1>
   <p class="konteks" id="sektor-konteks">
     <span>Kommune: <strong id="kommune-navn">–</strong></span>
@@ -313,9 +313,24 @@ function retning(label) {
 
 const u = new URL(window.location.href);
 const sektorId = u.searchParams.get('id') || 'grunnskole';
-const kommuneNavn = u.searchParams.get('kommune') || 'Lørenskog';
+const kommuneNavn = u.searchParams.get('kommune') || '';
 const år = u.searchParams.get('år') || u.searchParams.get('ar') || '2025';
 const modus = u.searchParams.get('mode') || (localStorage.getItem('kb_mode') === 'justert' ? 'justert' : 'raa');
+
+// Bygg tilbake-lenke som bevarer aktiv kommune/år/mode. Brukes både av
+// breadcrumb-lenken og av "Ukjent sektor"-fallbacken. Tom kommune ⇒ bare /.
+function byggHjemUrl() {
+  const params = new URLSearchParams();
+  if (kommuneNavn) params.set('kommune', kommuneNavn);
+  if (år) params.set('år', år);
+  if (modus && modus !== 'raa') params.set('mode', modus);
+  const qs = params.toString();
+  return qs ? `/?${qs}` : '/';
+}
+{
+  const hjemA = document.getElementById('hjem-lenke');
+  if (hjemA) hjemA.href = byggHjemUrl();
+}
 const sektor = SEKTORER[sektorId];
 // Modul-state må initialiseres FØR initSide() kalles, ellers havner referanser
 // fra async-funksjoner i Temporal Dead Zone.
@@ -345,12 +360,20 @@ function finnKommunenrFraNavn(navn) {
   }
   // Fallback: hvis brukeren ga 4-sifret kode direkte
   if (/^\d{4}$/.test(navn)) return navn;
-  // Statisk fallback for kjente POC-kommuner
-  const statisk = { 'Lørenskog': '3222' };
-  return statisk[navn] || null;
+  return null;
 }
 
-if (!sektor) {
+if (!kommuneNavn) {
+  // Ingen kommune i URL — sektor-dypdykk gir ikke mening uten det. Send brukeren
+  // til hovedsiden så hun kan velge kommune først.
+  const banner = document.createElement('div');
+  banner.className = 'placeholder-banner';
+  banner.innerHTML = `<strong>Ingen kommune valgt.</strong> <a href="/" id="hjem-fra-tom">Gå til Kommunebarometer</a> og velg en kommune først.`;
+  document.querySelector('main').prepend(banner);
+  document.getElementById('sammendrag-seksjon').hidden = true;
+  document.getElementById('indikatorer-seksjon').hidden = true;
+  document.getElementById('tidsserie-seksjon').hidden = true;
+} else if (!sektor) {
   document.getElementById('ikke-funnet').hidden = false;
   document.getElementById('ikke-funnet-id').textContent = sektorId;
 } else {
