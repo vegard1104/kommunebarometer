@@ -499,14 +499,14 @@ function _w(id, std) { return typeof _JUSTERT[id] === 'number' ? _JUSTERT[id] : 
 const SECTORS = [
   { id: 'grunnskole',    name: 'Grunnskole',                weight: _w('grunnskole', 20.0), tableId: '12255', dir: 'auto', maxInd: 5 },
   { id: 'pleie',         name: 'Pleie og omsorg',           weight: _w('pleie', 20.0),      tableId: '12209', dir: 'auto', maxInd: 5, filter: 'pleie|omsorg|sykehjem|hjemmetjeneste' },
-  { id: 'barnevern',     name: 'Barnevern',                 weight: _w('barnevern', 10.0), tableId: '12873', dir: 'auto', maxInd: 4, fallbackTableIds: ['12849', '08845'], statusNotat: 'Tabell 08845 returnerer HTTP 400 på enkelte parameter-kombinasjoner. Bruker 12873 (KOSTRA Barnevern, kommune) som primær med 12849/08845 som fallback. Verifiser mot SSB Statistikkbanken.' },
+  { id: 'barnevern',     name: 'Barnevern',                 weight: _w('barnevern', 10.0), tableId: '12279', dir: 'auto', maxInd: 4, fallbackTableIds: ['12189', '08845'], statusNotat: 'Verifisert mot SSB 2026-04-26: tabell 12279 "Nøkkeltal utgifter barnevern (K) 2015-2025" er den aktuelle. Tabell 08845 er "(avslutta)". 12189 dekker meldinger med konklusjon og handsamingstid som fallback. (12873 og 12849 er ikke barnevern — fjernet.)' },
   { id: 'barnehage',     name: 'Barnehage',                 weight: _w('barnehage', 10.0), tableId: '12379', dir: 'auto', maxInd: 4 },
   { id: 'helse',         name: 'Helse',                     weight: _w('helse',  7.5),      tableId: '12209', dir: 'auto', maxInd: 4, filter: 'helse|lege|fastlege|helsestasjon' },
   { id: 'sosial',        name: 'Sosialtjeneste',            weight: _w('sosial',  7.5),     tableId: '14019', dir: 'auto', maxInd: 4 },
   { id: 'okonomi',       name: 'Økonomi',                   weight: _w('okonomi', 10.0),   tableId: '12134', dir: 'auto', maxInd: 5 },
   { id: 'eiendom',       name: 'Kostnadsnivå / eiendom',    weight: _w('eiendom',  5.0),    tableId: '12051', dir: 'auto', maxInd: 3 },
   { id: 'kultur',        name: 'Kultur',                    weight: _w('kultur',  2.5),     tableId: '13135', dir: 'auto', maxInd: 3 },
-  { id: 'saksbehandling',name: 'Saksbehandling',            weight: _w('saksbehandling', 2.5), tableId: '13141', dir: 'auto', maxInd: 3, fallbackTableIds: ['13139', '13111'], statusNotat: 'Tabell 13111 sist oppdatert 15. juni 2021 — flagget som foreldet. Bruker 13141 (Plansaker behandlet) som primær. Vegard må vurdere redistribusjon av 2,5% vekt eller bytte til mer aktiv kilde.' },
+  { id: 'saksbehandling',name: 'Saksbehandling',            weight: _w('saksbehandling', 2.5), tableId: '12676', dir: 'auto', maxInd: 3, fallbackTableIds: ['13124', '13111'], statusNotat: 'Verifisert mot SSB 2026-04-26: tabell 12676 "Behandlede byggesøknader og klagesaker" dekker 2015-2025. 13124 (Tilsyn i byggesaker) som første fallback. Tabell 13141 og 13139 fjernet — de er bolig-tabeller, ikke saksbehandling.' },
   { id: 'var',           name: 'Vann, avløp, renovasjon',   weight: _w('var',  2.5),        tableId: '12263', dir: 'auto', maxInd: 3 },
   { id: 'klima',         name: 'Miljø og klima',            weight: _w('klima',  2.5),      tableId: '12190', dir: 'auto', maxInd: 3 }
 ];
