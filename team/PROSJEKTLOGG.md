@@ -14,6 +14,38 @@ Format per oppføring:
 
 ---
 
+## 2026-04-27 — Hotfix runde 6.2: 5 sektorer ga falske "ingen data"/"foreldet"
+
+**Hvem:** Claude Code (autonom, etter Vegards bug-rapport)
+**Branch:** `fix/sektor-data-feiler` (commit `0ec447a`), merget til test som `8c3b4d3`.
+
+**Bug:** 5 av 12 sektorer på dashbordet feilet etter runde 6:
+- "Kostnadsnivå / eiendom" 12051 — *ingen data*
+- "Kultur" 13135 — *⚠ foreldet*
+- "Saksbehandling" 12676 — *ingen data*
+- "Vann, avløp, renovasjon" 12263 — *ingen data*
+- "Miljø og klima" 12190 — *⚠ foreldet*
+
+**Diagnose:** Live-test mot `data.ssb.no/api/pxwebapi/v2/tables/{tab}/metadata` for alle 5 ID-er returnerer **HTTP 200**, sist oppdatert 2026-03-16, med 891 kommuner × 7-20 contents-koder × 11 år (2015-2025). SSB-tabellene er IKKE foreldet.
+
+Sannsynlig rotårsak: **transient SSB-feil** under parallell henting. `main()` lastet 12 sektorer i batcher av 4 → 8 samtidige SSB-requests per batch (1 metadata + 1 data per sektor). SSB returnerer 5xx eller timeout sporadisk under høyt parallell-trykk. `loadSector` fanget feilen i catch-blokken og rapporterte enten "ingen data" (når fetchTableV2 feilet) eller falsk "deprecated" (når fetchMeta feilet og det ikke fantes fallback).
+
+**Fix:**
+1. `_hentMedRetry`: 3 forsøk med 0/200/600 ms backoff. 4xx kaster med en gang (ingen retry på faktiske klient-feil), 5xx + nettverksfeil får retries. Anvendes i både `fetchMeta` og `fetchTableV2`.
+2. `deprecated: true`-flagget settes nå **kun** for ekte HTTP 404. Andre feil klassifiseres som SSB-feil med rød rand og "Last siden på nytt"-melding.
+3. Batch redusert fra 4 til 3 (8 → 6 samtidige SSB-requests per bølge).
+4. Sektor-kort skiller mellom 4 tilstander: *Datakilde foreldet* (404), *SSB-feil — last på nytt* (5xx/timeout), *mangler for kommunen* (kommune ikke i datasett), *ingen data* (annet).
+5. Logger nå URL-lengde i `GET data ${tableId}` så fremtidige diagnoser kan se om noe feiler pga. for lang sti.
+
+**Verifisering:**
+- Live-curl mot SSB for alle 5 tabell-IDer: 200 OK, 38–45 KB metadata.
+- Live-curl mot SSB for data-endpoint 13135: 200 OK, 92 KB, 5346 verdier (3 contents × 891 kommuner × 2 år).
+- Vercel-deploy `dpl_FXbn1DpCwcn336eksCY8q6sTE1bQ` (commit `8c3b4d3`) er READY.
+
+**Vegard må verifisere på preview:** Last `/kommunebarometer?kommune=Bergen` i incognito. Forventet: alle 12 sektorer viser score + rang. Hvis fortsatt feil, åpne konsollen og kopier API-loggen — den nye `URL-lengde` og retry-status hjelper rotårsak-diagnose.
+
+---
+
 ## 2026-04-26 — Hotfix runde 6: sektor-routing 404 + DKI force-cache
 
 **Hvem:** Claude Code (autonom, etter Vegards bug-rapport "page not found")
