@@ -754,12 +754,34 @@ function setStatus(text, cls = '') {
 //  SSB API-hjelpere
 // ============================================================
 
+// Retry-utility: 2 forsøk til, eksponentiell backoff (200ms → 600ms).
+// Aktiveres for HTTP 5xx og nettverksfeil. 4xx feiler umiddelbart.
+async function _hentMedRetry(url, etiket) {
+  const forsinkelser = [0, 200, 600];
+  let sisteFeil = null;
+  for (let i = 0; i < forsinkelser.length; i++) {
+    if (forsinkelser[i] > 0) await new Promise(r => setTimeout(r, forsinkelser[i]));
+    try {
+      const r = await fetch(url);
+      if (r.ok) return r.json();
+      // 4xx → ingen retry, kast med en gang. 5xx → prøv igjen.
+      if (r.status < 500) {
+        throw new Error(`${etiket}: HTTP ${r.status} ${r.statusText || ''}`.trim());
+      }
+      sisteFeil = new Error(`${etiket}: HTTP ${r.status} (forsøk ${i + 1}/${forsinkelser.length})`);
+    } catch (e) {
+      // Nettverksfeil eller 5xx: forsøk igjen
+      if (e.message.startsWith(etiket)) throw e; // 4xx-kast over — gi videre uendret
+      sisteFeil = e;
+    }
+  }
+  throw sisteFeil || new Error(`${etiket}: ukjent feil`);
+}
+
 async function fetchMeta(tableId) {
   const url = `${API_BASE}${tableId}/metadata?lang=no&outputFormat=json-px`;
   log(`GET metadata ${tableId}`);
-  const r = await fetch(url);
-  if (!r.ok) throw new Error(`Meta ${tableId}: HTTP ${r.status}`);
-  return r.json();
+  return _hentMedRetry(url, `Meta ${tableId}`);
 }
 
 async function fetchTableV2(tableId, params) {
@@ -772,10 +794,8 @@ async function fetchTableV2(tableId, params) {
     else usp.set(k, v);
   }
   const url = `${API_BASE}${tableId}/data?${usp.toString()}`;
-  log(`GET data ${tableId}`);
-  const r = await fetch(url);
-  if (!r.ok) throw new Error(`Data ${tableId}: HTTP ${r.status}`);
-  return r.json();
+  log(`GET data ${tableId} (${url.length} chars)`);
+  return _hentMedRetry(url, `Data ${tableId}`);
 }
 
 // ============================================================
@@ -1045,10 +1065,17 @@ async function loadSector(sec) {
     }
   }
   if (!meta) {
-    log(`  ✗ ${sec.id}: alle tabeller (${tabellerÅPrøve.join(', ')}) feilet — datakilde foreldet`);
+    const feildetalj = sisteFeil?.message || '(ingen feilmelding)';
+    log(`  ✗ ${sec.id}: alle tabeller (${tabellerÅPrøve.join(', ')}) feilet — ${feildetalj}`);
+    // Bare flagger som "deprecated" hvis SSB faktisk svarer 404 (tabell borte).
+    // 5xx, timeout, nettverksfeil → "ingen data" (gjenlast hjelper sannsynligvis).
+    const erEkteForeldet = /HTTP 404/.test(feildetalj);
     return {
-      sector: sec, error: `Datakilde foreldet — alle SSB-tabeller (${tabellerÅPrøve.join(', ')}) feilet. ${sisteFeil?.message || ''}`,
-      data: {}, indicators: [], years: [], deprecated: true
+      sector: sec,
+      error: erEkteForeldet
+        ? `Datakilde foreldet — SSB-tabell ${sec.tableId} svarer 404. ${feildetalj}`
+        : `SSB-feil for ${sec.tableId}: ${feildetalj}. Prøv å laste siden på nytt.`,
+      data: {}, indicators: [], years: [], deprecated: erEkteForeldet
     };
   }
   // Behold midlertidig override så fetchTableV2 kalles med riktig tableId.
@@ -1951,7 +1978,17 @@ function renderSectors() {
     const missing = !info;
     const hasForklaring = !!SEKTOR_FORKLARINGER?.sektorer?.[sec.id];
     const foreldet = sd?.deprecated === true;
-    const ingenDataText = foreldet ? 'Datakilde foreldet' : 'ingen data';
+    // Skill mellom "ekte foreldet" (HTTP 404 — tabell borte hos SSB),
+    // "midlertidig SSB-feil" (5xx, timeout — gjenlast hjelper), og
+    // "kommunen mangler i datasettet" (tabell OK men ikke for valgt kommune).
+    const harSdData = sd && Object.keys(sd.data || {}).length > 0;
+    const ssbFeil = !!sd?.error && !foreldet;
+    const kunMangelForKommunen = harSdData && !info;
+    const ingenDataText = foreldet
+      ? 'Datakilde foreldet'
+      : ssbFeil ? 'SSB-feil — last på nytt'
+      : kunMangelForKommunen ? 'mangler for kommunen'
+      : 'ingen data';
     // E4: Sist-oppdatert-stempel
     const oppdatert = sd?.tableUpdated ? formatNorskDato(sd.tableUpdated) : null;
     const tabellTittel = sd?.tableLabel ? sd.tableLabel.replace(/^\d+:\s*/, '') : '';
@@ -1988,6 +2025,7 @@ function renderSectors() {
         ${renderTrendRow(sec.id, CURRENT_MUNI_CODE)}
         ${dkiBadge(sec.id, CURRENT_MUNI_CODE, CURRENT_YEAR)}` : ''}
         ${foreldet ? `<div style="margin-top:8px;padding:8px 10px;background:rgba(251,191,36,0.10);border-left:3px solid var(--warn);border-radius:4px;font-size:12px;color:var(--muted);">SSB-tabell ${sec.tableId} svarer ikke. Sjekk Statistikkbanken for bytte eller fjerning av sektoren.</div>` : ''}
+        ${ssbFeil ? `<div style="margin-top:8px;padding:8px 10px;background:rgba(248,113,113,0.10);border-left:3px solid var(--bad);border-radius:4px;font-size:12px;color:var(--muted);">SSB-feil ved henting: ${escapeHtml(sd.error || '').slice(0, 200)}. Last siden på nytt.</div>` : ''}
         ${stempel}
       </a>
     `;
@@ -2455,9 +2493,12 @@ async function main() {
   } catch (_) {}
 
   const loaded = [];
-  // parallell henting i batcher av 4
-  for (let i = 0; i < SECTORS.length; i += 4) {
-    const batch = SECTORS.slice(i, i + 4);
+  // Parallell henting i batcher. Reduserte fra 4 til 3 etter at runde 6
+  // viste at noen SSB-tabeller (kultur 13135, klima 12190 m.fl.) tilfeldig
+  // feilet — sannsynligvis pga. korte SSB-API-throttle-vinduer.
+  // 12 sektorer / 3 = 4 batcher; total tid ≈ 4 × 600 ms = 2,4 s.
+  for (let i = 0; i < SECTORS.length; i += 3) {
+    const batch = SECTORS.slice(i, i + 3);
     const results = await Promise.all(batch.map(s => loadSector(s)));
     loaded.push(...results);
     setStatus(`Lastet ${loaded.length}/${SECTORS.length} sektorer…`);
